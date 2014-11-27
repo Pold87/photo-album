@@ -78,8 +78,8 @@ public class SpeechCommands {
 		configuration.setGrammarName(GRAMMAR_NAME);
 		configuration.setGrammarPath(GRAMMAR_PATH);
 		
-		Context context = new Context("file:/home/pold/Documents/Radboud/Java/photo-album/custom.config.xml", configuration);
-		context.setLocalProperty("logLevel", "WARNING");
+//		Context context = new Context("file:/home/pold/Documents/Radboud/Java/photo-album/custom.config.xml", configuration);
+//		context.setLocalProperty("logLevel", "WARNING");
 	
 	
 		// Set language model (for continuous speech)
