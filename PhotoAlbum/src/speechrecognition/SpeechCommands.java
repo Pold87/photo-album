@@ -1,6 +1,8 @@
 package speechrecognition;
 
 import java.awt.Toolkit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.Context;
@@ -27,7 +29,7 @@ public class SpeechCommands {
 	private static final String GRAMMAR_PATH = "resource:/speechrecognition/";
 	private static final String GRAMMAR_NAME = "commands";
 	private static final String LANGUAGE_MODEL = "resource:/edu/cmu/sphinx/models/language/en-us.lm.dmp";
-
+	
 	// Recognize a command
 	private static String recognizeCommand(LiveSpeechRecognizer recognizer) {
 		System.out.println("Command recognition (using grammar)");
@@ -62,6 +64,8 @@ public class SpeechCommands {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+
 		Configuration configuration = new Configuration();
 
 		// Set acoustic model
