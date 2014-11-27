@@ -1,0 +1,28 @@
+#JSGF V1.0;
+
+grammar dialog;
+
+<digit> = oh    |
+          zero  |
+          one   |
+          two   |
+          three |
+          four  |
+          five  |
+          six   |
+          seven |
+          eight |
+          nine  |
+          ten;
+
+<select_command> =  select <digit>;
+
+<exit_command> = exit;
+
+<edit_command> = move     |
+                 increase |
+                 decrease |
+                 description |
+                 remove;
+
+public <command> = <select_command> | <edit_command> | <exit_command>;
