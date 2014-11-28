@@ -1,12 +1,15 @@
 package speechrecognition;
 
 import java.awt.Toolkit;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import edu.cmu.sphinx.api.Configuration;
-import edu.cmu.sphinx.api.Context;
-import edu.cmu.sphinx.api.LiveSpeechRecognizer;
+import edu.cmu.sphinx.api.*;
+import edu.cmu.sphinx.result.ConfidenceResult;
+import edu.cmu.sphinx.result.Lattice;
+import edu.cmu.sphinx.result.MAPConfidenceScorer;
 
 /**
  * The speech recognition class. It is composed of two parts:
@@ -25,13 +28,13 @@ import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 public class SpeechCommands {
 
 	private static final String ACOUSTIC_MODEL = "resource:/speechrecognition/voxforge";
-	private static final String DICTIONARY_PATH = "resource:/edu/cmu/sphinx/models/acoustic/wsj/dict/cmudict.0.6d";
+	private static final String DICTIONARY_PATH = "resource:/speechrecognition/voxforge/cmudict.0.6d";
 	private static final String GRAMMAR_PATH = "resource:/speechrecognition/";
 	private static final String GRAMMAR_NAME = "commands";
 	private static final String LANGUAGE_MODEL = "resource:/edu/cmu/sphinx/models/language/en-us.lm.dmp";
 	
 	// Recognize a command
-	private static String recognizeCommand(LiveSpeechRecognizer recognizer) {
+	private static SpeechResult recognizeCommand(LiveSpeechRecognizer recognizer) {
 		System.out.println("Command recognition (using grammar)");
 		// System.out.println("--------------------------------");
 		// System.out.println("Example: select one");
@@ -39,8 +42,9 @@ public class SpeechCommands {
 		// System.out.println("--------------------------------");
 
 		recognizer.startRecognition(true);
-		String utterance = recognizer.getResult().getHypothesis();
-
+		SpeechResult utterance = recognizer.getResult();
+		//MAPConfidenceScorer scorer = new MAPConfidenceScorer();
+		//ConfidenceResult confidence = scorer.score(recognizer.getResult().);
 		// Pause recognition process. It can be resumed then with
 		// startRecognition(false).
 		recognizer.stopRecognition();
@@ -48,7 +52,7 @@ public class SpeechCommands {
 	}
 
 	// Recognize a description
-	private static String recognizeDescription(LiveSpeechRecognizer recognizer) {
+	private static SpeechResult recognizeDescription(LiveSpeechRecognizer recognizer) {
 		System.out
 				.println("Continuous speech recognition (using language model)");
 		// System.out.println("--------------------------------");
@@ -58,7 +62,7 @@ public class SpeechCommands {
 
 		recognizer.startRecognition(true);
 		System.out.println("Description listening");
-		String utterance = recognizer.getResult().getHypothesis();
+		SpeechResult utterance = recognizer.getResult();
 		recognizer.stopRecognition();
 		return utterance;
 	}
@@ -105,17 +109,17 @@ public class SpeechCommands {
 		Toolkit.getDefaultToolkit().beep();
 
 		// Get command and print to command line
-		String cmd = "start";
-		while (!cmd.equals("exit")) {
+		SpeechResult cmd = null;
+		while (true) {
 			cmd = recognizeCommand(commandRecognizer);
-
-			if (cmd.equals("description")) {
-				System.out.println("Switching to description mode");
-				String desc = recognizeDescription(descriptionRecognizer);
-				System.out.println(desc);
-			} else {
-				System.out.println(cmd);
-			}
+			System.out.println("Hypothesis" + cmd.getHypothesis());
+			System.out.println("N best:" + cmd.getNbest(2));
+			Lattice lattice = cmd.getLattice();
+			System.out.println("Lattice: " + lattice.getNodes());
+			System.out.println("Lattice: " + lattice.getEdges());
+			//lattice.computeNodePosteriors(0);
+			//System.out.println("Lattice: " + lattice.getViterbiPath());
+			System.out.println("Words: " + cmd.getWords());
 		}
 	}
 }

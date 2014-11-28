@@ -25,4 +25,21 @@ grammar dialog;
                  description |
                  remove;
 
-public <command> = <select_command> | <edit_command> | <exit_command>;
+<commands> = <select_command> | <edit_command> | <exit_command>;
+
+<option_1> = <commands>;  
+
+<option_2> = <garbage_loop> <commands>;  
+
+<option_3> = <commands> <garbage_loop>;  
+
+<option_4> = <garbage_loop> <commands> <garbage_loop>;  
+
+<option_5> = <garbage_loop>;    
+
+<garbage_loop> = (G1 | G2 | G3 | G4 | G5 | G6 | G7 | G8 | G9 | G10 | G11 | G12
+| G13 | G14 | G15 | G16 | G17 | G18 | G19 | G20 | G21 | G22 | G23 | G24 | G25
+| G26 | G27 | G28 | G29 | G30 | G31 | G32 | G33 | G34 | G35 | G36 | G37 | G38
+| G39)+;
+    
+public <command> = <option_1> | <option_2> | <option_3> | <option_4> | <option_5> ; 

@@ -1,8 +1,2 @@
-INDEX VERSION 1.127+C:\Users\Franziska\Documents\GitHub\photo-album\.metadata\.plugins\org.eclipse.jdt.core
-2701218135.index
-891044040.index
-2426723749.index
-4061246885.index
-953358023.index
-2444826113.index
-2293938933.index
+INDEX VERSION 1.127+/home/thomas/Projects/photo-album/.metadata/.plugins/org.eclipse.jdt.core
+4135133939.index
