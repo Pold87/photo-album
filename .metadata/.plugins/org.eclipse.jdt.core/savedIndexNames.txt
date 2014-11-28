@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+INDEX VERSION 1.127+/home/thomas/Projects/photo-album/.metadata/.plugins/org.eclipse.jdt.core
+4135133939.index
+=======
 INDEX VERSION 1.127+C:\Users\Franziska\Documents\GitHub\photo-album\.metadata\.plugins\org.eclipse.jdt.core
 3902870905.index
 1913418516.index
@@ -24,3 +28,4 @@ INDEX VERSION 1.127+C:\Users\Franziska\Documents\GitHub\photo-album\.metadata\.p
 776465942.index
 3983409053.index
 2293938933.index
+>>>>>>> 17405d40eeb7baad117c29347f632dc4021ab9d1
