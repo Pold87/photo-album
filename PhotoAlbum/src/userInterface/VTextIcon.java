@@ -1,4 +1,4 @@
-package GUI;
+package userInterface;
 /*
  *  soapUI, copyright (C) 2004-2011 smartbear.com 
  *
