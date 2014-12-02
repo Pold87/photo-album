@@ -22,7 +22,7 @@ public class Wit {
 	private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
 	private static final long RECORD_TIME = 5000;  // 1 minute
 	
-	private static HttpResponse getSpeech(File audioFile) throws Exception {
+	public static HttpResponse getSpeech(File audioFile) throws Exception {
 
 		// Speech recognition
 
