@@ -44,7 +44,7 @@ public class BasicDesign extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	    
-	private String imagedir = "C:\\";
+	private String imagedir = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
 	
 	private MissingIcon placeholderIcon = new MissingIcon();
 	private JToolBar buttonBar = new JToolBar();
@@ -117,6 +117,10 @@ public class BasicDesign extends JFrame {
 		VTextIcon textIcon1 = new VTextIcon(tabbedPane, "Photos");
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab(null, textIcon1, scrollPane_1);
+		
+		JPanel panel_2 = new JPanel();
+		scrollPane_1.setViewportView(panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
 
 		VTextIcon textIcon2 = new VTextIcon(tabbedPane, "Backgrounds");
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -148,8 +152,8 @@ public class BasicDesign extends JFrame {
         
         buttonBar.setOrientation(SwingConstants.VERTICAL);
         
-        buttonBar.add(photographLabel);
-        panel_1.add(buttonBar);
+        panel_1.add(photographLabel);
+        panel_2.add(buttonBar);
         
         // start the image loading 
         loadimages();
@@ -162,7 +166,6 @@ public class BasicDesign extends JFrame {
 				try {
 					BufferedImage bImage = ImageIO.read(new File(imagedir + pic));
 	                ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(bImage, 32, 32));
-	                
 	                ThumbnailAction thumbAction;
 	                thumbAction = new ThumbnailAction(bImage, thumbnailIcon, pic);
 	                JButton thumbButton = new JButton(thumbAction);
