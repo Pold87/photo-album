@@ -149,7 +149,7 @@ public class BasicDesign extends JFrame {
         buttonBar.setOrientation(SwingConstants.VERTICAL);
         
         buttonBar.add(photographLabel);
-        scrollPane_1.add(buttonBar);
+        panel_1.add(buttonBar);
         
         // start the image loading 
         loadimages();
@@ -159,15 +159,12 @@ public class BasicDesign extends JFrame {
     private void loadimages() {
             for (int i = 0; i < images.length; i++) {
             	String pic = images[i];
-                ImageIcon icon;
-                BufferedImage bImage;
 				try {
-					bImage = ImageIO.read(new File(imagedir + pic));
-					icon = new ImageIcon(bImage);
+					BufferedImage bImage = ImageIO.read(new File(imagedir + pic));
 	                ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(bImage, 32, 32));
 	                
 	                ThumbnailAction thumbAction;
-	                thumbAction = new ThumbnailAction(icon, thumbnailIcon, pic);
+	                thumbAction = new ThumbnailAction(bImage, thumbnailIcon, pic);
 	                JButton thumbButton = new JButton(thumbAction);
 	                buttonBar.add(thumbButton, buttonBar.getComponentCount()-1);
 				} catch (IOException e) {
@@ -208,8 +205,26 @@ public class BasicDesign extends JFrame {
          * @param Icon - The thumbnail to show in the button.
          * @param String - The descriptioon of the icon.
          */
-        public ThumbnailAction(Icon photo, Icon thumb, String desc){
-            displayPhoto = photo;
+        public ThumbnailAction(BufferedImage photo, Icon thumb, String desc){
+            float width = (float) photo.getWidth();
+            float height = (float) photo.getHeight();
+            float h;
+            float w;
+            //horizontal image
+            if (width>height) {
+            	w= 400;
+            	h = (400/width)*height;
+            }
+            //vertical image
+            else if (height>width){
+            	h=400;
+                w = (400/height)*width;
+            }
+            else{
+            	h=400;
+                w=400;
+            }
+            displayPhoto = new ImageIcon(getScaledImage(photo, (int) w, (int) h));
             
             // The short description becomes the tooltip of a button.
             putValue(SHORT_DESCRIPTION, desc);
