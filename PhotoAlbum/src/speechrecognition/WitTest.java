@@ -13,7 +13,7 @@ public class WitTest {
 
 		// Specify the location of the audio file
 		File audioFileWav = new File("recording.wav");
-//		File audioFileMp3 = new File("recording.mp3");
+		File audioFileMp3 = new File("recording.mp3");
 
 		final Record recorder = new Record(audioFileWav);
 
@@ -36,12 +36,16 @@ public class WitTest {
 		recorder.start();
 
 		// Convert Wav to Mp3
-		// recorder.convertWavToMp3(audioFileWav, audioFileMp3);
+		 recorder.convertWavToMp3(audioFileWav, audioFileMp3);
 
-		HttpResponse speechResponse = Wit.getSpeech(audioFileWav);
+		HttpResponse speechResponse = Wit.getSpeech(audioFileWav, "wav");
 		String speechResponseString = new BasicResponseHandler()
 				.handleResponse(speechResponse);
 
+		speechResponse = Wit.getSpeech(audioFileMp3, "mpeg3");
+		speechResponseString = new BasicResponseHandler()
+				.handleResponse(speechResponse);
+		
 		WitResponse response = null;
 
 		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally

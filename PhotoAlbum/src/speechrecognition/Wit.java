@@ -20,9 +20,9 @@ import org.apache.http.entity.InputStreamEntity;
 public class Wit {
 
 	private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
-	private static final long RECORD_TIME = 5000;  // 1 minute
+	private static final long RECORD_TIME = 3500;
 	
-	public static HttpResponse getSpeech(File audioFile) throws Exception {
+	public static HttpResponse getSpeech(File audioFile, String fileType) throws Exception {
 
 		// Speech recognition
 
@@ -39,12 +39,20 @@ public class Wit {
 		reqEntity.setChunked(true);
 
 		post.setHeader("Authorization", "Bearer " + TOKEN);
-		post.setHeader("Content-Type", "audio/wav");
+		post.setHeader("Content-Type", "audio/"+fileType);
 		post.setEntity(reqEntity);
+
+		long a = System.currentTimeMillis();
+		
 
 		// Get the data from wit.AI
 		HttpResponse speechResponse = client.execute(post);
 
+		long b = System.currentTimeMillis();
+		
+		System.out.println(b - a);
+		
+		
 		return speechResponse;
 	}
 
@@ -95,7 +103,7 @@ public class Wit {
         //recorder.convertWavToMp3(audioFileWav, audioFileMp3);
         
 
-		HttpResponse speechResponse = getSpeech(audioFileWav);
+		HttpResponse speechResponse = getSpeech(audioFileWav, "wav");
 		String speechResponseString = new BasicResponseHandler()
 				.handleResponse(speechResponse);
 		System.out.println(speechResponseString);
