@@ -8,6 +8,7 @@ public interface commandInterface {
 	abstract void selectSpecificPage(int nr); //Voice
 	abstract void insertPages(); //Insert 2 page after current page. //Voice or LEAP?
 	abstract void removeCurrentPages(); //Voice or LEAP?
+	abstract void addPictureFromLibrary(int nr); //Voice or LEAP?
 	
 
 

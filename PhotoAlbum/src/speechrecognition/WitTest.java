@@ -62,10 +62,32 @@ public class WitTest {
 		response = mapper.readValue(speechResponseString, WitResponse.class);
 		System.out.println("The recognized text was " + response.get_text());
 
-		response = mapper.readValue(speechResponseString, WitResponse.class);
 		System.out.println("It was recognized with a confidence of " + response.getOutcomes().get(0).getConfidence());
 
-		response = mapper.readValue(speechResponseString, WitResponse.class);
 		System.out.println("Your intent was " + response.getOutcomes().get(0).getIntent());
+		
+		try {
+			System.out.println("The first entity was " + response
+					.getOutcomes()
+					.get(0)
+					.getEntities()
+					.getNumber()
+					.get(0)
+					.getValue());
+		} catch (Exception e) {
+//			System.out.println("No entity");
+		}
+		
+		try {
+			System.out.println("The second entity was " + response
+					.getOutcomes()
+					.get(0)
+					.getEntities()
+					.getNumber()
+					.get(1)
+					.getValue());
+		} catch (Exception e) {
+//			System.out.println("No entity");
+		}
 	}
 }
