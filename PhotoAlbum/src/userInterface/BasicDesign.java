@@ -4,9 +4,12 @@ package userInterface;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
@@ -24,36 +27,31 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
-import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.awt.GridLayout;
+
 import javax.swing.SwingConstants;
 
-public class BasicDesign extends JFrame {
+public class BasicDesign extends JFrame implements ComponentListener{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	    
-	private String imagedir = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
-	
-	private MissingIcon placeholderIcon = new MissingIcon();
 	private JToolBar buttonBar = new JToolBar();
 	private JLabel photographLabel = new JLabel();
 	
 	//Images (names will be used as labels)
 	    private String[] images = { "IMG_1.jpg", "IMG_2.jpg",
-	    "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg"};
-	    
+	    "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg"};
 
 	/**
 	 * Launch the application.
@@ -62,8 +60,14 @@ public class BasicDesign extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					BasicDesign frame = new BasicDesign();
-					frame.setVisible(true);
+					BasicDesign frame = new BasicDesign(600,600);
+					frame.pack();
+			        frame.setLocationRelativeTo(null);
+			        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			        frame.setTitle("Photo Book Builder");
+			        frame.setSize(600,600);
+			        //frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			        frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -75,36 +79,38 @@ public class BasicDesign extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public BasicDesign() {
+	public BasicDesign(int hi, int wi) {
 		
 		/**
 		* Everything that is necessary for layout
 		*/
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Photo Book Builder");
-	    setSize(600, 400);
-	    setLocationRelativeTo(null);
+	    int width_library = wi/6;
+	    int width_book = 5*wi/6;
+	    
 		
 		//Content Pane
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{422, 0};
-		gbl_contentPane.rowHeights = new int[]{243, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_contentPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
 		//Panel that holds everything
 		JPanel panel = new JPanel();
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{100, 300};
-		gbl_panel.rowHeights = new int[]{252, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0};
-		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[]{width_library, width_book};
+		gbl_panel.rowHeights = new int[]{hi};
+		gbl_panel.columnWeights = new double[]{0.17, 0.83};
+		gbl_panel.rowWeights = new double[]{1.0};
+		GridBagConstraints gbl_c = new GridBagConstraints();
+		gbl_c.fill = GridBagConstraints.BOTH; 
+		gbl_c.gridwidth = 2;
+        gbl_c.gridx = 0; 
+        gbl_c.gridy = 0; 
+        gbl_c.weightx = 1;
+        gbl_c.weighty = 1;
 		panel.setLayout(gbl_panel);
-		contentPane.add(panel);
+		contentPane.add(panel,gbl_c);
 		
 		//Tabbed Pane that holds library
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
@@ -114,6 +120,8 @@ public class BasicDesign extends JFrame {
 		gbc_tabbedPane.gridx = 0;
 		gbc_tabbedPane.gridy = 0;
 		panel.add(tabbedPane, gbc_tabbedPane);
+		tabbedPane.addComponentListener(this);
+		
 		VTextIcon textIcon1 = new VTextIcon(tabbedPane, "Photos");
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab(null, textIcon1, scrollPane_1);
@@ -131,12 +139,14 @@ public class BasicDesign extends JFrame {
 		tabbedPane.addTab(null, textIcon3, scrollPane_3);
 
 		//Pane that holds canvas for book
-		JPanel panel_1 = new JPanel();
-		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 1;
-		gbc_panel_1.gridy = 0;
-		panel.add(panel_1, gbc_panel_1);
+		JPanel book_panel = new JPanel();
+		GridBagConstraints gbc_book_panel = new GridBagConstraints();
+		gbc_book_panel.fill = GridBagConstraints.BOTH;
+		gbc_book_panel.gridx = 1;
+		gbc_book_panel.gridy = 0;
+		
+		book_panel.setBackground(Color.GRAY);
+		panel.add(book_panel, gbc_book_panel);
 	
 		/**
 		* Everything that is necessary for images
@@ -147,87 +157,42 @@ public class BasicDesign extends JFrame {
         photographLabel.setHorizontalAlignment(JLabel.CENTER);
         photographLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        buttonBar.add(Box.createGlue());
-        buttonBar.add(Box.createGlue());
-        
         buttonBar.setOrientation(SwingConstants.VERTICAL);
         
-        panel_1.add(photographLabel);
+        book_panel.add(photographLabel);
         panel_2.add(buttonBar);
         
         // start the image loading 
-        loadimages();
+        double thumbSize = wi*0.2;
+        loadimages((int) thumbSize, (int) thumbSize, thumbSize*2);
 	}
 	
 
-    private void loadimages() {
+    private void loadimages(int buttonWidth, int buttonHeight, double sideLength) {
+    	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
             for (int i = 0; i < images.length; i++) {
             	String pic = images[i];
 				try {
-					BufferedImage bImage = ImageIO.read(new File(imagedir + pic));
-	                ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(bImage, 32, 32));
-	                ThumbnailAction thumbAction;
-	                thumbAction = new ThumbnailAction(bImage, thumbnailIcon, pic);
+					Photo photo = new Photo(path, pic, buttonWidth, buttonHeight, (float) sideLength);
+	                ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
 	                JButton thumbButton = new JButton(thumbAction);
-	                buttonBar.add(thumbButton, buttonBar.getComponentCount()-1);
+	                buttonBar.add(thumbButton, buttonBar.getComponentCount());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} 
             }
-    };
-    
-    /**
-     * Resizes an image using a Graphics2D object backed by a BufferedImage.
-     * @param srcImg - source image to scale
-     * @param w - desired width
-     * @param h - desired height
-     * @return - the new resized image
-     */
-    private Image getScaledImage(Image srcImg, int w, int h){
-        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = resizedImg.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(srcImg, 0, 0, w, h, null);
-        g2.dispose();
-        return resizedImg;
     }
     
     /**
      * Action class that shows the image specified in it's constructor.
      */
     private class ThumbnailAction extends AbstractAction{
-        
-        /**
-         *The icon if the full image we want to display.
-         */
-        private Icon displayPhoto;
-        
-        /**
-         * @param Icon - The full size photo to show in the button.
-         * @param Icon - The thumbnail to show in the button.
-         * @param String - The descriptioon of the icon.
-         */
-        public ThumbnailAction(BufferedImage photo, Icon thumb, String desc){
-            float width = (float) photo.getWidth();
-            float height = (float) photo.getHeight();
-            float h;
-            float w;
-            //horizontal image
-            if (width>height) {
-            	w= 400;
-            	h = (400/width)*height;
-            }
-            //vertical image
-            else if (height>width){
-            	h=400;
-                w = (400/height)*width;
-            }
-            else{
-            	h=400;
-                w=400;
-            }
-            displayPhoto = new ImageIcon(getScaledImage(photo, (int) w, (int) h));
+		private static final long serialVersionUID = 1L;
+		private ImageIcon displayPhoto;
+        public ThumbnailAction(ImageIcon photo, ImageIcon thumb, String desc){
+        	
+        	displayPhoto = photo;
             
             // The short description becomes the tooltip of a button.
             putValue(SHORT_DESCRIPTION, desc);
@@ -245,31 +210,41 @@ public class BasicDesign extends JFrame {
             setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
         }
     }
+        
+       
+    public void componentHidden(ComponentEvent e) {
+        System.out.println(e.getComponent().getClass().getName() + " --- Hidden");
+    }
+
+    public void componentMoved(ComponentEvent e) {
+        System.out.println(e.getComponent().getClass().getName() + " --- Moved");
+    }
+
+    public void componentResized(ComponentEvent e) {
+    	System.out.println(e.getComponent().getClass().getName() + " --- Resized");
+    	/*for (int i = 0; i < buttonBar.getComponentCount(); i++) {
+			int width = e.getComponent().getWidth();
+			JButton button = (JButton) buttonBar.getComponent(i);
+			Image img = ((ImageIcon) button.getIcon()).getImage();
+			BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+			Graphics g = bi.createGraphics();
+			g.drawImage(img, 0, 0, width, width, null);
+			ImageIcon newIcon = new ImageIcon(bi);
+			button.setIcon(newIcon);
+			button.revalidate();
+			button.repaint();*/
+    	}
+    	
+					//Photo photo = new Photo(path, pic, buttonWidth, buttonHeight, (float) sideLength);
+	                //ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
+	                //JButton thumbButton = new JButton(thumbAction);	      
+
+    public void componentShown(ComponentEvent e) {
+        System.out.println(e.getComponent().getClass().getName() + " --- Shown");
+
+    }
 }
         
-	/*try{
-			
-			BufferedImage bImage = ImageIO.read(new File("C:\\picture1.jpg"));
-			BufferedImage resized = resize(bImage, 100, 100);
-			ImageIcon image = new ImageIcon(resized);
-			panel_1.setLayout(new BorderLayout(0, 0));
-			JLabel label  = new JLabel ("Trololol", image, JLabel.CENTER);
-			label.setPreferredSize(new Dimension(200, 200));
-			panel_1.add(label, BorderLayout.CENTER);
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public static BufferedImage resize(BufferedImage image, int width, int height) {
-	    BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
-	    Graphics2D g2d = (Graphics2D) bi.createGraphics();
-	    g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-	    g2d.drawImage(image, 0, 0, width, height, null);
-	    g2d.dispose();
-	    return bi;
-	}}*/
+
 	
 
