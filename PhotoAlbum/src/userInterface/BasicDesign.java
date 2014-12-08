@@ -11,7 +11,6 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -129,23 +128,46 @@ public class BasicDesign extends JFrame implements ComponentListener{
 
 		//Pane that holds canvas for book
 		JPanel book_panel = new JPanel();
-		GridBagConstraints gbc_book_panel = new GridBagConstraints();
-		gbc_book_panel.fill = GridBagConstraints.BOTH;
-		gbc_book_panel.gridx = 1;
-		gbc_book_panel.gridy = 0;
-		
+		GridBagLayout book_layout = new GridBagLayout();
+		book_panel.setLayout(book_layout);
+		book_layout.columnWidths = new int[]{ width_book/10, 2*width_book/5, 2*width_book/5, width_book/10};
+		book_layout.rowHeights = new int[]{hi/6, 2*hi/3, hi/6};
+		book_layout.columnWeights = new double[]{0.1, 0.4, 0.4, 0.1};
+		book_layout.rowWeights = new double[]{0.17, 0.66, 0.17};
+		GridBagConstraints book_constraints = new GridBagConstraints();
+		book_constraints.fill = GridBagConstraints.BOTH;
+		book_constraints.gridx = 1;
+		book_constraints.gridy = 0;
 		book_panel.setBackground(Color.GRAY);
-		panel.add(book_panel, gbc_book_panel);
+		panel.add(book_panel, book_constraints);
+	
+		//Left page of photobook
+		JPanel photo_left = new JPanel();
+		GridBagConstraints gbc_photo_left = new GridBagConstraints();
+		gbc_photo_left.fill = GridBagConstraints.BOTH;
+		gbc_photo_left.gridx = 1;
+		gbc_photo_left.gridy = 1;
+		photo_left.setBackground(Color.WHITE);
+		book_panel.add(photo_left, gbc_photo_left);
+		
+		//Left page of photobook
+		JPanel photo_right = new JPanel();
+		GridBagConstraints gbc_photo_right = new GridBagConstraints();
+		gbc_photo_right.fill = GridBagConstraints.BOTH;
+		gbc_photo_right.gridx = 2;
+		gbc_photo_right.gridy = 1;
+		photo_right.setBackground(Color.LIGHT_GRAY);
+		book_panel.add(photo_right, gbc_photo_right);
+		
 	
 		//How image labels are displayed
         photographLabel.setVerticalTextPosition(JLabel.BOTTOM);
         photographLabel.setHorizontalTextPosition(JLabel.CENTER);
         photographLabel.setHorizontalAlignment(JLabel.CENTER);
-        photographLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
         buttonBar.setOrientation(SwingConstants.VERTICAL);
         
-        book_panel.add(photographLabel);
+        photo_right.add(photographLabel);
         panel_2.add(buttonBar);
         
         // start the image loading 
@@ -197,7 +219,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
          */
         public void actionPerformed(ActionEvent e) {
             photographLabel.setIcon(displayPhoto);
-            setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
+            //setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
         }
     }
         
