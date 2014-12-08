@@ -9,11 +9,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.BasicResponseHandler;
 
 public class WitTest {
+	
+	public static final int recordTime = 4000;
 	public static void main(String[] args) throws Exception {
 
 		// Specify the location of the audio file
 		File audioFileWav = new File("recording.wav");
-		File audioFileMp3 = new File("recording.mp3");
+		File audioFileMp3 = new File("Vocaroo_s1zIdkevNvhl.mp3");
 
 		final Record recorder = new Record(audioFileWav);
 
@@ -22,7 +24,7 @@ public class WitTest {
 		Thread stopper = new Thread(new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(6000);
+					Thread.sleep(recordTime);
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 				}
@@ -36,14 +38,10 @@ public class WitTest {
 		recorder.start();
 
 		// Convert Wav to Mp3
-		 recorder.convertWavToMp3(audioFileWav, audioFileMp3);
+		//recorder.convertWavToMp3(audioFileWav, audioFileMp3);
 
 		HttpResponse speechResponse = Wit.getSpeech(audioFileWav, "wav");
 		String speechResponseString = new BasicResponseHandler()
-				.handleResponse(speechResponse);
-
-		speechResponse = Wit.getSpeech(audioFileMp3, "mpeg3");
-		speechResponseString = new BasicResponseHandler()
 				.handleResponse(speechResponse);
 		
 		WitResponse response = null;
@@ -89,5 +87,47 @@ public class WitTest {
 		} catch (Exception e) {
 //			System.out.println("No entity");
 		}
+		speechResponse = Wit.getSpeech(audioFileMp3, "mpeg3");
+		speechResponseString = new BasicResponseHandler()
+				.handleResponse(speechResponse);
+	System.out.println("The raw text was " + speechResponseString);
+		
+		
+		response = mapper.readValue(speechResponseString, WitResponse.class);
+		System.out.println("The recognized text was " + response.get_text());
+
+		System.out.println("It was recognized with a confidence of " + response.getOutcomes().get(0).getConfidence());
+
+		System.out.println("Your intent was " + response.getOutcomes().get(0).getIntent());
+		
+		try {
+			System.out.println("The first entity was " + response
+					.getOutcomes()
+					.get(0)
+					.getEntities()
+					.getNumber()
+					.get(0)
+					.getValue());
+		} catch (Exception e) {
+//			System.out.println("No entity");
+		}
+		
+		try {
+			System.out.println("The second entity was " + response
+					.getOutcomes()
+					.get(0)
+					.getEntities()
+					.getNumber()
+					.get(1)
+					.getValue());
+		} catch (Exception e) {
+//			System.out.println("No entity");
+		}
 	}
+	
+//	HttpResponse meaningResponse = getMeaning(remove1);
+//	String meaningResponseString = new BasicResponseHandler()
+//			.handleResponse(meaningResponse);
+//	System.out.println(meaningResponseString);
+	
 }

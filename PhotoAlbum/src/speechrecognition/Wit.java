@@ -20,7 +20,7 @@ import org.apache.http.entity.InputStreamEntity;
 public class Wit {
 
 	private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
-	private static final long RECORD_TIME = 3500;
+	private static final long RECORD_TIME = WitTest.recordTime;
 	
 	public static HttpResponse getSpeech(File audioFile, String fileType) throws Exception {
 
@@ -42,6 +42,7 @@ public class Wit {
 		post.setHeader("Content-Type", "audio/"+fileType);
 		post.setEntity(reqEntity);
 
+		System.out.println("filetype: " + fileType);
 		long a = System.currentTimeMillis();
 		
 
@@ -70,51 +71,6 @@ public class Wit {
 		
 		return meaningResponse;
 
-	}
-
-	public static void main(String[] args) throws Exception {
-
-		// Specify the location of the audio file
-		File audioFileWav = new File("recording.wav");
-		File audioFileMp3 = new File("recording.mp3");
-		
-		
-        final Record recorder = new Record(audioFileWav);
-        
-        // creates a new thread that waits for a specified
-        // of time before stopping
-        Thread stopper = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(RECORD_TIME);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                recorder.finish();
-            }
-        });
- 
-        stopper.start();
- 
-        // start recording
-        recorder.start();
-		
-		// Convert Wav to Mp3
-        //recorder.convertWavToMp3(audioFileWav, audioFileMp3);
-        
-
-		HttpResponse speechResponse = getSpeech(audioFileWav, "wav");
-		String speechResponseString = new BasicResponseHandler()
-				.handleResponse(speechResponse);
-		System.out.println(speechResponseString);
-
-//		String remove1 = "Remove";
-		
-//		HttpResponse meaningResponse = getMeaning(remove1);
-//		String meaningResponseString = new BasicResponseHandler()
-//				.handleResponse(meaningResponse);
-//		System.out.println(meaningResponseString);
-
-	}
+	}	
 	
 }

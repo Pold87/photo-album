@@ -1,5 +1,9 @@
 package speechrecognition;
 
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncodingAttributes;
+
 import javax.sound.sampled.*;
 
 import java.io.*;
@@ -29,9 +33,9 @@ public class Record {
 	AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
-        int channels = 2;
+        int channels = 1;
         boolean signed = true;
-        boolean bigEndian = true;
+        boolean bigEndian = false;
         AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
                                              channels, signed, bigEndian);
         return format;
@@ -86,17 +90,17 @@ public class Record {
 		System.out.println("Finished");
 	}
 	
-//	public void convertWavToMp3(File source, File target) throws Exception {
-//		AudioAttributes audio = new AudioAttributes();
-//		audio.setCodec("libmp3lame");
-//		audio.setBitRate(new Integer(128000));
-//		audio.setChannels(new Integer(2));
-//		audio.setSamplingRate(new Integer(44100));
-//		EncodingAttributes attrs = new EncodingAttributes();
-//		attrs.setFormat("mp3");
-//		attrs.setAudioAttributes(audio);
-//		Encoder encoder = new Encoder();
-//		encoder.encode(source, target, attrs);
-//	}
+	public void convertWavToMp3(File source, File target) throws Exception {
+		AudioAttributes audio = new AudioAttributes();
+		audio.setCodec("libmp3lame");
+		audio.setBitRate(new Integer(128000));
+		audio.setChannels(new Integer(2));
+		audio.setSamplingRate(new Integer(44100));
+		EncodingAttributes attrs = new EncodingAttributes();
+		attrs.setFormat("mp3");
+		attrs.setAudioAttributes(audio);
+		Encoder encoder = new Encoder();
+		encoder.encode(source, target, attrs);
+	}
 
 }
