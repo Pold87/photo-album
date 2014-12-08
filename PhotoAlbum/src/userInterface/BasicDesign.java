@@ -48,10 +48,13 @@ public class BasicDesign extends JFrame implements ComponentListener{
 	private JPanel contentPane;
 	private JToolBar buttonBar = new JToolBar();
 	private JLabel photographLabel = new JLabel();
+	//path for images
+	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
+	private Photo[] pictures;
 	
 	//Images (names will be used as labels)
-	    private String[] images = { "IMG_1.jpg", "IMG_2.jpg",
-	    "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg"};
+	private String[] images = { "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg"};
+	private Photo[] photos;
 
 	/**
 	 * Launch the application.
@@ -164,16 +167,19 @@ public class BasicDesign extends JFrame implements ComponentListener{
         
         // start the image loading 
         double thumbSize = wi*0.2;
-        loadimages((int) thumbSize, (int) thumbSize, thumbSize*2);
+        
+        //Array containing the images as objects of class Photo
+        pictures = loadimages((int) thumbSize, (int) thumbSize, thumbSize*2);
 	}
 	
-
-    private void loadimages(int buttonWidth, int buttonHeight, double sideLength) {
-    	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
+// loads images and returns array of photos, so that photo fields can be accessed easily
+    private Photo[] loadimages(int buttonWidth, int buttonHeight, double sideLength) {
+    	Photo[] photos = new Photo[images.length];
             for (int i = 0; i < images.length; i++) {
             	String pic = images[i];
 				try {
-					Photo photo = new Photo(path, pic, buttonWidth, buttonHeight, (float) sideLength);
+					Photo photo = new Photo(this.path, pic, buttonWidth, buttonHeight, (float) sideLength);
+					photos[i] = photo;
 	                ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
 	                JButton thumbButton = new JButton(thumbAction);
 	                buttonBar.add(thumbButton, buttonBar.getComponentCount());
@@ -182,6 +188,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
 					e.printStackTrace();
 				} 
             }
+            return photos;
     }
     
     /**
@@ -222,22 +229,25 @@ public class BasicDesign extends JFrame implements ComponentListener{
 
     public void componentResized(ComponentEvent e) {
     	System.out.println(e.getComponent().getClass().getName() + " --- Resized");
-    	/*for (int i = 0; i < buttonBar.getComponentCount(); i++) {
-			int width = e.getComponent().getWidth();
-			JButton button = (JButton) buttonBar.getComponent(i);
-			Image img = ((ImageIcon) button.getIcon()).getImage();
-			BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			Graphics g = bi.createGraphics();
-			g.drawImage(img, 0, 0, width, width, null);
-			ImageIcon newIcon = new ImageIcon(bi);
+    	//Resizing thumbnails with window
+    	int width = e.getComponent().getWidth();
+    	for (int i = 0; i < buttonBar.getComponentCount(); i++) {
+    		JButton button = (JButton) buttonBar.getComponent(i);
+  		    BufferedImage img;
+			img = this.pictures[i].getbImage();
+			int w = width/2;
+			BufferedImage resizedImg = new BufferedImage(w, w, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2 = resizedImg.createGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			g2.drawImage(img, 0, 0, w, w, null);
+			g2.dispose();
+			ImageIcon newIcon = new ImageIcon(resizedImg);
+			button.setPreferredSize(new Dimension(width,width));
 			button.setIcon(newIcon);
 			button.revalidate();
-			button.repaint();*/
+			button.repaint();
     	}
-    	
-					//Photo photo = new Photo(path, pic, buttonWidth, buttonHeight, (float) sideLength);
-	                //ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
-	                //JButton thumbButton = new JButton(thumbAction);	      
+    }
 
     public void componentShown(ComponentEvent e) {
         System.out.println(e.getComponent().getClass().getName() + " --- Shown");
