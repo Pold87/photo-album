@@ -4,21 +4,14 @@ package userInterface;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Toolkit;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -34,27 +27,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.SwingConstants;
 
 public class BasicDesign extends JFrame implements ComponentListener{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JToolBar buttonBar = new JToolBar();
 	private JLabel photographLabel = new JLabel();
-	//path for images
-	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
-	private Photo[] pictures;
 	
 	//Images (names will be used as labels)
+	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
 	private String[] images = { "IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg"};
-	private Photo[] photos;
+	private Photo[] pictures;
 
 	/**
 	 * Launch the application.
@@ -68,8 +55,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
 			        frame.setLocationRelativeTo(null);
 			        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			        frame.setTitle("Photo Book Builder");
-			        frame.setSize(600,600);
-			        //frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 			        frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -151,9 +137,6 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		book_panel.setBackground(Color.GRAY);
 		panel.add(book_panel, gbc_book_panel);
 	
-		/**
-		* Everything that is necessary for images
-		*/
 		//How image labels are displayed
         photographLabel.setVerticalTextPosition(JLabel.BOTTOM);
         photographLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -235,7 +218,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
     		JButton button = (JButton) buttonBar.getComponent(i);
   		    BufferedImage img;
 			img = this.pictures[i].getbImage();
-			int w = width/2;
+			int w = 2*width/3;
 			BufferedImage resizedImg = new BufferedImage(w, w, BufferedImage.TYPE_INT_RGB);
 			Graphics2D g2 = resizedImg.createGraphics();
 			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
