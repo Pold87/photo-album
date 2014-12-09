@@ -36,6 +36,8 @@ public class BasicDesign extends JFrame implements ComponentListener{
 	private JPanel contentPane;
 	private JToolBar buttonBar = new JToolBar();
 	private JLabel photographLabel = new JLabel();
+	//private JPanel photo_right;
+	//private JPanel photo_left;
 	
 	//Images (names will be used as labels)
 	String path = "C:\\Users\\Franziska\\Documents\\GitHub\\photo-album\\PhotoAlbum\\src\\pictures\\";
@@ -49,12 +51,12 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					BasicDesign frame = new BasicDesign(600,600);
+					BasicDesign frame = new BasicDesign(400,600);
 					frame.pack();
 			        frame.setLocationRelativeTo(null);
 			        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			        frame.setTitle("Photo Book Builder");
-			        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			        //frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 			        frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -72,33 +74,19 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		/**
 		* Everything that is necessary for layout
 		*/
-	    int width_library = wi/6;
-	    int width_book = 5*wi/6;
 	    
-		
 		//Content Pane
+		int width_library = wi/6;
+	    int width_book = 5*wi/6;
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
+		gbl_contentPane.columnWidths = new int[]{width_library, width_book};
+		gbl_contentPane.rowHeights = new int[]{hi};
+		gbl_contentPane.columnWeights = new double[]{0.17, 0.83};
+		gbl_contentPane.rowWeights = new double[]{1.0};
 		contentPane.setLayout(gbl_contentPane);
-		
-		//Panel that holds everything
-		JPanel panel = new JPanel();
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{width_library, width_book};
-		gbl_panel.rowHeights = new int[]{hi};
-		gbl_panel.columnWeights = new double[]{0.17, 0.83};
-		gbl_panel.rowWeights = new double[]{1.0};
-		GridBagConstraints gbl_c = new GridBagConstraints();
-		gbl_c.fill = GridBagConstraints.BOTH; 
-		gbl_c.gridwidth = 2;
-        gbl_c.gridx = 0; 
-        gbl_c.gridy = 0; 
-        gbl_c.weightx = 1;
-        gbl_c.weighty = 1;
-		panel.setLayout(gbl_panel);
-		contentPane.add(panel,gbl_c);
 		
 		//Tabbed Pane that holds library
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
@@ -107,17 +95,16 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		gbc_tabbedPane.insets = new Insets(0, 0, 0, 5);
 		gbc_tabbedPane.gridx = 0;
 		gbc_tabbedPane.gridy = 0;
-		panel.add(tabbedPane, gbc_tabbedPane);
+		contentPane.add(tabbedPane, gbc_tabbedPane);
 		tabbedPane.addComponentListener(this);
 		
 		VTextIcon textIcon1 = new VTextIcon(tabbedPane, "Photos");
 		JScrollPane scrollPane_1 = new JScrollPane();
 		tabbedPane.addTab(null, textIcon1, scrollPane_1);
 		
-		JPanel panel_2 = new JPanel();
+		JPanel panel_2 = new JPanel(new BorderLayout());
 		scrollPane_1.setViewportView(panel_2);
-		panel_2.setLayout(new BorderLayout(0, 0));
-
+       
 		VTextIcon textIcon2 = new VTextIcon(tabbedPane, "Backgrounds");
 		JScrollPane scrollPane_2 = new JScrollPane();
 		tabbedPane.addTab(null, textIcon2, scrollPane_2);
@@ -126,11 +113,15 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		JScrollPane scrollPane_3 = new JScrollPane();
 		tabbedPane.addTab(null, textIcon3, scrollPane_3);
 
+		buttonBar.setOrientation(SwingConstants.VERTICAL);
+        buttonBar.setMargin(new Insets(0,0,0,0));
+        panel_2.add(buttonBar);
+        
 		//Pane that holds canvas for book
 		JPanel book_panel = new JPanel();
 		GridBagLayout book_layout = new GridBagLayout();
 		book_panel.setLayout(book_layout);
-		book_layout.columnWidths = new int[]{ width_book/10, 2*width_book/5, 2*width_book/5, width_book/10};
+		book_layout.columnWidths = new int[]{width_book/10, (int) (width_book*0.4), 2*width_book/5, width_book/10};
 		book_layout.rowHeights = new int[]{hi/6, 2*hi/3, hi/6};
 		book_layout.columnWeights = new double[]{0.1, 0.4, 0.4, 0.1};
 		book_layout.rowWeights = new double[]{0.17, 0.66, 0.17};
@@ -139,7 +130,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		book_constraints.gridx = 1;
 		book_constraints.gridy = 0;
 		book_panel.setBackground(Color.GRAY);
-		panel.add(book_panel, book_constraints);
+		contentPane.add(book_panel, book_constraints);
 	
 		//Left page of photobook
 		JPanel photo_left = new JPanel();
@@ -148,15 +139,17 @@ public class BasicDesign extends JFrame implements ComponentListener{
 		gbc_photo_left.gridx = 1;
 		gbc_photo_left.gridy = 1;
 		photo_left.setBackground(Color.WHITE);
+		//photo_left.setLayout(null);
 		book_panel.add(photo_left, gbc_photo_left);
 		
-		//Left page of photobook
+		//Right page of photobook
 		JPanel photo_right = new JPanel();
 		GridBagConstraints gbc_photo_right = new GridBagConstraints();
 		gbc_photo_right.fill = GridBagConstraints.BOTH;
 		gbc_photo_right.gridx = 2;
 		gbc_photo_right.gridy = 1;
 		photo_right.setBackground(Color.LIGHT_GRAY);
+		//photo_right.setLayout(null);
 		book_panel.add(photo_right, gbc_photo_right);
 		
 	
@@ -164,11 +157,7 @@ public class BasicDesign extends JFrame implements ComponentListener{
         photographLabel.setVerticalTextPosition(JLabel.BOTTOM);
         photographLabel.setHorizontalTextPosition(JLabel.CENTER);
         photographLabel.setHorizontalAlignment(JLabel.CENTER);
-        
-        buttonBar.setOrientation(SwingConstants.VERTICAL);
-        
         photo_right.add(photographLabel);
-        panel_2.add(buttonBar);
         
         // start the image loading 
         double thumbSize = wi*0.2;
@@ -219,7 +208,6 @@ public class BasicDesign extends JFrame implements ComponentListener{
          */
         public void actionPerformed(ActionEvent e) {
             photographLabel.setIcon(displayPhoto);
-            //setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
         }
     }
         
