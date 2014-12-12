@@ -6,18 +6,19 @@ import java.awt.*;
 /**
  * Created by pold on 12/10/14.
  */
-public class TabbedPane extends JTabbedPane {
+public class TabbedPane extends JTabbedPane{
 
-    public TabbedPane(JComponent c1) {
+    public TabbedPane() throws Exception{
 
         super(JTabbedPane.LEFT);
 
         VTextIcon textIcon1 = new VTextIcon(this, "Photos");
-        JScrollPane scrollPane_1 = new JScrollPane();
-        addTab(null, textIcon1, c1);
+        PhotoBar photoBar = new PhotoBar();
+        setBackground(Color.white);
+        addTab(null, textIcon1, new JScrollPane(photoBar));
 
         JPanel panel_2 = new JPanel();
-        scrollPane_1.setViewportView(panel_2);
+//        scrollPane_1.setViewportView(panel_2);
         panel_2.setLayout(new BorderLayout(0, 0));
 
         VTextIcon textIcon2 = new VTextIcon(this, "Backgrounds");
@@ -38,5 +39,9 @@ public class TabbedPane extends JTabbedPane {
 //    panel.add(tabbedPane, gbc_tabbedPane);
 //    tabbedPane.addComponentListener(this);
 
+
+    public void addPanel() {
+
+    }
 
 }

@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -26,7 +27,8 @@ public class Photo {
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
 		this.sideLength = sideLength;
-		this.bImage = ImageIO.read(new File(imagedir + pic));
+		URL url = getClass().getResource(imagedir + pic);
+		this.bImage = ImageIO.read(url);
 		this.thumbnailIcon = new ImageIcon(getScaledImage(bImage, buttonWidth, buttonHeight));
 		this.dispPic = displayPic(bImage, sideLength);
 	}

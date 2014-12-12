@@ -9,21 +9,21 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BasicDesign extends JFrame implements ComponentListener {
 
     private ContentPanel contentPanel; // Displays photos
     private JTabbedPane tabbedPane; // Contains library, tools, etc.
-    private JToolBar photoBar; // Actually contains photos.
-    private JLabel library; // contains library of photos TODO: NO!
     private JSplitPane splitPane; // For splitting library and content panel
-    private String path; // Path of images
-    private String[] images; // Names of images
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
-//	private Photo[] pictures;
 
-    public BasicDesign(int hi, int wi, String path, String[] images) throws IOException {
+    Map<String, Color> colors = new HashMap<String, Color>();
+
+
+    public BasicDesign(int hi, int wi, String path, String[] images) throws Exception {
 
         super("Photoalbum");
 
@@ -39,17 +39,15 @@ public class BasicDesign extends JFrame implements ComponentListener {
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
 
+
+
+
         this.contentPanel = new ContentPanel();
-        this.photoBar = new PhotoBar();
-        this.library = new PhotoLibrary();
         this.toolbar = new Toolbar();
         this.debugPanel = new DebugPanel();
 
-        this.tabbedPane = new TabbedPane(photoBar);
+        this.tabbedPane = new TabbedPane();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
-
-        this.path = path;
-        this.images = images;
 
         // Create MenuBar (File, View, etc.).
         setJMenuBar(createMenuBar());
@@ -58,6 +56,8 @@ public class BasicDesign extends JFrame implements ComponentListener {
         setLayout(new BorderLayout());
 
         debugPanel.setPreferredSize(new Dimension(800, 200));
+
+        addColors();
 
         add(toolbar, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
@@ -71,19 +71,26 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
             @Override
             public void recognizedWitResponse(WitResponse response) {
-                if (response.getIntent().equals("select")) {
-
-                    ArrayList<Integer> entities = response.getEntities();
-
+                if (response.getIntent().contains("select")) {
+                    String entitiy = response.getEntities();
                     for (MyImage i : contentPanel.getImageList()) {
-                        if (entities.contains(i.getNum())) {
-                            i.setActive(!i.isActive());
-                        }
+//                        if (entities.contains(i.getNum())) {
+//                            i.setActive(!i.isActive());
+//                        }
+
                     }
                 }
-            repaint();
-            }
-        });
+                if (response.getIntent().contains("background")) {
+                    String entitity = response.getEntities();
+                    if (entitity != null) {
+                        String theColor = entitity;
+                        contentPanel.setBackground(colors.get(theColor.toLowerCase()));
+                    }
+
+                    }
+                repaint();
+                }
+            });
 
 
 //		gbl_panel.columnWidths = new int[]{width_library, width_book};
@@ -163,53 +170,6 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
     }
 
-    // loads images and returns array of photos, so that photo fields can be accessed easily
-    private Photo[] loadimages(int buttonWidth, int buttonHeight, double sideLength) {
-        Photo[] photos = new Photo[images.length];
-        for (int i = 0; i < images.length; i++) {
-            String pic = images[i];
-            try {
-                Photo photo = new Photo(this.path, pic, buttonWidth, buttonHeight, (float) sideLength);
-                photos[i] = photo;
-                ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
-                JButton thumbButton = new JButton(thumbAction);
-                photoBar.add(thumbButton, photoBar.getComponentCount());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return photos;
-    }
-
-    /**
-     * Action class that shows the image specified in it's constructor.
-     */
-    private class ThumbnailAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-        private ImageIcon displayPhoto;
-
-        public ThumbnailAction(ImageIcon photo, ImageIcon thumb, String desc) {
-
-            displayPhoto = photo;
-
-            // The short description becomes the tooltip of a button.
-            putValue(SHORT_DESCRIPTION, desc);
-
-            // The LARGE_ICON_KEY is the key for setting the
-            // icon when an Action is applied to a button.
-            putValue(LARGE_ICON_KEY, thumb);
-        }
-
-        /**
-         * Shows the full image in the main area and sets the application title.
-         */
-        public void actionPerformed(ActionEvent e) {
-            library.setIcon(displayPhoto);
-            //setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
-        }
-    }
-
 
     public void componentHidden(ComponentEvent e) {
         System.out.println(e.getComponent().getClass().getName() + " --- Hidden");
@@ -277,6 +237,12 @@ public class BasicDesign extends JFrame implements ComponentListener {
         });
 
         return menuBar;
+    }
+
+    private void addColors() {
+        colors.put("blue", Color.BLUE);
+        colors.put("red", Color.RED);
+        colors.put("green", Color.GREEN);
     }
 }
 

@@ -126,8 +126,6 @@ public class MyImage extends JComponent {
         Graphics2D g2 = rotated.createGraphics();
         g2.drawImage(img, xform, null);
 
-        System.out.println("Und wieder gedreht");
-
         MyImage rotatedImage = new MyImage(rotated, this.img.getHeight(), this.img.getWidth(), this.num, this.rotationDegrees);
         return rotatedImage;
 
