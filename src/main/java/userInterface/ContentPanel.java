@@ -19,33 +19,30 @@ import java.util.ArrayList;
  */
 public class ContentPanel extends JPanel {
 
-    public ArrayList<MyImage> getImageList() {
-        return imageList;
-    }
-
-    public void setImageList(ArrayList<MyImage> imageList) {
-        this.imageList = imageList;
-    }
-
-    private ArrayList<MyImage> imageList;
+    private final ArrayList<MyImage> imageList;
     private Integer oldMouseX, oldMouseY;
 
-    public ContentPanel() throws IOException {
-        this.imageList = new ArrayList();
-
-        MyImage img1 = new MyImage("/pictures/IMG_1.jpg", 150, 150, 1);
-        MyImage img2 = new MyImage("/pictures/IMG_7.jpg", 0, 0, 2);
-
-        this.imageList.add(img1);
-        this.imageList.add(img2);
-
+    public ContentPanel(ArrayList<MyImage> imageList) throws IOException {
+        this.imageList = imageList;
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(Color.white);
-
+        for (MyImage image:imageList){
+            if(image.isActive()){
+                this.add(image);
+            }
+        }
         addMouseListener(new MyMouseListener());
         addMouseMotionListener(new MyMouseMotionListener());
-
     }
+
+    public ArrayList<MyImage> getImageList() { return imageList; }
+
+    public void setImage(MyImage image) {
+        for (MyImage i : this.imageList)
+            if (i.getNum() == image.getNum())
+                i = image;
+    }
+
 
     // For mouse click events (to select and unselect pictures)
     class MyMouseListener extends MouseAdapter {
@@ -58,12 +55,12 @@ public class ContentPanel extends JPanel {
 
             // For each image in the image list, get its area and determine if the mouse click occurred in this area.
             for (MyImage i : imageList) {
-                MyImage rotatedImage = i.getRotatedImage(90);
-                i.setImg(rotatedImage.getImg());
+                //MyImage rotatedImage = i.getRotatedImage(1);
+                //i.setImg(rotatedImage.getImg());
                 Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
                 if (pictureArea.contains(clickPoint)) {
                     // Toggle activity status.
-                    i.setActive(!i.isActive());
+                    i.setSelected(!i.isSelected());
                 }
             }
             // Repaint everything in order to see changes.
@@ -74,12 +71,7 @@ public class ContentPanel extends JPanel {
     class MyMouseMotionListener implements MouseMotionListener {
 
         @Override
-        public void mouseDragged(MouseEvent mouseEvent) {
-            // Nothing to do here
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent mouseEvent) {
+        public void mouseDragged(MouseEvent mouseEvent){
 
             // Set mouse position, if there is no old Mouse position.
             if (oldMouseX == null | oldMouseY == null) {
@@ -95,12 +87,11 @@ public class ContentPanel extends JPanel {
                 Integer diffY = mouseY - oldMouseY;
 
                 // Update position for every image in the image list.
-                for (MyImage i : imageList) {
-                    if (i.isActive()) {
+                for(MyImage i:imageList)
+                    if(i.isSelected()){
                         i.setX(i.getX() + diffX);
                         i.setY(i.getY() + diffY);
                     }
-                }
 
                 // Set old mouse position to current position.
                 oldMouseX = mouseX;
@@ -110,6 +101,11 @@ public class ContentPanel extends JPanel {
             // Repaint everything in order to see changes.
             repaint();
         }
+
+        @Override
+        public void mouseMoved(MouseEvent mouseEvent) {
+        }
+
     }
 
 
@@ -124,17 +120,27 @@ public class ContentPanel extends JPanel {
             if (i.isActive()) {
 
 
-                double rotationRequired = Math.toRadians(45.0);
+                //double rotationRequired = Math.toRadians(45.0);
 
-                AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, i.getX(), i.getY());
-                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+                //AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, i.getX(), i.getY());
+                //AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
 //                g2.drawLine(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
                 g2.drawImage(i.getImg(), i.getX(), i.getY(), null);
+                if (i.isSelected()){
+                    //draw blue frame around image if it is now selected
+                    double thickness = 3;
+                    Stroke oldStroke = g2.getStroke();
+                    g2.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g2.setPaint(Color.blue);
+                    g2.drawRect(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
+                    g2.setStroke(oldStroke);
+                }
 //                g2d.drawImage(op.filter(image, null), drawLocationX, drawLocationY, null);
 //                i.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.black, Color.black));
 
             }
+
         }
 
     }
