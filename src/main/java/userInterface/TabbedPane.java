@@ -7,13 +7,14 @@ import java.awt.*;
  * Created by pold on 12/10/14.
  */
 public class TabbedPane extends JTabbedPane{
+    String[] images;
+    String path;
 
-    public TabbedPane() throws Exception{
+    public TabbedPane(PhotoBar photoBar) throws Exception{
 
         super(JTabbedPane.LEFT);
 
         VTextIcon textIcon1 = new VTextIcon(this, "Photos");
-        PhotoBar photoBar = new PhotoBar();
         setBackground(Color.white);
         addTab(null, textIcon1, new JScrollPane(photoBar));
 
@@ -43,5 +44,6 @@ public class TabbedPane extends JTabbedPane{
     public void addPanel() {
 
     }
+
 
 }

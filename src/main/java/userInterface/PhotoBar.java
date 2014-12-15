@@ -9,27 +9,31 @@ import java.awt.event.ActionEvent;
  */
 public class PhotoBar extends JToolBar {
 
-    private String[] images = {"IMG_1.jpg", "IMG_2.jpg"}; // Names of images
-    private String path = "/pictures/"; // Path of images
+    private String[] images;
+    private PhotoBarListener listener;
 
-    public PhotoBar() throws Exception {
+    public PhotoBar(String[] images) throws Exception {
 
         setOrientation(SwingConstants.VERTICAL);
         setBackground(Color.white);
-        this.loadimages(100, 100, 100);
-
+        this.images = images;
     }
 
     // loads images and returns array of photos, so that photo fields can be accessed easily
-    private Photo[] loadimages(int buttonWidth, int buttonHeight, double sideLength) throws Exception {
-        Photo[] photos = new Photo[images.length];
-        for (int i = 0; i < images.length; i++) {
-            String pic = images[i];
-                Photo photo = new Photo(this.path, pic, buttonWidth, buttonHeight, (float) sideLength);
-                photos[i] = photo;
-                ThumbnailAction thumbAction = new ThumbnailAction(photo.getDispPic(), photo.getThumbnailIcon(), pic);
-                JButton thumbButton = new JButton(thumbAction);
-                this.add(thumbButton); // photoBar.getComponentCount()
+    public MyImage[] loadImages(String path, int buttonWidth) throws Exception {
+        MyImage[] photos = new MyImage[this.images.length];
+        int x = 20;
+        int y = 20;
+        for (int i = 0; i < this.images.length; i++) {
+            String pic = this.images[i];
+            String imgPath = new String(path + pic);
+            MyImage photo = new MyImage(imgPath, x, y, i);
+            photos[i] = photo;
+            ThumbnailAction thumbAction = new ThumbnailAction(photo,buttonWidth, pic);
+            JButton thumbButton = new JButton(thumbAction);
+            this.add(thumbButton);
+            x = x+20;
+            y = y+20;
         }
         return photos;
     }
@@ -39,11 +43,13 @@ public class PhotoBar extends JToolBar {
      */
     private class ThumbnailAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
-        private ImageIcon displayPhoto;
+        private MyImage displayPhoto;
+        private ImageIcon thumb;
 
-        public ThumbnailAction(ImageIcon photo, ImageIcon thumb, String desc) {
+        public ThumbnailAction(MyImage photo, int bWidth, String desc) {
 
             displayPhoto = photo;
+            thumb = new ImageIcon(photo.getScaledImage(bWidth, bWidth));
 
             // The short description becomes the tooltip of a button.
             putValue(SHORT_DESCRIPTION, desc);
@@ -57,12 +63,12 @@ public class PhotoBar extends JToolBar {
          * Shows the full image in the main area and sets the application title.
          */
         public void actionPerformed(ActionEvent e) {
-
-
-
-
-            //setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
+            listener.recognizedClick(displayPhoto);
         }
+    }
+
+    public void setPhotoBarListener(PhotoBarListener listener) {
+        this.listener = listener;
     }
 
 }

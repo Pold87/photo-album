@@ -2,11 +2,10 @@ package main.java.userInterface;
 
 
 import main.java.speechrecognition.WitResponse;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +22,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
     Map<String, Color> colors = new HashMap<String, Color>();
 
 
-    public BasicDesign(int hi, int wi, String path, String[] images) throws Exception {
+    public BasicDesign(int hi, int wi, String path) throws Exception {
 
         super("Photoalbum");
-
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -39,14 +37,28 @@ public class BasicDesign extends JFrame implements ComponentListener {
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
 
+        URL url = getClass().getResource(path);
+        File dir = new File(url.toURI());
+        File[] imageFiles = dir.listFiles();
+        String[] images = new String[imageFiles.length];
+        for (int i = 0; i < imageFiles.length; ++i){
+            if (imageFiles[i].isDirectory()) {
+                System.out.println(imageFiles[i].getName());
+            } else {
+                images[i] = imageFiles[i].getName();
+                System.out.println(imageFiles[i].getName());
+            }
+        }
 
-
+        this.toolbar = new Toolbar();
+        int preferredThumbSize = 100;
+        PhotoBar photoBar = new PhotoBar(images);
+        this.tabbedPane = new TabbedPane(photoBar);
+        tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
+        photoBar.loadImages(path, preferredThumbSize);
 
         this.contentPanel = new ContentPanel();
-        this.toolbar = new Toolbar();
         this.debugPanel = new DebugPanel();
-
-        this.tabbedPane = new TabbedPane();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
 
         // Create MenuBar (File, View, etc.).
@@ -63,6 +75,17 @@ public class BasicDesign extends JFrame implements ComponentListener {
         add(splitPane, BorderLayout.CENTER);
         add(debugPanel, BorderLayout.SOUTH);
 
+        photoBar.setPhotoBarListener(
+                new PhotoBarListener() {
+                    @Override
+                    public void recognizedClick(MyImage image) {
+                        image.setActive(!image.isActive());
+                        contentPanel.setImage(image);
+                        contentPanel.repaint();
+                    }
+                }
+        );
+
         toolbar.setToolBarListener(new ToolBarListener() {
             @Override
             public void recognizedText(String text) {
@@ -71,103 +94,33 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
             @Override
             public void recognizedWitResponse(WitResponse response) {
-                if (response.getIntent().contains("select")) {
-                    String entitiy = response.getEntities();
+                /*if (response.getIntent().contains("select")) {
+                    String entity = response.getEntities();
                     for (MyImage i : contentPanel.getImageList()) {
-//                        if (entities.contains(i.getNum())) {
-//                            i.setActive(!i.isActive());
-//                        }
-
+                        if (entity.contains(i.getNum())) {
+                            i.setSelected(!i.isSelected());
+                        }
                     }
-                }
+                }*/
                 if (response.getIntent().contains("background")) {
-                    String entitity = response.getEntities();
-                    if (entitity != null) {
-                        String theColor = entitity;
-                        contentPanel.setBackground(colors.get(theColor.toLowerCase()));
+                    String entity = response.getEntities();
+                    if (entity != null) {
+                        contentPanel.setBackground(colors.get(entity.toLowerCase()));
                     }
 
                     }
                 repaint();
                 }
-            });
 
+            @Override
+            public void whichAction(String action) {
+                contentPanel.setWhichButton(action);
+            }
+        });
 
-//		gbl_panel.columnWidths = new int[]{width_library, width_book};
-//		gbl_panel.rowHeights = new int[]{hi};
-//		gbl_panel.columnWeights = new double[]{0.17, 0.83};
-//		gbl_panel.rowWeights = new double[]{1.0};
-
-//		gbc.gridwidth = 2;
-
-        // Add tabbedPane
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        gbc.fill = GridBagConstraints.BOTH;
-//        gbc.weightx = 0.3;
-//        gbc.weighty = 1;
-//
-//        add(splitPane, gbc);
-
-//		panel.setLayout(gbl_panel);
-//		contentPanel.add(panel, gbc);
-
-        // Add contentPanel
-//		gbc.gridx = 1;
-//		gbc.gridy = 0;
-//		gbc.weightx = 0.7;
-//		gbc.weighty = 1;
-//		add(contentPanel);
-
-        //Pane that holds canvas for book
-//		JPanel book_panel = new JPanel();
-//		GridBagLayout book_layout = new GridBagLayout();
-//		book_panel.setLayout(book_layout);
-//		book_layout.columnWidths = new int[]{width_book / 10, 2 * width_book / 5, 2 * width_book / 5, width_book / 10};
-//		book_layout.rowHeights = new int[]{hi / 6, 2 * hi / 3, hi / 6};
-//		book_layout.columnWeights = new double[]{0.1, 0.4, 0.4, 0.1};
-//		book_layout.rowWeights = new double[]{0.17, 0.66, 0.17};
-//		GridBagConstraints book_constraints = new GridBagConstraints();
-//		book_constraints.fill = GridBagConstraints.BOTH;
-//		book_constraints.gridx = 1;
-//		book_constraints.gridy = 0;
-//		book_panel.setBackground(Color.GRAY);
-//		panel.add(book_panel, book_constraints);
-
-        //Left page of photobook
-//		JPanel photo_left = new JPanel();
-//		GridBagConstraints gbc_photo_left = new GridBagConstraints();
-//		gbc_photo_left.fill = GridBagConstraints.BOTH;
-//		gbc_photo_left.gridx = 1;
-//		gbc_photo_left.gridy = 1;
-//		photo_left.setBackground(Color.WHITE);
-//		book_panel.add(photo_left, gbc_photo_left);
-
-        //Right page of photobook
-//		JPanel photo_right = new JPanel();
-//		GridBagConstraints gbc_photo_right = new GridBagConstraints();
-//		gbc_photo_right.fill = GridBagConstraints.BOTH;
-//		gbc_photo_right.gridx = 2;
-//		gbc_photo_right.gridy = 1;
-//		photo_right.setBackground(Color.LIGHT_GRAY);
-//		book_panel.add(photo_right, gbc_photo_right);
-
-//
-//		photo_right.add(library);
-//		panel_2.add(photoBar);
-//
-//		// start the image loading
-//		double thumbSize = wi * 0.2;
-//
-//		//Array containing the images as objects of class Photo
-//		pictures = loadimages((int) thumbSize, (int) thumbSize, thumbSize * 2);
-//
-//		pack();
-//		setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//		setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setVisible(true);
-
     }
 
 
