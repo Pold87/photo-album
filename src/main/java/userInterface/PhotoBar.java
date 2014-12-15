@@ -9,7 +9,8 @@ import java.awt.event.ActionEvent;
  */
 public class PhotoBar extends JToolBar {
 
-    private String[] images;
+	private static final long serialVersionUID = 1L;
+	private String[] images;
     private PhotoBarListener listener;
 
     public PhotoBar(String[] images) throws Exception {

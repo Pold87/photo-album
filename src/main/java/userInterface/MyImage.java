@@ -1,16 +1,19 @@
 package main.java.userInterface;
 
 import javax.imageio.ImageIO;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Stroke;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 
-import javax.swing.ImageIcon;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.awt.GraphicsConfiguration;
@@ -19,26 +22,15 @@ import java.net.URL;
 /**
  * Created by pold on 12/11/14.
  */
-public class MyImage extends JComponent {
+public class MyImage {
 
     private BufferedImage img; // The actual picture
-    private int x, y; // 2D-coordinates
+    private int x, y, width, height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
     private int rotationDegrees; // Degrees of rotation for image.
-
-    public boolean isActive() {
-        return active;
-    }
-    public boolean isSelected() {return selected;}
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-    public void setSelected(boolean selected) { this.selected = selected; }
-
     private boolean active; //indicates whether image is being displayed on contentPanel
     private boolean selected; //indicates whether image is selected in contentPanel
-
+    
     public MyImage(String path, int x, int y, int num) throws IOException {
 
         // Create URL for image (to handle OS difficulties)
@@ -51,8 +43,22 @@ public class MyImage extends JComponent {
         this.active = false;
         this.selected = false;
         this.rotationDegrees=0;
-        setBackground(Color.black);
         setDisplaySize();
+        width = img.getWidth();
+        height = img.getHeight();
+        
+    }
+    
+    public boolean isActive() {
+        return active;
+    }
+    public boolean isSelected() {return selected;}
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public void setSelected(boolean selected) {
+    	this.selected = selected; 
     }
 
     private void setDisplaySize() {
@@ -125,8 +131,16 @@ public class MyImage extends JComponent {
         return resizedImg;
     }
 
+    public void incrementRotation(int degree){
+    	rotationDegrees += degree;   	
+    }
+    
+    public void setRatation(int degree){
+    	rotationDegrees = degree;
+    }
 
-    public void getRotatedImage(double degree) throws IOException {
+    //Deprecated?
+    private void getRotatedImage(double degree) throws IOException {
         double angle = Math.toRadians(degree);
         double sin = Math.abs(Math.sin(angle));
         double cos = Math.abs(Math.cos(angle));
@@ -146,16 +160,33 @@ public class MyImage extends JComponent {
         this.setImg(result);
         this.rotationDegrees = (int) (this.rotationDegrees + degree);
     }
+    
+    public void paint(Graphics g){
+    	System.out.println("Drawing picture: " + num);
+    	Graphics2D g2d = (Graphics2D) g;
+    	System.out.print("X: "+ x +" Y: "+y );
+    	//g2d.translate(0, 0);
+    	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
+    	g2d.drawImage(img, x, y, null);
+    	System.out.println(" X: "+ x +" Y: "+y );
+    	
+    	if(selected){
+                //draw blue frame around image if it is now selected
+                double thickness = 3;
+                Stroke oldStroke = g2d.getStroke();
+                g2d.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2d.setPaint(Color.blue);
+                g2d.drawRect(x, y, width, height);
+                g2d.setStroke(oldStroke);
+    	}
+    	g2d.setTransform(new AffineTransform());
+    }
 
-        /*BufferedImage rotated = new BufferedImage(newH, newW, BufferedImage.TYPE_INT_RGB);
-
-        AffineTransform xform = AffineTransform.getRotateInstance(Math.toRadians(degree), w / 2, h / 2);
-
-
-        Graphics2D g2 = rotated.createGraphics();
-        g2.drawImage(img, xform, null);
-
-
-        return rotatedImage;*/
+    
+    public boolean contains(Point p){
+    	
+    	
+    	return false;
+    }
 
 }

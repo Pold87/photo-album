@@ -13,7 +13,8 @@ import java.util.Map;
 
 public class BasicDesign extends JFrame implements ComponentListener {
 
-    private ContentPanel contentPanel; // Displays photos
+	private static final long serialVersionUID = 1L;
+	private ContentPanel contentPanel; // Displays photos
     private JTabbedPane tabbedPane; // Contains library, tools, etc.
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
@@ -37,7 +38,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
 
-        this.setMaximumSize(new Dimension(hi, wi));
+        //this.setMaximumSize(new Dimension(hi, wi));
         this.setPreferredSize(new Dimension(hi, wi));
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
@@ -79,7 +80,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
         photoBar.setPhotoBarListener(
                 new PhotoBarListener() {
-                    @Override
+                    
                     public void recognizedClick(MyImage image) {
                         image.setActive(!image.isActive());
                         contentPanel.setImage(image);
@@ -89,13 +90,13 @@ public class BasicDesign extends JFrame implements ComponentListener {
         );
 
         toolbar.setToolBarListener(new ToolBarListener() {
-            @Override
+            
             public void recognizedText(String text) {
                 debugPanel.appendText(text);
             }
 
             // TODO: definitely improve theses functions, they are just dirty hacks
-            @Override
+            
             public void recognizedWitResponse(WitResponse response) {
                 if (response.getIntent().contains("select")) {
                     ArrayList<Integer> entity = response.getEntities();
@@ -115,7 +116,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
                 repaint();
                 }
 
-            @Override
+            
             public void whichAction(String action) {
                 contentPanel.setWhichButton(action);
             }
@@ -186,7 +187,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
         menuBar.add(windowMenu);
 
         exitItem.addActionListener(new ActionListener() {
-            @Override
+            
             public void actionPerformed(ActionEvent actionEvent) {
                 System.exit(0);
             }

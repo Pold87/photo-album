@@ -8,17 +8,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by pold on 12/10/14.
  */
 public class ContentPanel extends JPanel {
-    private ArrayList<MyImage> imageList;
+	
+	private static final long serialVersionUID = 1L;
+	private ArrayList<MyImage> imageList;
     private Integer oldMouseX, oldMouseY;
     private String whichButton;
 
     public ContentPanel() throws IOException {
+    	setPreferredSize(new Dimension(600, 600));
         imageList = new ArrayList<MyImage>();
         whichButton = "none"; //at the beginning no button is selected
         setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -50,45 +52,48 @@ public class ContentPanel extends JPanel {
     class MyMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
-            super.mouseClicked(mouseEvent);
+        	super.mouseClicked(mouseEvent);
 
-            // Get current mouse position.
-            Point clickPoint = mouseEvent.getPoint();
+        	// Get current mouse position.
+        	Point clickPoint = mouseEvent.getPoint();
 
-            // For each image in the image list, get its area and determine if the mouse click occurred in this area.
-            boolean noOverlap = true; //to ensure that only the topmost picture can be selected if mouse is clicked in area of two pictures
-            Collections.reverse(getImageList());
-            while (noOverlap == true) {
-                for (MyImage i : imageList) {
-                    Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-                    if (noOverlap && pictureArea.contains(clickPoint)) {
-                        if (getWhichButton().equals("rotate") && i.isSelected()) {
-                            try {
-                                i.getRotatedImage(90);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            // Repaint everything in order to see changes.
-                            noOverlap = false;
-                            repaint();
-                        } else {
-                            // Toggle activity status.
-                            i.setSelected(!i.isSelected());
-                            noOverlap = false;
-                        }
-                    }
-                }
-                // Repaint everything in order to see changes
-                repaint();
-                //undo reverse for future uses of imageList
-                Collections.reverse(getImageList());
-            }
+        	// For each image in the image list, get its area and determine if the mouse click occurred in this area.
+        	MyImage selectedImage = null;
+        	for (MyImage i : imageList) {
+        		//Does this still work when the picture is rotated?
+        		Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
+        		if (pictureArea.contains(clickPoint)) {
+        			selectedImage = i;
+        		}
+        	}
+        	if(selectedImage != null){
+        		if (getWhichButton().equals("rotate")) {
+        			System.out.println("Lets rotate this stuff.");
+        			selectedImage.incrementRotation(45);
+        		} else {
+        			for(MyImage i2: imageList){
+        				i2.setSelected(false);
+        			}                        	
+        			selectedImage.setSelected(true);
+        			imageList.remove(selectedImage);
+        			imageList.add(selectedImage);
+        		}
+        	}
+        	// Repaint everything in order to see changes
+        	repaint();
+        }
+        
+        public void mouseReleased(MouseEvent event){
+        	super.mouseReleased(event);
+        	oldMouseX = null;
+        	oldMouseY = null;
+        	
         }
     }
 
     class MyMouseMotionListener implements MouseMotionListener {
 
-        @Override
+        
         public void mouseDragged(MouseEvent mouseEvent){
             // Set mouse position, if there is no old Mouse position.
             if (oldMouseX == null | oldMouseY == null) {
@@ -119,10 +124,9 @@ public class ContentPanel extends JPanel {
             repaint();
         }
 
-        @Override
+        
         public void mouseMoved(MouseEvent mouseEvent) {
         }
-
     }
 
 
@@ -131,31 +135,12 @@ public class ContentPanel extends JPanel {
         // Casting to 2D seems to be beneficial.
         Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g2);
+        System.out.println("Draw all the things.");
 
         // Draw each image in the image list (if it's active)
         for (MyImage i : imageList) {
             if (i.isActive()) {
-
-
-                //double rotationRequired = Math.toRadians(45.0);
-
-                //AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, i.getX(), i.getY());
-                //AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-
-//                g2.drawLine(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-                g2.drawImage(i.getImg(), i.getX(), i.getY(), null);
-                if (i.isSelected()){
-                    //draw blue frame around image if it is now selected
-                    double thickness = 3;
-                    Stroke oldStroke = g2.getStroke();
-                    g2.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                    g2.setPaint(Color.blue);
-                    g2.drawRect(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-                    g2.setStroke(oldStroke);
-                }
-//                g2d.drawImage(op.filter(image, null), drawLocationX, drawLocationY, null);
-//                i.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.black, Color.black));
-
+            	i.paint(g2);
             }
 
         }

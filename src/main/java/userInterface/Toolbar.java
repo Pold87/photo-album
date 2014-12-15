@@ -26,13 +26,12 @@ public class Toolbar extends JToolBar {
 
         // Create buttons and add listeners.
         selectButton = new JButton(new AbstractAction("select") {
-            @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.whichAction("select");
             }
         });
         speechButton = new JButton(new AbstractAction("speech") {
-            @Override
+            
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     // Extract String from speechResponse
@@ -48,14 +47,14 @@ public class Toolbar extends JToolBar {
             }
         });
         moveButton = new JButton(new AbstractAction("move") {
-            @Override
+            
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.whichAction("move");
             }
         });
 
         rotateButton = new JButton(new AbstractAction("rotate") {
-            @Override
+            
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.whichAction("rotate");
             }
