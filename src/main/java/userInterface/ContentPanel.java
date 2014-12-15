@@ -58,30 +58,31 @@ public class ContentPanel extends JPanel {
             // For each image in the image list, get its area and determine if the mouse click occurred in this area.
             boolean noOverlap = true; //to ensure that only the topmost picture can be selected if mouse is clicked in area of two pictures
             Collections.reverse(getImageList());
-            for (MyImage i : imageList) {
-                    while (noOverlap == true){
+            while (noOverlap == true) {
+                for (MyImage i : imageList) {
                     Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-                    if (noOverlap && pictureArea.contains(clickPoint) && getWhichButton().equals("rotate") && i.isSelected()) {
-                        try {
-                            i.getRotatedImage(90);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    if (noOverlap && pictureArea.contains(clickPoint)) {
+                        if (getWhichButton().equals("rotate") && i.isSelected()) {
+                            try {
+                                i.getRotatedImage(90);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            // Repaint everything in order to see changes.
+                            noOverlap = false;
+                            repaint();
+                        } else {
+                            // Toggle activity status.
+                            i.setSelected(!i.isSelected());
+                            noOverlap = false;
                         }
-                        // Repaint everything in order to see changes.
-                        noOverlap = false;
-                        repaint();
-                    }
-                    else if (noOverlap && pictureArea.contains(clickPoint) && (getWhichButton().equals("select") || getWhichButton().equals("none"))){
-                        // Toggle activity status.
-                        i.setSelected(!i.isSelected());
-                        noOverlap = false;
-                        // Repaint everything in order to see changes.
-                        repaint();
                     }
                 }
+                // Repaint everything in order to see changes
+                repaint();
+                //undo reverse for future uses of imageList
+                Collections.reverse(getImageList());
             }
-            //undo reverse for future uses of imageList
-            Collections.reverse(getImageList());
         }
     }
 

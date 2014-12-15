@@ -51,7 +51,7 @@ public class Record {
 	/**
 	 * Captures the sound and record into a WAV file
 	 */
-	void start() {
+	public void start() {
 		try {
 			AudioFormat format = getAudioFormat();
 			DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
