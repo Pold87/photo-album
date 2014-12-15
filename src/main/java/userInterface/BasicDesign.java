@@ -2,13 +2,10 @@ package main.java.userInterface;
 
 
 import main.java.speechrecognition.WitResponse;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,16 +51,13 @@ public class BasicDesign extends JFrame implements ComponentListener {
         }
 
         this.toolbar = new Toolbar();
+        int preferredThumbSize = 100;
         PhotoBar photoBar = new PhotoBar(images);
         this.tabbedPane = new TabbedPane(photoBar);
-        MyImage[] imageArray = photoBar.loadImages(path, 100);
-        ArrayList<MyImage> imageArrayList = new ArrayList<MyImage>();
+        tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
+        photoBar.loadImages(path, preferredThumbSize);
 
-        for (MyImage image:imageArray){
-            imageArrayList.add(image);
-        }
-
-        this.contentPanel = new ContentPanel(imageArrayList);
+        this.contentPanel = new ContentPanel();
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
 
@@ -86,11 +80,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
                     @Override
                     public void recognizedClick(MyImage image) {
                         image.setActive(!image.isActive());
-                        for (MyImage i : contentPanel.getImageList()) {
-                            if (i.isActive()) {
-                                contentPanel.setImage(i);
-                            }
-                        }
+                        contentPanel.setImage(image);
                         contentPanel.repaint();
                     }
                 }
@@ -104,30 +94,32 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
             @Override
             public void recognizedWitResponse(WitResponse response) {
-                if (response.getIntent().contains("select")) {
+                /*if (response.getIntent().contains("select")) {
                     String entity = response.getEntities();
                     for (MyImage i : contentPanel.getImageList()) {
-//                        if (entities.contains(i.getNum())) {
-//                            i.setActive(!i.isActive());
-//                        }
-
+                        if (entity.contains(i.getNum())) {
+                            i.setSelected(!i.isSelected());
+                        }
                     }
-                }
+                }*/
                 if (response.getIntent().contains("background")) {
                     String entity = response.getEntities();
                     if (entity != null) {
-                        String theColor = entity;
-                        contentPanel.setBackground(colors.get(theColor.toLowerCase()));
+                        contentPanel.setBackground(colors.get(entity.toLowerCase()));
                     }
 
                     }
                 repaint();
                 }
-            });
+
+            @Override
+            public void whichAction(String action) {
+                contentPanel.setWhichButton(action);
+            }
+        });
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 

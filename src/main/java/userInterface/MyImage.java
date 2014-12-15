@@ -1,13 +1,19 @@
 package main.java.userInterface;
 
 import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
+
+import java.awt.image.ColorModel;
 import java.io.IOException;
+import java.awt.GraphicsConfiguration;
 import java.net.URL;
 
 /**
@@ -18,7 +24,7 @@ public class MyImage extends JComponent {
     private BufferedImage img; // The actual picture
     private int x, y; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
-    private int rotationDegrees; // Degress of rotation for image.
+    private int rotationDegrees; // Degrees of rotation for image.
 
     public boolean isActive() {
         return active;
@@ -44,6 +50,7 @@ public class MyImage extends JComponent {
         this.num = num;
         this.active = false;
         this.selected = false;
+        this.rotationDegrees=0;
         setBackground(Color.black);
         setDisplaySize();
     }
@@ -70,15 +77,6 @@ public class MyImage extends JComponent {
             w=sideLength;
         }
         this.img = getScaledImage((int) w, (int) h);
-    }
-
-
-    public MyImage(BufferedImage img, int x, int y, int num, int rotationDegrees) {
-        this.img = img;
-        this.x = x;
-        this.y = y;
-        this.num = num;
-        this.rotationDegrees = rotationDegrees;
     }
 
     public BufferedImage getImg() {
@@ -128,30 +126,36 @@ public class MyImage extends JComponent {
     }
 
 
-    public MyImage getRotatedImage(double degrees) {
+    public void getRotatedImage(double degree) throws IOException {
+        double angle = Math.toRadians(degree);
+        double sin = Math.abs(Math.sin(angle));
+        double cos = Math.abs(Math.cos(angle));
+        int w = this.getImg().getWidth();
+        int h = this.getImg().getHeight();
+        int newW = (int) Math.floor(w * cos + h * sin);
+        int newH = (int) Math.floor(h * cos + w * sin);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        GraphicsConfiguration gc = gd.getDefaultConfiguration();
+        BufferedImage result = gc.createCompatibleImage(newW, newH, Transparency.TRANSLUCENT);
+        Graphics2D g = result.createGraphics();
+        g.translate((newW - w) / 2, (newH - h) / 2);
+        g.rotate(angle, w / 2, h / 2);
+        g.drawRenderedImage(this.img, null);
+        g.dispose();
+        this.setImg(result);
+        this.rotationDegrees = (int) (this.rotationDegrees + degree);
+    }
 
-        ImageIcon icon = new ImageIcon(this.img);
+        /*BufferedImage rotated = new BufferedImage(newH, newW, BufferedImage.TYPE_INT_RGB);
 
-        int newH = (int) (Math.sin(Math.toRadians(degrees)) * img.getWidth() +
-                Math.cos(Math.toRadians(degrees) * img.getHeight()));
-
-        int newW = (int) (Math.sin(Math.toRadians(degrees)) * img.getHeight() +
-                Math.cos(Math.toRadians(degrees) * img.getWidth()));
-
-        BufferedImage rotated = new BufferedImage(newH, newW, BufferedImage.TYPE_INT_RGB);
-
-
-        int w = img.getWidth();
-        int h = img.getHeight();
-        AffineTransform xform = AffineTransform.getRotateInstance(Math.toRadians(degrees), w / 2, h / 2);
+        AffineTransform xform = AffineTransform.getRotateInstance(Math.toRadians(degree), w / 2, h / 2);
 
 
         Graphics2D g2 = rotated.createGraphics();
         g2.drawImage(img, xform, null);
 
-        MyImage rotatedImage = new MyImage(rotated, this.img.getHeight(), this.img.getWidth(), this.num, this.rotationDegrees);
-        return rotatedImage;
 
-    }
+        return rotatedImage;*/
 
 }

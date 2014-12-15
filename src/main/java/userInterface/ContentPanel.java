@@ -1,48 +1,50 @@
 package main.java.userInterface;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by pold on 12/10/14.
  */
 public class ContentPanel extends JPanel {
-
-    private final ArrayList<MyImage> imageList;
+    private ArrayList<MyImage> imageList;
     private Integer oldMouseX, oldMouseY;
+    private String whichButton;
 
-    public ContentPanel(ArrayList<MyImage> imageList) throws IOException {
-        this.imageList = imageList;
+    public ContentPanel() throws IOException {
+        imageList = new ArrayList<MyImage>();
+        whichButton = "none"; //at the beginning no button is selected
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(Color.white);
-        for (MyImage image:imageList){
-            if(image.isActive()){
-                this.add(image);
-            }
-        }
         addMouseListener(new MyMouseListener());
         addMouseMotionListener(new MyMouseMotionListener());
     }
 
     public ArrayList<MyImage> getImageList() { return imageList; }
 
-    public void setImage(MyImage image) {
-        for (MyImage i : this.imageList)
-            if (i.getNum() == image.getNum())
-                i = image;
+    public String getWhichButton() {
+        return whichButton;
     }
 
+    public void setWhichButton(String whichButton) {
+        this.whichButton = whichButton;
+    }
+
+    public void setImage(MyImage image) {
+        if (image.isActive()) {
+            this.imageList.add(image);
+        }
+        else {
+            this.imageList.remove(image);
+        }
+    }
 
     // For mouse click events (to select and unselect pictures)
     class MyMouseListener extends MouseAdapter {
@@ -54,17 +56,32 @@ public class ContentPanel extends JPanel {
             Point clickPoint = mouseEvent.getPoint();
 
             // For each image in the image list, get its area and determine if the mouse click occurred in this area.
+            boolean noOverlap = true; //to ensure that only the topmost picture can be selected if mouse is clicked in area of two pictures
+            Collections.reverse(getImageList());
             for (MyImage i : imageList) {
-                //MyImage rotatedImage = i.getRotatedImage(1);
-                //i.setImg(rotatedImage.getImg());
-                Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-                if (pictureArea.contains(clickPoint)) {
-                    // Toggle activity status.
-                    i.setSelected(!i.isSelected());
+                    while (noOverlap == true){
+                    Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
+                    if (noOverlap && pictureArea.contains(clickPoint) && getWhichButton().equals("rotate") && i.isSelected()) {
+                        try {
+                            i.getRotatedImage(90);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        // Repaint everything in order to see changes.
+                        noOverlap = false;
+                        repaint();
+                    }
+                    else if (noOverlap && pictureArea.contains(clickPoint) && (getWhichButton().equals("select") || getWhichButton().equals("none"))){
+                        // Toggle activity status.
+                        i.setSelected(!i.isSelected());
+                        noOverlap = false;
+                        // Repaint everything in order to see changes.
+                        repaint();
+                    }
                 }
             }
-            // Repaint everything in order to see changes.
-            repaint();
+            //undo reverse for future uses of imageList
+            Collections.reverse(getImageList());
         }
     }
 
@@ -72,7 +89,6 @@ public class ContentPanel extends JPanel {
 
         @Override
         public void mouseDragged(MouseEvent mouseEvent){
-
             // Set mouse position, if there is no old Mouse position.
             if (oldMouseX == null | oldMouseY == null) {
                 oldMouseX = mouseEvent.getX();
