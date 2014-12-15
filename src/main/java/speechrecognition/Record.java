@@ -15,22 +15,20 @@ import java.io.*;
  * http://stackoverflow.com/questions/5800649/detect-silence-when-recording
  */
 public class Record {
-	// record duration, in milliseconds
-	static final long RECORD_TIME = 6000; // 1 minute
 
-	// path of the wav file
-	File wavFile;
+	static final long RECORD_TIME = 6000; // Record duration, in milliseconds
+	File wavFile; // Path of the wav file
+	AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE; // Format of audio file
+	TargetDataLine line; // The line from which audio data is captured
 
-	// format of audio file
-	AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE;
-
-	// the line from which audio data is captured
-	TargetDataLine line;
+	public Record(File wavFile) {
+		this.wavFile = wavFile;
+	}
 
 	/**
 	 * Defines an audio format
 	 */
-	AudioFormat getAudioFormat() {
+	private AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
         int channels = 1;
@@ -39,19 +37,12 @@ public class Record {
         AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
                                              channels, signed, bigEndian);
         return format;
-        
-
     }
-	
-	// Constructor (one needs to specify the file)
-    public Record(File wavFile) {
-		this.wavFile = wavFile;
-	}    
 
 	/**
 	 * Captures the sound and record into a WAV file
 	 */
-	void start() {
+	public void start() {
 		try {
 			AudioFormat format = getAudioFormat();
 			DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -61,13 +52,13 @@ public class Record {
 				System.out.println("Line not supported");
 				System.exit(0);
 			}
-			line = (TargetDataLine) AudioSystem.getLine(info);
-			line.open(format);
-			line.start(); // start capturing
+			this.line = (TargetDataLine) AudioSystem.getLine(info);
+			this.line.open(format);
+			this.line.start(); // start capturing
 
 			System.out.println("Start capturing...");
 
-			AudioInputStream ais = new AudioInputStream(line);
+			AudioInputStream ais = new AudioInputStream(this.line);
 
 			System.out.println("Start recording...");
 
@@ -81,19 +72,20 @@ public class Record {
 		}
 	}
 
-	public static void recordExtern(File file) throws IOException, InterruptedException {
-
-		Process p = new ProcessBuilder("rec", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
-		p.waitFor();
-	}
 
 	/**
 	 * Closes the target data line to finish capturing and recording
 	 */
-	void finish() {
-		line.stop();
-		line.close();
+	public void finish() {
+		this.line.stop();
+		this.line.close();
 		System.out.println("Finished");
+	}
+
+	public static void recordExtern(File file) throws IOException, InterruptedException {
+
+		Process p = new ProcessBuilder("rec", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
+		p.waitFor();
 	}
 
 	public void convertWavToMp3External(File source, File target) throws Exception {
