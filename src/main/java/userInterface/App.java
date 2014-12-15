@@ -19,7 +19,7 @@ public class App {
                     new BasicDesign(600,
                             600,
                             "/pictures/");
-                            //new String[]{"IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg", "IMG_7.jpg"});
+                            //newsudo apt-get install oracle-java8-set-default String[]{"IMG_1.jpg", "IMG_2.jpg", "IMG_3.jpg", "IMG_4.jpg", "IMG_5.jpg", "IMG_6.jpg", "IMG_7.jpg"});
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

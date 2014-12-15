@@ -37,6 +37,8 @@ public class BasicDesign extends JFrame implements ComponentListener {
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
 
+        this.setMaximumSize(new Dimension(hi, wi));
+        this.setPreferredSize(new Dimension(hi, wi));
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
         File[] imageFiles = dir.listFiles();
@@ -94,14 +96,14 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
             @Override
             public void recognizedWitResponse(WitResponse response) {
-                /*if (response.getIntent().contains("select")) {
+                if (response.getIntent().contains("select")) {
                     String entity = response.getEntities();
                     for (MyImage i : contentPanel.getImageList()) {
                         if (entity.contains(i.getNum())) {
                             i.setSelected(!i.isSelected());
                         }
                     }
-                }*/
+                }
                 if (response.getIntent().contains("background")) {
                     String entity = response.getEntities();
                     if (entity != null) {
