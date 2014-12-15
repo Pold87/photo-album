@@ -23,87 +23,104 @@ import static main.java.speechrecognition.Record.recordExtern;
 
 public class Wit {
 
-	private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
-	private static final long RECORD_TIME = WitTest.recordTime;
-	private WitResponse witResponse;
+    private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
+    private static final long RECORD_TIME = WitTest.recordTime;
+    private WitResponse witResponse;
 
 
-	private String witRawJSONString;
-	
-	public Wit (File audioFileWav, String fileType) throws Exception {
+    private String witRawJSONString;
 
-		recordExtern(audioFileWav);
+    public Wit(File audioFileWav, String fileType) throws Exception {
 
-		// Speech recognition
+        final Record recorder = new Record(audioFileWav);
 
-		HttpClient client = HttpClients.createDefault();
+        // creates a new thread that waits for a specified
+        // of time before stopping
+        Thread stopper = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(RECORD_TIME);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                recorder.finish();
+            }
+        });
 
-		// URL for speech recognition
-		URI urlSpeech = new URIBuilder("https://api.wit.ai/speech?v=20141201")
-				.build();
-		HttpPost post = new HttpPost(urlSpeech);
+        stopper.start();
 
-		InputStreamEntity reqEntity = new InputStreamEntity(
-				new FileInputStream(audioFileWav), -1,
-				ContentType.APPLICATION_OCTET_STREAM);
-		reqEntity.setChunked(true);
+        // Using an external program for recording.
+//		Record.recordExtern(audioFileWav);
 
-		post.setHeader("Authorization", "Bearer " + TOKEN);
-		post.setHeader("Content-Type", "audio/"+fileType);
-		post.setEntity(reqEntity);
+        // Speech recognition
+        HttpClient client = HttpClients.createDefault();
 
-		System.out.println("filetype: " + fileType);
-		long a = System.currentTimeMillis();
-		
+        // URL for speech recognition
+        URI urlSpeech = new URIBuilder("https://api.wit.ai/speech?v=20141201")
+                .build();
+        HttpPost post = new HttpPost(urlSpeech);
 
-		// Get the data from wit.AI
-		HttpResponse speechResponse = client.execute(post);
+        InputStreamEntity reqEntity = new InputStreamEntity(
+                new FileInputStream(audioFileWav), -1,
+                ContentType.APPLICATION_OCTET_STREAM);
+        reqEntity.setChunked(true);
 
-		long b = System.currentTimeMillis();
-		
-		System.out.println(b - a);
+        post.setHeader("Authorization", "Bearer " + TOKEN);
+        post.setHeader("Content-Type", "audio/" + fileType);
+        post.setEntity(reqEntity);
 
-		// Extract String from HttpResponse.
-		String speechResponseString = new BasicResponseHandler()
-				.handleResponse(speechResponse);
+        System.out.println("filetype: " + fileType);
+        long a = System.currentTimeMillis();
 
-		this.witRawJSONString = speechResponseString;
+
+        // Get the data from wit.AI
+        HttpResponse speechResponse = client.execute(post);
+
+        long b = System.currentTimeMillis();
+
+        System.out.println(b - a);
+
+        // Extract String from HttpResponse.
+        String speechResponseString = new BasicResponseHandler()
+                .handleResponse(speechResponse);
+
+        this.witRawJSONString = speechResponseString;
 
 //		WitResponse response = null;
-		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+        ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
 
-		// IMPORTANT
-		// without this option set adding new fields breaks old code
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-				false);
+        // IMPORTANT
+        // without this option set adding new fields breaks old code
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
 
-		this.witResponse = mapper.readValue(speechResponseString, WitResponse.class);
-	}
+        this.witResponse = mapper.readValue(speechResponseString, WitResponse.class);
+    }
 
-	// Getter for witReponse
-	public WitResponse getWitResponse() {
-		return witResponse;
-	}
+    // Getter for witReponse
+    public WitResponse getWitResponse() {
+        return witResponse;
+    }
 
 
-	public String getWitRawJSONString() {
-		return witRawJSONString;
-	}
+    public String getWitRawJSONString() {
+        return witRawJSONString;
+    }
 
-	public static HttpResponse getMeaning(String string) throws Exception {
+    public static HttpResponse getMeaning(String string) throws Exception {
 
-		URI urlText = new URIBuilder(
-				"https://api.wit.ai/message?v=20140916&q=remove").build();
+        URI urlText = new URIBuilder(
+                "https://api.wit.ai/message?v=20140916&q=remove").build();
 
-		CloseableHttpClient client = HttpClients.createDefault();
-		HttpGet request = new HttpGet(urlText);
-		request.setHeader("Authorization", "Bearer " + TOKEN);
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet request = new HttpGet(urlText);
+        request.setHeader("Authorization", "Bearer " + TOKEN);
 
-		// Get the data from wit.AI
-		CloseableHttpResponse meaningResponse = client.execute(request);
-		
-		return meaningResponse;
+        // Get the data from wit.AI
+        CloseableHttpResponse meaningResponse = client.execute(request);
 
-	}	
-	
+        return meaningResponse;
+
+    }
+
 }

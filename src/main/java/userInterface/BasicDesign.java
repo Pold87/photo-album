@@ -19,7 +19,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
 
-    Map<String, Color> colors = new HashMap<String, Color>();
+    Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
 
     public BasicDesign(int hi, int wi, String path) throws Exception {
@@ -94,10 +94,11 @@ public class BasicDesign extends JFrame implements ComponentListener {
                 debugPanel.appendText(text);
             }
 
+            // TODO: definitely improve theses functions, they are just dirty hacks
             @Override
             public void recognizedWitResponse(WitResponse response) {
                 if (response.getIntent().contains("select")) {
-                    String entity = response.getEntities();
+                    ArrayList<Integer> entity = response.getEntities();
                     for (MyImage i : contentPanel.getImageList()) {
                         if (entity.contains(i.getNum())) {
                             i.setSelected(!i.isSelected());
@@ -105,9 +106,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
                     }
                 }
                 if (response.getIntent().contains("background")) {
-                    String entity = response.getEntities();
+                    ArrayList<Integer> entity = response.getEntities();
                     if (entity != null) {
-                        contentPanel.setBackground(colors.get(entity.toLowerCase()));
+                        contentPanel.setBackground(colors.get(entity.get(0)));
                     }
 
                     }
@@ -195,9 +196,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
     }
 
     private void addColors() {
-        colors.put("blue", Color.BLUE);
-        colors.put("red", Color.RED);
-        colors.put("green", Color.GREEN);
+        colors.put(0, Color.BLUE);
+        colors.put(1, Color.RED);
+        colors.put(1, Color.GREEN);
     }
 }
 

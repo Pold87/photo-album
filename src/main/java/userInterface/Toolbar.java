@@ -36,7 +36,10 @@ public class Toolbar extends JToolBar {
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     // Extract String from speechResponse
-                    Wit wit= new Wit(new File("recording.wav"), "wav");
+
+                    // TODO URL + getResource
+                    URL url = getClass().getResource("/speechrecognition/recording.wav");
+                    Wit wit= new Wit(new File(url.toURI()), "wav");
                     listener.recognizedText(wit.getWitRawJSONString());
                     listener.recognizedWitResponse(wit.getWitResponse());
                 } catch (Exception e) {

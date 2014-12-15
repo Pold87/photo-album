@@ -51,26 +51,15 @@ public class WitResponse {
         return intents;
     }
 
-    public String getEntities() {
+    public ArrayList<Integer> getEntities() {
 
-        ArrayList<String> entities = new ArrayList<String>();
+        ArrayList<Integer> entities = new ArrayList<Integer>();
 
-//            for (WitOutcomes o : getOutcomes()) {
-//
-//                for (WitEntities e : o.getEntities()) {
-//
-//                    for (WitNumber n : e.getNumber()) {
-//
-//                        entities.add(n.getValue());
-//
-//                    }
-//
-//                }
-//            }
+        for (WitNumber witNumber : this.getOutcomes().get(0).getEntities().getNumber()) {
+            entities.add(witNumber.getValue());
+        }
 
-//        return entities;
-
-        return this.getOutcomes().get(0).getEntities().getNumber().get(0).getValue();
+        return entities;
 
     }
 
