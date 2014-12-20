@@ -8,7 +8,8 @@ import java.awt.*;
  */
 
 public class JVertLabel extends JComponent {
-    private String text;
+	private static final long serialVersionUID = 1L;
+	private String text;
 
     public JVertLabel(String s){
         text = s;

@@ -13,7 +13,8 @@ import java.net.URL;
  */
 public class Toolbar extends JToolBar {
 
-    private JButton selectButton;
+	private static final long serialVersionUID = 1L;
+	private JButton selectButton;
     private JButton speechButton;
     private JButton moveButton;
     private JButton rotateButton;
@@ -27,7 +28,7 @@ public class Toolbar extends JToolBar {
         // Create buttons and add listeners.
         selectButton = new JButton(new AbstractAction("select") {
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.whichAction("select");
+                listener.setAction("select");
             }
         });
         speechButton = new JButton(new AbstractAction("speech") {
@@ -49,14 +50,14 @@ public class Toolbar extends JToolBar {
         moveButton = new JButton(new AbstractAction("move") {
             
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.whichAction("move");
+                listener.setAction("move");
             }
         });
 
         rotateButton = new JButton(new AbstractAction("rotate") {
             
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.whichAction("rotate");
+                listener.setAction("rotate");
             }
         });
 

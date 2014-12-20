@@ -1,6 +1,6 @@
 package main.java.userInterface;
 
-public interface commandInterface {
+public interface CommandInterface {
 
 	abstract void selectPicture(int nr); //Voice
 	abstract void nextPage();//Voice and/or LEAP

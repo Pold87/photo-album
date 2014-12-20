@@ -8,7 +8,8 @@ import java.awt.*;
  */
 public class DebugPanel extends JPanel {
 
-    private JTextArea textArea;
+	private static final long serialVersionUID = 1L;
+	private JTextArea textArea;
 
     public DebugPanel() {
 

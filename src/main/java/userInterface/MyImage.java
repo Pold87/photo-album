@@ -1,22 +1,14 @@
 package main.java.userInterface;
 
 import javax.imageio.ImageIO;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.Stroke;
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-
-import javax.swing.*;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.awt.GraphicsConfiguration;
 import java.net.URL;
 
 /**
@@ -140,6 +132,7 @@ public class MyImage {
     }
 
     //Deprecated?
+    /*
     private void getRotatedImage(double degree) throws IOException {
         double angle = Math.toRadians(degree);
         double sin = Math.abs(Math.sin(angle));
@@ -160,6 +153,7 @@ public class MyImage {
         this.setImg(result);
         this.rotationDegrees = (int) (this.rotationDegrees + degree);
     }
+    */
     
     public void paint(Graphics g){
     	System.out.println("Drawing picture: " + num);

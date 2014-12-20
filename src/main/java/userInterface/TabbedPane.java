@@ -7,7 +7,8 @@ import java.awt.*;
  * Created by pold on 12/10/14.
  */
 public class TabbedPane extends JTabbedPane{
-    String[] images;
+	private static final long serialVersionUID = 1L;
+	String[] images;
     String path;
 
     public TabbedPane(PhotoBar photoBar) throws Exception{

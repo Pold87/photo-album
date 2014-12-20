@@ -1,13 +1,11 @@
 package main.java.userInterface;
 
 
-import main.java.speechrecognition.WitResponse;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +17,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
+    private Controller controller = new Controller();
 
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
@@ -60,7 +59,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
         tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
         photoBar.loadImages(path, preferredThumbSize);
 
-        this.contentPanel = new ContentPanel();
+        this.contentPanel = new ContentPanel(controller);
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
 
@@ -78,49 +77,8 @@ public class BasicDesign extends JFrame implements ComponentListener {
         add(splitPane, BorderLayout.CENTER);
         add(debugPanel, BorderLayout.SOUTH);
 
-        photoBar.setPhotoBarListener(
-                new PhotoBarListener() {
-                    
-                    public void recognizedClick(MyImage image) {
-                        image.setActive(!image.isActive());
-                        contentPanel.setImage(image);
-                        contentPanel.repaint();
-                    }
-                }
-        );
-
-        toolbar.setToolBarListener(new ToolBarListener() {
-            
-            public void recognizedText(String text) {
-                debugPanel.appendText(text);
-            }
-
-            // TODO: definitely improve theses functions, they are just dirty hacks
-            
-            public void recognizedWitResponse(WitResponse response) {
-                if (response.getIntent().contains("select")) {
-                    ArrayList<Integer> entity = response.getEntities();
-                    for (MyImage i : contentPanel.getImageList()) {
-                        if (entity.contains(i.getNum())) {
-                            i.setSelected(!i.isSelected());
-                        }
-                    }
-                }
-                if (response.getIntent().contains("background")) {
-                    ArrayList<Integer> entity = response.getEntities();
-                    if (entity != null) {
-                        contentPanel.setBackground(colors.get(entity.get(0)));
-                    }
-
-                    }
-                repaint();
-                }
-
-            
-            public void whichAction(String action) {
-                contentPanel.setWhichButton(action);
-            }
-        });
+        photoBar.setPhotoBarListener(controller);
+        toolbar.setToolBarListener(controller);
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -201,8 +159,8 @@ public class BasicDesign extends JFrame implements ComponentListener {
         colors.put(1, Color.RED);
         colors.put(1, Color.GREEN);
     }
+    
+    public DebugPanel getDebugPanel(){
+    	return debugPanel;
+    }
 }
-
-
-	
-

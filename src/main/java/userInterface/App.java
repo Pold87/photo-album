@@ -1,7 +1,6 @@
 package main.java.userInterface;
 
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * Created by pold on 12/10/14.
