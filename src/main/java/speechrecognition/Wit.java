@@ -2,6 +2,7 @@ package main.java.speechrecognition;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.net.URI;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,6 +19,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.stream.JsonParser;
+
 import static main.java.speechrecognition.Record.recordExtern;
 
 
@@ -26,8 +33,6 @@ public class Wit {
     private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
     private static final long RECORD_TIME = WitTest.recordTime;
     private WitResponse witResponse;
-
-
     private String witRawJSONString;
 
     public Wit(File audioFileWav, String fileType) throws Exception {
@@ -85,8 +90,10 @@ public class Wit {
                 .handleResponse(speechResponse);
 
         this.witRawJSONString = speechResponseString;
+        System.out.println(this.witRawJSONString);
 
-//		WitResponse response = null;
+
+       //		WitResponse response = null;
         ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
 
         // IMPORTANT
@@ -120,6 +127,19 @@ public class Wit {
         CloseableHttpResponse meaningResponse = client.execute(request);
 
         return meaningResponse;
+
+    }
+
+    // Using the integrated JSON framework
+    public String getIntent() {
+
+        JsonReader reader = Json.createReader(new StringReader(this.witRawJSONString));
+        JsonObject jsonObject = reader.readObject();
+
+        JsonArray outcomes = jsonObject.getJsonArray("outcomes");
+        System.out.println(outcomes.getJsonObject(0).getString("intent"));
+
+        return outcomes.getJsonObject(0).getString("intent");
 
     }
 

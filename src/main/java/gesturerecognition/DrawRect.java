@@ -25,24 +25,7 @@ public class DrawRect {
 
         // Have the sample listener receive events from the controller
         controller.addListener(listener);
-        for (int i = 0 ; i < 100 ; i++) {
-			    Gestures ges = new Gestures(listener);
-			    System.out.println("Gesture found: " + ges.gestureStartFound());
-			    if (ges.gestureStartFound()) {
-			    	int g = ges.getGesture();
-			    	// while gesture (z is bigger than 50)
-			    	while(listener.getMax(listener.getPositions()) <= 70) {
-			    		float[] positionChanges = ges.doGesture(g);
-			    		//System.out.println(positionChanges[0] + ", " + positionChanges[1]);
-			    		frame.set(positionChanges, maxx, maxy);
-			    		//frame.set(positionChanges);
-			    		window.validate();
-			    		window.repaint();
-			    	}
-			    	System.out.println(listener.getMax(listener.getPositions()));
-			    }
-			    ges.set();
-        }
+
         // Keep this process running until Enter is pressed
         System.out.println("Press Enter to quit...");
         try {
