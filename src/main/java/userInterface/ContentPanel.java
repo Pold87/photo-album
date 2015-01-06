@@ -12,7 +12,10 @@ import java.util.ArrayList;
 public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+	
+	//Needs edit when we make multiple pages
 	private ArrayList<MyImage> imageList;
+	private MyImage selectedImage;
 
     public ContentPanel(Controller controller) throws IOException {
     	setPreferredSize(new Dimension(600, 600));
@@ -54,13 +57,21 @@ public class ContentPanel extends JPanel {
     	}
     	return null;
     }
+    
+    public void selectPicture(int nr){
+    	selectedImage = imageList.get(nr);
+    	selectedImage.setSelected(true);
+    	imageList.remove(selectedImage);
+		imageList.add(selectedImage);	
+		repaint();
+    }
 
     public MyImage selectPictureAt(int x, int y){
 		
     	// For each image in the image list, get its area and determine if the mouse click occurred in this area.
-    	MyImage selectedImage = null;
+    	selectedImage = null;
     	for (MyImage i : imageList) {
-    		//Does this still work when the picture is rotated?
+    		//Does this still work when the picture is rotated? Nope, fix pending.
     		Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
     		if (pictureArea.contains(new Point(x, y))) {
     			selectedImage = i;
@@ -85,6 +96,7 @@ public class ContentPanel extends JPanel {
      * Edit when functionality for more pages is created.
      */
     public void addPictureToCurrentPage(MyImage image){
+		image.setActive(!image.isActive());
         if (image.isActive()) {
             this.imageList.add(image);
         }
@@ -94,5 +106,28 @@ public class ContentPanel extends JPanel {
         repaint();
     }
     
+    /**
+     * Also needs an edit when we have multiple pages.
+     * @param nr 
+     */
+    public void deletePictureFromCurrentPage(int nr){
+    	MyImage image = imageList.remove(nr);
+    	image.setSelected(false);
+    	repaint();
+    }
+    public void deleteSelectedPicture(){
+    	selectedImage.setSelected(false);
+    	imageList.remove(selectedImage);
+    	repaint();
+    }
+    
+    public void rotate(){
+    	selectedImage.incrementRotation(45);
+    	repaint();
+    }
 
+    public void rotate(int degrees){
+    	selectedImage.incrementRotation(degrees);
+    	repaint();
+    }
 }

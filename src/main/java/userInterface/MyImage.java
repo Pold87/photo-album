@@ -127,7 +127,8 @@ public class MyImage {
     	rotationDegrees += degree;   	
     }
     
-    public void setRatation(int degree){
+    //Is this a necessary method?
+    public void setRotation(int degree){
     	rotationDegrees = degree;
     }
 
@@ -158,11 +159,10 @@ public class MyImage {
     public void paint(Graphics g){
     	System.out.println("Drawing picture: " + num);
     	Graphics2D g2d = (Graphics2D) g;
-    	System.out.print("X: "+ x +" Y: "+y );
+    	//System.out.print("X: "+ x +" Y: "+y );
     	//g2d.translate(0, 0);
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
     	g2d.drawImage(img, x, y, null);
-    	System.out.println(" X: "+ x +" Y: "+y );
     	
     	if(selected){
                 //draw blue frame around image if it is now selected

@@ -30,7 +30,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     
     //START CommandInterface
 	public void selectPicture(int nr) {
-		// TODO Auto-generated method stub
+		contentPanel.selectPicture(nr);
 
 	}
 
@@ -60,10 +60,39 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	}
 
 	public void addPictureFromLibrary(int nr) {
-		// TODO Auto-generated method stub
+		MyImage image = basicDesign.getLibrary()[nr];
+        contentPanel.addPictureToCurrentPage(image);
+	}
 
+	public void selectPicture(int x, int y) {
+		contentPanel.selectPictureAt(x, y);
+	}
+
+	public void deletePicture(int nr) {
+		contentPanel.deletePictureFromCurrentPage(nr);		
 	}
 	
+	public void deleteSelectedPicture(){
+		contentPanel.deleteSelectedPicture();
+	}
+
+	
+	public void movePicture(int x, int y) {
+		// TODO Auto-generated method stub
+		//Should probably communicate with the LEAP guys about this. 
+		
+	}
+
+	//Also needs edit when we got multiple pages
+	public void setBackground(Color color) {
+		contentPanel.setBackground(color);
+		
+	}
+
+	public void rotate(int degrees) {
+		contentPanel.rotate(degrees);
+		
+	}
 	//END CommandInterface
 
 	
@@ -107,7 +136,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 		if(currentAction.equals("select")|| currentAction.equals("move")){ //Why do we have a separate move button anyway?
 			contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
 		}else if(currentAction.equals("rotate")){
-			contentPanel.getSelectedPicture().incrementRotation(45);
+			contentPanel.rotate();
 		}
 
 	}
@@ -122,7 +151,6 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 
 	public void mousePressed(MouseEvent arg0) {
 		// Not using this.	
-		System.out.println("Mouse pressed. Yaaaaay");
 	}
 
 	public void mouseReleased(MouseEvent arg0) {
@@ -170,10 +198,10 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	public void actionPerformed(ActionEvent e) {
 		int picNr = Integer.parseInt(e.getActionCommand());
 		MyImage image = basicDesign.getLibrary()[picNr];
-		image.setActive(!image.isActive());
         contentPanel.addPictureToCurrentPage(image);
 	}
 	//END ActionListener
-	
 
+
+	
 }
