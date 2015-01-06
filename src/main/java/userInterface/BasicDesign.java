@@ -18,6 +18,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private Controller controller = new Controller();
+    private MyImage[] library;
 
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
@@ -54,14 +55,16 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
         this.toolbar = new Toolbar();
         int preferredThumbSize = 100;
-        PhotoBar photoBar = new PhotoBar(images);
+        PhotoBar photoBar = new PhotoBar(images, controller);
         this.tabbedPane = new TabbedPane(photoBar);
         tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
-        photoBar.loadImages(path, preferredThumbSize);
+        library = photoBar.loadImages(path, preferredThumbSize);
 
         this.contentPanel = new ContentPanel(controller);
+        controller.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
+        
 
         // Create MenuBar (File, View, etc.).
         setJMenuBar(createMenuBar());
@@ -77,7 +80,6 @@ public class BasicDesign extends JFrame implements ComponentListener {
         add(splitPane, BorderLayout.CENTER);
         add(debugPanel, BorderLayout.SOUTH);
 
-        photoBar.setPhotoBarListener(controller);
         toolbar.setToolBarListener(controller);
 
         setLocationRelativeTo(null);
@@ -94,6 +96,10 @@ public class BasicDesign extends JFrame implements ComponentListener {
         System.out.println(e.getComponent().getClass().getName() + " --- Moved");
     }
 
+    public MyImage [] getLibrary(){
+    	return library;
+    }
+    
     public void componentResized(ComponentEvent e) {
         System.out.println(e.getComponent().getClass().getName() + " --- Resized");
 //    	//Resizing thumbnails with window

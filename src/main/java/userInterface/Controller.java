@@ -1,6 +1,8 @@
 package main.java.userInterface;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,7 +12,7 @@ import java.util.Map;
 
 import main.java.speechrecognition.WitResponse;
 
-public class Controller implements CommandInterface, MouseMotionListener, MouseListener, PhotoBarListener, ToolBarListener {
+public class Controller implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
@@ -129,23 +131,14 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	}
 	//END MouseListeners
 	
-	
-	//START PhotobarListener
-	public void recognizedClick(MyImage image) {
-        image.setActive(!image.isActive());
-        contentPanel.setImage(image);
-        contentPanel.repaint();
-    }
-	//END Photobar Listener
-	
-	
 	//START toolbarListener
 	public void recognizedText(String text) {
         basicDesign.getDebugPanel().appendText(text);
     }
 
     // TODO: definitely improve theses functions, they are just dirty hacks
-    
+    // Hmm, I might have moved too much functionality to the controller now.. Not sure
+	
     public void recognizedWitResponse(WitResponse response) {
         if (response.getIntent().contains("select")) {
             ArrayList<Integer> entity = response.getEntities();
@@ -171,5 +164,16 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     }
     //END ToolbarListener
 
+    
+    //START ActionListener
+    //Used Only by the PhotoBar
+	public void actionPerformed(ActionEvent e) {
+		int picNr = Integer.parseInt(e.getActionCommand());
+		MyImage image = basicDesign.getLibrary()[picNr];
+		image.setActive(!image.isActive());
+        contentPanel.addPictureToCurrentPage(image);
+	}
+	//END ActionListener
+	
 
 }

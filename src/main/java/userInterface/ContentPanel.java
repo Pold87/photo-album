@@ -27,15 +27,6 @@ public class ContentPanel extends JPanel {
     	return imageList;
     }
 
-    public void setImage(MyImage image) {
-        if (image.isActive()) {
-            this.imageList.add(image);
-        }
-        else {
-            this.imageList.remove(image);
-        }
-    }
-
     public void paintComponent(Graphics g) {
 
         // Casting to 2D seems to be beneficial.
@@ -43,7 +34,7 @@ public class ContentPanel extends JPanel {
         super.paintComponent(g2);
 
         // Draw each image in the image list (if it's active)
-        System.out.println("Draw all the things.");
+        System.out.println("Draw all the things!!");
         for (MyImage i : imageList) {
             if (i.isActive()) {
             	i.paint(g2);
@@ -88,6 +79,19 @@ public class ContentPanel extends JPanel {
     	
     	
     	return selectedImage;
+    }
+    
+    /**
+     * Edit when functionality for more pages is created.
+     */
+    public void addPictureToCurrentPage(MyImage image){
+        if (image.isActive()) {
+            this.imageList.add(image);
+        }
+        else {
+            this.imageList.remove(image);
+        }
+        repaint();
     }
     
 
