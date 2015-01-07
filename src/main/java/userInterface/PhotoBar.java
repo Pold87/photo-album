@@ -31,15 +31,18 @@ public class PhotoBar extends JToolBar {
         for (int i = 0; i < this.imageNames.length; i++) {
             String pic = this.imageNames[i];
             String imgPath = new String(path + pic);
-            MyImage photo = new MyImage(imgPath, x, y, i);
-            photos[i] = photo;
-            //ThumbnailAction thumbAction = new ThumbnailAction(photo,buttonWidth, pic);
-            JButton thumbButton = new JButton(new ImageIcon(photo.getScaledImage(buttonWidth, buttonWidth)));
-            thumbButton.setActionCommand(i + "");
-            this.add(thumbButton);
-            thumbButton.addActionListener(listener);
-            x = x+20;
-            y = y+20;
+            System.out.println(imgPath);
+            if(pic != null){
+            	MyImage photo = new MyImage(imgPath, x, y, i);
+            	photos[i] = photo;
+            	//ThumbnailAction thumbAction = new ThumbnailAction(photo,buttonWidth, pic);
+            	JButton thumbButton = new JButton(new ImageIcon(photo.getScaledImage(buttonWidth, buttonWidth)));
+            	thumbButton.setActionCommand(i + "");
+            	this.add(thumbButton);
+            	thumbButton.addActionListener(listener);
+            	x = x+20;
+            	y = y+20;
+            }
         }
         return photos;
     }

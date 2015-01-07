@@ -8,5 +8,5 @@ import main.java.speechrecognition.WitResponse;
 public interface ToolBarListener{
     public void recognizedText(String text);
     public void recognizedWitResponse(WitResponse response);
-    public void setAction(String action);
+    public void toolbarButtonClicked(String action);
 }

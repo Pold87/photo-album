@@ -18,6 +18,8 @@ public class Toolbar extends JToolBar {
     private JButton speechButton;
     private JButton moveButton;
     private JButton rotateButton;
+    private JButton undoButton;
+    private JButton redoButton;
     private ToolBarListener listener;
 
     public Toolbar() {
@@ -28,7 +30,7 @@ public class Toolbar extends JToolBar {
         // Create buttons and add listeners.
         selectButton = new JButton(new AbstractAction("select") {
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.setAction("select");
+                listener.toolbarButtonClicked("select");
             }
         });
         speechButton = new JButton(new AbstractAction("speech") {
@@ -52,14 +54,28 @@ public class Toolbar extends JToolBar {
         moveButton = new JButton(new AbstractAction("move") {
             
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.setAction("move");
+                listener.toolbarButtonClicked("move");
             }
         });
 
         rotateButton = new JButton(new AbstractAction("rotate") {
             
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.setAction("rotate");
+                listener.toolbarButtonClicked("rotate");
+            }
+        });
+        
+        undoButton = new JButton(new AbstractAction("undo") {
+            
+            public void actionPerformed(ActionEvent actionEvent) {
+                listener.toolbarButtonClicked("undo");
+            }
+        });
+        
+        redoButton = new JButton(new AbstractAction("redo") {
+            
+            public void actionPerformed(ActionEvent actionEvent) {
+                listener.toolbarButtonClicked("redo");
             }
         });
 
@@ -68,19 +84,24 @@ public class Toolbar extends JToolBar {
         speechButton.setIcon(createIcon("/icons/Discussion.png"));
         moveButton.setIcon(createIcon("/icons/Import Picture Document.png"));
         rotateButton.setIcon(createIcon("/icons/Backup Green Button.png"));
-
-
+        undoButton.setIcon(createIcon("/icons/Undo.png"));
+        redoButton.setIcon(createIcon("/icons/Redo.png"));
+        
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");
         speechButton.setToolTipText("Start and stop speech recognition");
         moveButton.setToolTipText("Start moving selected pictures");
         rotateButton.setToolTipText("Rotate selected pictures");
+        undoButton.setToolTipText("Undo the last action");
+        redoButton.setToolTipText("Redo the last undone action");
 
         // Add buttons to toolbar.
         add(selectButton);
         add(speechButton);
         add(moveButton);
         add(rotateButton);
+        add(undoButton);
+        add(redoButton);
 
         // Use non-draggable toolbar.
         setFloatable(false);
