@@ -2,10 +2,12 @@ package main.java.userInterface;
 
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private Controller controller = new Controller();
     private MyImage[] library;
+    private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>();
 
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
@@ -45,14 +48,14 @@ public class BasicDesign extends JFrame implements ComponentListener {
         File[] imageFiles = dir.listFiles();
         String[] images = new String[imageFiles.length];
         for (int i = 0; i < imageFiles.length; ++i){
-            if (imageFiles[i].isDirectory()) {
+            if (imageFiles[i].isDirectory() || imageFiles[i].isHidden()) {
                 System.out.println(imageFiles[i].getName());
             } else {
                 images[i] = imageFiles[i].getName();
                 System.out.println(imageFiles[i].getName());
             }
         }
-
+        
         this.toolbar = new Toolbar();
         int preferredThumbSize = 100;
         PhotoBar photoBar = new PhotoBar(images, controller);

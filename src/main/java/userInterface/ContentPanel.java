@@ -58,6 +58,15 @@ public class ContentPanel extends JPanel {
     	return null;
     }
     
+    public void selectPicture(MyImage image){
+    	selectedImage.setSelected(false);
+    	selectedImage = image;
+    	image.setSelected(true);
+    	repaint();
+    	imageList.remove(selectedImage);
+		imageList.add(selectedImage);
+    }
+    
     public void selectPicture(int nr){
     	selectedImage = imageList.get(nr);
     	selectedImage.setSelected(true);

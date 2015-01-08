@@ -78,9 +78,11 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 
 	
 	public void movePicture(int x, int y) {
-		// TODO Auto-generated method stub
 		//Should probably communicate with the LEAP guys about this. 
-		
+		MyImage image = contentPanel.getSelectedPicture();
+		image.setX(x);
+		image.setY(y);
+		contentPanel.repaint();
 	}
 
 	//Also needs edit when we got multiple pages
@@ -187,8 +189,14 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     }
 
     
-    public void setAction(String action) {
-        currentAction = action;
+    public void toolbarButtonClicked(String action) {
+    	if(action == "undo"){
+    		// TODO implement
+    	}else if(action == "redo"){
+    		//TODO implement
+    	}else{
+    		currentAction = action;
+    	}
     }
     //END ToolbarListener
 
@@ -202,6 +210,9 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	}
 	//END ActionListener
 
-
+	public void selectPicture(MyImage image){
+		contentPanel.selectPicture(image);
+	}
+	
 	
 }
