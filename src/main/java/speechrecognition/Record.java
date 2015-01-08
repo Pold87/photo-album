@@ -63,6 +63,7 @@ public class Record {
 			System.out.println("Start recording...");
 
 			// start recording
+			System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
 			AudioSystem.write(ais, fileType, wavFile);
 
 		} catch (LineUnavailableException ex) {
