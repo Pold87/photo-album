@@ -132,30 +132,7 @@ public class MyImage {
     	rotationDegrees = degree;
     }
 
-    //Deprecated?
-    /*
-    private void getRotatedImage(double degree) throws IOException {
-        double angle = Math.toRadians(degree);
-        double sin = Math.abs(Math.sin(angle));
-        double cos = Math.abs(Math.cos(angle));
-        int w = this.getImg().getWidth();
-        int h = this.getImg().getHeight();
-        int newW = (int) Math.floor(w * cos + h * sin);
-        int newH = (int) Math.floor(h * cos + w * sin);
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        GraphicsConfiguration gc = gd.getDefaultConfiguration();
-        BufferedImage result = gc.createCompatibleImage(newW, newH, Transparency.TRANSLUCENT);
-        Graphics2D g = result.createGraphics();
-        g.translate((newW - w) / 2, (newH - h) / 2);
-        g.rotate(angle, w / 2, h / 2);
-        g.drawRenderedImage(this.img, null);
-        g.dispose();
-        this.setImg(result);
-        this.rotationDegrees = (int) (this.rotationDegrees + degree);
-    }
-    */
-    
+
     public void paint(Graphics g){
     	System.out.println("Drawing picture: " + num);
     	Graphics2D g2d = (Graphics2D) g;
@@ -178,8 +155,7 @@ public class MyImage {
 
     
     public boolean contains(Point p){
-    	
-    	
+
     	return false;
     }
 

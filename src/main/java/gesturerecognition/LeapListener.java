@@ -1,5 +1,6 @@
 package main.java.gesturerecognition;
 
+import com.leapmotion.leap.CircleGesture;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
@@ -7,6 +8,7 @@ import com.leapmotion.leap.Gesture;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.InteractionBox;
 import com.leapmotion.leap.Vector;
+
 import main.java.userInterface.*;
 
 public class LeapListener extends com.leapmotion.leap.Listener {
@@ -16,9 +18,6 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 	float clickThresholdRight = 0.0f;
 	float clickThresholdLeft = 0.0f;
 	boolean prevRightClick = false;
-	
-	private int currentRight = -1;
-	private int currentLeft  = -1;
 
 	public void setScrWidth(int scrWidth) {
 		this.scrWidth = scrWidth;
@@ -46,6 +45,8 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 
 	public void onInit(Controller controller) {
 		System.out.println("Leap Motion Initialization");
+		// Enable recognition of circle gesture
+		controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
 	}
 
 	public void onFrame(Controller controller) {
@@ -57,12 +58,10 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 		if (nrHands == 1) {
 			if (frame.hands().get(0).isLeft()) {
 				// links
-				currentRight = -1;
 				this.updateLeftHand(frame, frame.hands().get(0));
 				contentPanel.setLeapRightClick(false);
 			} else if (frame.hands().get(0).isRight()) {
 				// rechts
-				currentLeft = -1;
 				this.updateRightHand(frame, frame.hands().get(0));
 				contentPanel.setLeapLeftClick(false);
 			}
@@ -73,7 +72,46 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapRightClick(false);
 			contentPanel.setLeapLeftClick(false);
 		}
+		// Update gestures
+		updateGestures(frame);
+	}
 
+	private void updateGestures(Frame frame) {
+		// Check if gesture is circle
+		for(Gesture gesture : frame.gestures()) {
+			switch (gesture.type()) {
+			case TYPE_CIRCLE:
+				switch (gesture.state()) {
+		        case STATE_START:
+		            //Handle starting gestures
+		            break;
+		        case STATE_UPDATE:
+		            //Handle continuing gestures
+		        	// Determine direction
+		        	CircleGesture circle = new CircleGesture(gesture);
+		        	boolean clockwise;
+		        	if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI/2) {
+		        	        clockwise = true;
+		        	}
+		        	else {
+		        	    clockwise = false;
+		        	}
+		        	System.out.println("Circle detected.");
+					contentPanel.rotate(clockwise);
+		            break;
+		        case STATE_STOP:
+		            //Handle ending gestures
+		            break;
+		        default:
+		            //Handle unrecognized states
+		            break;
+		    }
+			break;
+			default:
+				System.out.println(gesture.toString() + " detected");
+				break;
+			}
+		}
 	}
 
 	private void updateRightHand(Frame frame, Hand hand) {
@@ -85,11 +123,19 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 				if (hand.fingers().get(i).isExtended())
 					rightHandFingerCount += 1;
 			}
-
+			////////////////////////////////// Previous (palmposition) //////////////////////////////
+			/*
 			// Right hand finger coordinates
+
 			InteractionBox iBox = frame.interactionBox();
 			Vector normalizedPos = iBox.normalizePoint(hand
-					.stabilizedPalmPosition());
+				.stabilizedPalmPosition());
+			*/
+			////////////////////////////////// Now (fingertipposition) //////////////////////////////
+			InteractionBox iBox = frame.interactionBox();
+			Vector normalizedPos = iBox.normalizePoint(hand.fingers().frontmost()
+					.stabilizedTipPosition());
+
 			int rightHandXPos = (int) (normalizedPos.getX() * scrWidth) - 250;
 			int rightHandYPos = (int) (scrHeight - normalizedPos.getY()
 					* scrHeight) - 30;
@@ -128,12 +174,12 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 				contentPanel.setToolMode(DrawingPanel.ToolMode.MOVE);
 				break;
 			case 2: // ROTATE
-				contentPanel.setToolMode(DrawingPanel.ToolMode.ROTATERIGHT);
+				contentPanel.setToolMode(DrawingPanel.ToolMode.ROTATE);
 				break;
-			case 3: 
-				
+			case 3:
+
 				break;
-			case 4: 
+			case 4:
 				break;
 			case 5: // ENLARGE
 				contentPanel.setToolMode(DrawingPanel.ToolMode.ENLARGE);
@@ -141,7 +187,6 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 			default:
 				System.out.println("Hoeveel vingers heb je eigenlijk?");
 			}
-			currentRight = rightHandFingerCount;
 
 			// Update drawpanel
 			contentPanel.setLeapRightX(rightHandXPos);
@@ -162,10 +207,18 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 					leftHandFingerCount += 1;
 			}
 
+			////////////////////////////////// Previous (palmposition) //////////////////////////////
+			/*
 			// Left hand finger coordinates
+
 			InteractionBox iBox = frame.interactionBox();
 			Vector normalizedPos = iBox.normalizePoint(hand
-					.stabilizedPalmPosition());
+				.stabilizedPalmPosition());
+			*/
+			////////////////////////////////// Now (fingertipposition) //////////////////////////////
+			InteractionBox iBox = frame.interactionBox();
+			Vector normalizedPos = iBox.normalizePoint(hand.fingers().frontmost()
+					.stabilizedTipPosition());
 			int leftHandXPos = (int) (normalizedPos.getX() * scrWidth);
 			int leftHandYPos = (int) (scrHeight - normalizedPos.getY()
 					* scrHeight);
@@ -179,7 +232,7 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 			boolean leftHandClick = leftHandDistanceToScreen < clickThresholdLeft;
 			//boolean leftHandClick = leftHandDistanceToScreen < clickThresholdLeft
 				//	&& leftHandFingerCount > 0 && leftHandFingerCount <= 2;
-					
+
 			// Cursor Pressed
 			if (leftHandClick && !prevRightClick) {
 				contentPanel.cursorPressed(leftHandXPos, leftHandYPos);
@@ -206,12 +259,12 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 				contentPanel.setToolMode(DrawingPanel.ToolMode.MOVE);
 				break;
 			case 2: // ROTATE
-				contentPanel.setToolMode(DrawingPanel.ToolMode.ROTATELEFT);
+				contentPanel.setToolMode(DrawingPanel.ToolMode.ROTATE);
 				break;
-			case 3: 
-				
+			case 3:
+
 				break;
-			case 4: 
+			case 4:
 				break;
 			case 5: // ENLARGE
 				contentPanel.setToolMode(DrawingPanel.ToolMode.ENLARGE);
@@ -219,8 +272,7 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 			default:
 				System.out.println("Hoeveel vingers heb je eigenlijk?");
 			}
-			currentLeft = leftHandFingerCount;
-			
+
 			// Update drawpanel
 			contentPanel.setLeapLeftX(leftHandXPos);
 			contentPanel.setLeapLeftY(leftHandYPos);
@@ -229,7 +281,7 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapLeftFingers(leftHandFingerCount);
 		}
 	}
-	
+
 	public void setContentPanel(DrawingPanel contentPanel) {
 		this.contentPanel = contentPanel;
 	}

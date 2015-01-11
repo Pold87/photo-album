@@ -1,5 +1,6 @@
 package main.java.userInterface;
 
+import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
 
 import javax.swing.*;
@@ -37,15 +38,16 @@ public class Toolbar extends JToolBar {
             
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    // Extract String from speechResponse
-
-                    // TODO URL + getResource
+                    // Url for recording speech input
                     URL url = getClass().getResource("/recording.wav");
-                    System.out.println("URL is " + url);
+
+                    // Record wav with external program
+                    Record.recordExtern(new File(url.toURI()));
                     Wit wit = new Wit(new File(url.toURI()), "wav");
-                    wit.getIntent();
+
+                    // Send recognized
                     listener.recognizedText(wit.getWitRawJSONString());
-                    listener.recognizedWitResponse(wit.getWitResponse());
+                    listener.recognizedWitResponse(wit);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

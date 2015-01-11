@@ -6,11 +6,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import main.java.speechrecognition.WitResponse;
+import main.java.speechrecognition.Wit;
+
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 
 public class Controller implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 	private ContentPanel contentPanel;
@@ -169,24 +173,37 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     // TODO: definitely improve theses functions, they are just dirty hacks
     // Hmm, I might have moved too much functionality to the controller now.. Not sure
 	
-    public void recognizedWitResponse(WitResponse response) {
-        if (response.getIntent().contains("select")) {
-            ArrayList<Integer> entity = response.getEntities();
-            for (MyImage i : contentPanel.getImageList()) {
-                if (entity.contains(i.getNum())) {
-                    i.setSelected(!i.isSelected());
-                }
-            }
-        }
-        if (response.getIntent().contains("background")) {
-            ArrayList<Integer> entity = response.getEntities();
-            if (entity != null) {
-                contentPanel.setBackground(colors.get(entity.get(0)));
-            }
+    public void recognizedWitResponse(Wit response) {
+		String intent = response.getIntent();
+		System.out.println(response.getWitRawJSONString());
+		switch (intent) {
+			case "select":
+				ArrayList<Integer> pictureNumbers = response.getPictureNumbers();
+				for (MyImage i : contentPanel.getImageList()) {
+					if (pictureNumbers.contains(i.getNum())) {
+						i.setSelected(!i.isSelected());
+					}
+				}
+				break;
+			case "background":
+				Color color = response.getBackgroundColor();
+				if (color != null) {
+					contentPanel.setBackground(color);
+				} else {
+					System.out.println("Unknown color: " + color.toString());
+				}
+				break;
+			default:
+				System.out.println("The recognized intent is unknown: " + intent);
+				System.out.println("But I'm also in default");
+				break;
+		}
 
-            }
-        basicDesign.repaint();
-    }
+		// TODO: See if this is really necessary
+		basicDesign.repaint();
+
+		}
+
 
     
     public void toolbarButtonClicked(String action) {

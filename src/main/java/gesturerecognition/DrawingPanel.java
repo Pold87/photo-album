@@ -79,7 +79,7 @@ public class DrawingPanel extends JPanel {
 
 	// Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, ROTATERIGHT, ROTATELEFT, CUT
+		MOVE, ENLARGE, REDUCE, ROTATE, CUT
 	};
 
 	ToolMode toolModeIndex = ToolMode.MOVE;
@@ -237,13 +237,10 @@ public class DrawingPanel extends JPanel {
 			g2d.drawString("E", leapRightX - 6, leapRightY + 6);
 			break;
 		case REDUCE:
-			g2d.drawString("R", leapRightX - 6, leapRightY + 6);
+			g2d.drawString("Re", leapRightX - 6, leapRightY + 6);
 			break;
-		case ROTATERIGHT:
-			g2d.drawString("RR", leapRightX - 6, leapRightY + 6);
-			break;
-		case ROTATELEFT:
-			g2d.drawString("RL", leapRightX - 6, leapRightY + 6);
+		case ROTATE:
+			g2d.drawString("Ro", leapRightX - 6, leapRightY + 6);
 			break;
 		case CUT:
 			g2d.drawString("C", leapRightX - 6, leapRightY + 6);
@@ -280,13 +277,10 @@ public class DrawingPanel extends JPanel {
 			g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
 			break;
 		case REDUCE:
-			g2d.drawString("R", leapLeftX - 6, leapLeftY + 6);
+			g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
 			break;
-		case ROTATERIGHT:
-			g2d.drawString("RR", leapLeftX - 6, leapLeftY + 6);
-			break;
-		case ROTATELEFT:
-			g2d.drawString("RL", leapLeftX - 6, leapLeftY + 6);
+		case ROTATE:
+			g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
 			break;
 		case CUT:
 			g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
@@ -346,6 +340,23 @@ public class DrawingPanel extends JPanel {
 		repaint();
 	}
 
+	public void rotate(boolean clockwise) {
+		switch (toolModeIndex) {
+		case ROTATE:
+			if(clockwise) {
+				activeShape.increaseRotation(0.30);
+				repaint();
+			}
+			else {
+				activeShape.increaseRotation(-0.30);
+				repaint();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
 	/* MOUSE LISTENER */
 
 	public void cursorPressed(int XPos, int YPos) {
@@ -367,17 +378,8 @@ public class DrawingPanel extends JPanel {
 		case MOVE:
 		case ENLARGE:
 		case REDUCE:
-		case CUT:
-			repaint();
-			break;
-		case ROTATERIGHT:
-			// Rotation information
-			activeShape.increaseRotation(30);
-			repaint();
-			break;
-		case ROTATELEFT:
-			// Rotation information
-			activeShape.increaseRotation(-30);
+		case CUT:		
+		case ROTATE:
 			repaint();
 			break;
 		default:
@@ -391,8 +393,7 @@ public class DrawingPanel extends JPanel {
 		case MOVE:
 		case ENLARGE:
 		case REDUCE:
-		case ROTATERIGHT:
-		case ROTATELEFT:
+		case ROTATE:
 		case CUT:
 			if (XPos < 0 || XPos > this.getWidth() || YPos < 0
 					|| YPos > this.getHeight())
@@ -460,10 +461,7 @@ public class DrawingPanel extends JPanel {
 				activeShape.setX1((int) (activeShape.getX1() + deltaX));
 				activeShape.setX2((int) (activeShape.getX2() + deltaX));
 				break;
-			case ROTATERIGHT:
-				// do nothing
-				break;
-			case ROTATELEFT:
+			case ROTATE:
 				// do nothing
 				break;
 			default:
