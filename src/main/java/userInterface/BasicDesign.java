@@ -1,15 +1,22 @@
 package main.java.userInterface;
 
 
-import javax.swing.*;
+import main.java.gesturerecognition.Imagedata;
+import main.java.gesturerecognition.LeapListener;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BasicDesign extends JFrame implements ComponentListener {
 
@@ -19,11 +26,329 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
+
     private Controller controller = new Controller();
     private MyImage[] library;
     private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>();
 
-    Map<Integer, Color> colors = new HashMap<Integer, Color>();
+    // Members
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private int scr_width = screenSize.width;
+    private int scr_height = screenSize.height;
+    // TODO: See if there is a conflict between Controller classes
+    public com.leapmotion.leap.Controller leapController = new com.leapmotion.leap.Controller();
+    public VolkerLeapListener leapListener = new VolkerLeapListener();
+
+    /**********************************************************************************************/
+    // Copied from gesturerecognition (DrawingPanel)
+
+    // Which object is selected
+    private Imagedata activeShape;
+
+    // Resize mode
+    private double cursorX;
+    private double cursorY;
+
+    // Leap cursor right
+    private int leapRightX = 9999, leapRightY = 9999;
+    private float leapRightScreenDist = 1.0f;
+    private boolean leapRightClick = false;
+    private int leapRightFingers = 0;
+
+    // Leap cursor left
+    private int leapLeftX = 9999, leapLeftY = 9999;
+    private float leapLeftScreenDist = 1.0f;
+    private boolean leapLeftClick = false;
+    private int leapLeftFingers = 0;
+
+    // Transform for rotation
+    AffineTransformOp op;
+
+    // Shape Mode
+    public enum ShapeMode {
+        IMAGE
+    };
+
+    private ShapeMode shapeModeIndex = ShapeMode.IMAGE;
+
+
+    public ShapeMode getShapeModeIndex() {
+        return shapeModeIndex;
+    }
+
+    public ToolMode getToolModeIndex() {
+        return toolModeIndex;
+    }
+
+    @SuppressWarnings("unused")
+    private ShapeMode randomShape() {
+        int index = new Random().nextInt(ShapeMode.values().length);
+        return ShapeMode.values()[index];
+    }
+
+    // Tool Mode
+    public enum ToolMode {
+        MOVE, ENLARGE, REDUCE, ROTATE, CUT
+    };
+
+    ToolMode toolModeIndex = ToolMode.MOVE;
+
+    // Screen width & height
+    private int screenWidth, screenHeight;
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+
+
+    public void setLeapRightFingers(int leapFingers) {
+        this.leapRightFingers = leapFingers;
+        repaint();
+    }
+
+    public void setLeapRightClick(boolean leapClick) {
+        this.leapRightClick = leapClick;
+        repaint();
+    }
+
+    public void setLeapRightX(int leapX) {
+        this.leapRightX = leapX;
+        repaint();
+    }
+
+    public void setLeapRightY(int leapY) {
+        this.leapRightY = leapY;
+        repaint();
+    }
+
+    public void setLeapRightScreenDist(float leapScreenDist) {
+        this.leapRightScreenDist = leapScreenDist;
+        repaint();
+    }
+
+    public void setLeapLeftFingers(int leapFingers) {
+        this.leapLeftFingers = leapFingers;
+        repaint();
+    }
+
+    public void setLeapLeftClick(boolean leapClick) {
+        this.leapLeftClick = leapClick;
+        repaint();
+    }
+
+    public void setLeapLeftX(int leapX) {
+        this.leapLeftX = leapX;
+        repaint();
+    }
+
+    public void setLeapLeftY(int leapY) {
+        this.leapLeftY = leapY;
+        repaint();
+    }
+
+    public void setLeapLeftScreenDist(float leapScreenDist) {
+        this.leapLeftScreenDist = leapScreenDist;
+        repaint();
+    }
+
+    public void rotate(boolean clockwise) {
+        switch (toolModeIndex) {
+            case ROTATE:
+                if(clockwise) {
+                    activeShape.increaseRotation(0.30);
+                    repaint();
+                }
+                else {
+                    activeShape.increaseRotation(-0.30);
+                    repaint();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /* MOUSE LISTENER */
+
+    public void cursorPressed(int XPos, int YPos) {
+        this.requestFocusInWindow();
+
+        // Update mouse Coords
+        cursorY = YPos;
+        cursorX = XPos;
+
+        switch (toolModeIndex) {
+            case MOVE:
+            case ENLARGE:
+            case REDUCE:
+            case CUT:
+            case ROTATE:
+                repaint();
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    public void cursorReleased(int XPos, int YPos) {
+        switch (toolModeIndex) {
+            case MOVE:
+            case ENLARGE:
+            case REDUCE:
+            case ROTATE:
+            case CUT:
+                break;
+            default:
+                System.out.println("Tool not found: " + toolModeIndex);
+                break;
+        }
+    }
+
+    public void cursorDragged(int XPos, int YPos) {
+        double deltaY, deltaX;
+        double normalizerX, normalizerY;
+        if(!(activeShape==null)) {
+            switch (toolModeIndex) {
+                case ENLARGE:
+                    System.out.println("Enlarge");
+                    // Mouse movement since previous calculation
+                    deltaY = YPos - cursorY;
+                    deltaX = XPos - cursorX;
+
+                    normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
+                    normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
+
+                    // Moving up increases height, down decreases height
+                    activeShape.setY1((int) (activeShape.getY1() + normalizerY));
+                    activeShape.setY2((int) (activeShape.getY2() - 2*normalizerY));
+
+                    // Moving right increases width
+                    activeShape.setX1((int) (activeShape.getX1() - normalizerX));
+                    activeShape.setX2((int) (activeShape.getX2() + 2*normalizerX));
+                    break;
+                case REDUCE:
+                    System.out.println("Reduce");
+                    // Mouse movement since previous calculation
+                    deltaY = YPos - cursorY;
+                    deltaX = XPos - cursorX;
+
+                    normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
+                    normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
+
+                    if(activeShape.getHeight() > 10) {
+                        // Moving up increases height, down decreases height
+                        activeShape.setY1((int) (activeShape.getY1() - 2*normalizerY));
+                        activeShape.setY2((int) (activeShape.getY2() + 2*normalizerY));
+                    }
+                    if(activeShape.getWidth() > 10) {
+                        // Moving right increases width
+                        activeShape.setX1((int) (activeShape.getX1() + 2*normalizerX));
+                        activeShape.setX2((int) (activeShape.getX2() - 2*normalizerX));
+                    }
+                    break;
+                case MOVE:
+                    System.out.println("Move");
+                    // Mouse-movement since previous calculation
+                    deltaY = YPos - cursorY;
+                    deltaX = XPos - cursorX;
+
+                    // Moving up increases height, down decreases height
+                    activeShape.setY1((int) (activeShape.getY1() + deltaY));
+                    activeShape.setY2((int) (activeShape.getY2() + deltaY));
+
+                    // Moving right increases width
+                    activeShape.setX1((int) (activeShape.getX1() + deltaX));
+                    activeShape.setX2((int) (activeShape.getX2() + deltaX));
+                    break;
+                case ROTATE:
+                    // do nothing
+                    break;
+                default:
+                    System.out.println("No Tool selected");
+                    break;
+            }
+
+            // Update mouse Coords
+            cursorY = YPos;
+            cursorX = XPos;
+            repaint();
+        }
+    }
+
+    public void cursorMoved(int XPos, int YPos) {
+        final int x = XPos;
+        final int y = YPos;
+        // Only display a hand if the cursor is hovering over the items
+        boolean foundobject = false;
+
+        if (foundobject && toolModeIndex != ToolMode.MOVE)
+            this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        else
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    public void keyTyped(char key) {
+        System.out.println("Key Typed: " + key);
+        switch (key) {
+            case '1':
+                int randomX = (int) (Math.random() * (this.screenWidth - 200));
+                int randomY = (int) (Math.random() * (this.screenHeight - 200));
+                Imagedata imagedata = new Imagedata(randomX, randomY, 200 + randomX,
+                        200 + randomY);
+                break;
+            case '8':
+
+                break;
+            case '9':
+                addLouis();
+                break;
+            case '0':
+                this.setToolMode(ToolMode.MOVE);
+                break;
+            case '.':
+                this.setToolMode(ToolMode.ENLARGE);
+                break;
+            case '\n':
+                setShapeMode(ShapeMode.IMAGE);
+                setToolMode(ToolMode.MOVE);
+                break;
+            default:
+                System.out.println("Key not assigned");
+                break;
+        }
+
+    }
+
+    private void addLouis() {
+        int randomX = (int) (Math.random() * (this.screenWidth - 200));
+        int randomY = (int) (Math.random() * (this.screenHeight - 200));
+        Imagedata imagedata = new Imagedata(randomX, randomY, 200 + randomX,
+                200 + randomY);
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File("res/louis.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        imagedata.setImage(image);
+    }
+
+
+    public void setShapeMode(ShapeMode shapeMode) {
+        this.shapeModeIndex = shapeMode;
+    }
+
+    public void setToolMode(ToolMode toolMode) {
+        this.toolModeIndex = toolMode;
+    }
+
+    /**********************************************************************************************/
 
 
     public BasicDesign(int hi, int wi, String path) throws Exception {
@@ -40,6 +365,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
             // If Nimbus is not available, you can set the GUI to another look and feel.
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
+
 
         //this.setMaximumSize(new Dimension(hi, wi));
         this.setPreferredSize(new Dimension(hi, wi));
@@ -77,17 +403,37 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
         debugPanel.setPreferredSize(new Dimension(800, 200));
 
-        addColors();
-
         add(toolbar, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
         add(debugPanel, BorderLayout.SOUTH);
 
         toolbar.setToolBarListener(controller);
 
+
+
+
+        /**************************/
+        // Leap STUFF
+        //leapListener.setSystemPanel(systemPanel);
+        leapListener.setContentPanel(this.contentPanel);
+        leapListener.setScrHeight(scr_height);
+        leapListener.setScrWidth(scr_width);
+        leapController.addListener(leapListener);
+        /**************************/
+
+
+
+
+
+
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
+
+
+
+
+
     }
 
 
@@ -163,13 +509,11 @@ public class BasicDesign extends JFrame implements ComponentListener {
         return menuBar;
     }
 
-    private void addColors() {
-        colors.put(0, Color.BLUE);
-        colors.put(1, Color.RED);
-        colors.put(1, Color.GREEN);
-    }
-    
     public DebugPanel getDebugPanel(){
     	return debugPanel;
+    }
+
+    public ContentPanel getContentPanel() {
+        return this.contentPanel;
     }
 }

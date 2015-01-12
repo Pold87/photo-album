@@ -139,4 +139,14 @@ public class ContentPanel extends JPanel {
     	selectedImage.incrementRotation(degrees);
     	repaint();
     }
+
+	public void updateMe(int x, int y) {
+
+		System.out.println("X is: " + x + ", Y is: " + y);
+		MyImage image = this.getSelectedPicture();
+		image.setX(x);
+		image.setY(y);
+		repaint();
+
+	}
 }
