@@ -6,22 +6,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import main.java.speechrecognition.Wit;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 
 public class Controller implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
-    private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
+    //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
 	private int oldMouseX = -1, oldMouseY = -1;
-	private String currentAction = "";
+	private String currentAction = "select";
+    private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
+    private MyImage draggingPicture = null;
 	
     
 	public Controller(){
@@ -35,7 +31,6 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     //START CommandInterface
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
-
 	}
 
 	public void nextPage() {
@@ -66,6 +61,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	public void addPictureFromLibrary(int nr) {
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
+        performedActions.add(new ActionAddPic(image, this));
 	}
 
 	public void selectPicture(int x, int y) {
@@ -73,31 +69,44 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	}
 
 	public void deletePicture(int nr) {
-		contentPanel.deletePictureFromCurrentPage(nr);		
+		MyImage image = contentPanel.deletePictureFromCurrentPage(nr);
+		performedActions.add(new ActionDelete(image, this));
+		basicDesign.getToolbar().setEnabledUndoButton(true);
+		contentPanel.repaint();
 	}
 	
 	public void deleteSelectedPicture(){
-		contentPanel.deleteSelectedPicture();
+		MyImage image = contentPanel.deleteSelectedPicture();
+		performedActions.add(new ActionDelete(image, this));
+		basicDesign.getToolbar().setEnabledUndoButton(true);
+		contentPanel.repaint();
 	}
 
 	
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
+		int oldX = image.getX(), oldY = image.getY();
 		image.setX(x);
 		image.setY(y);
+		
+		performedActions.add(new ActionMove(image, oldX, oldY, x, y, this));
+		basicDesign.getToolbar().setEnabledUndoButton(true);
 		contentPanel.repaint();
 	}
 
 	//Also needs edit when we got multiple pages
 	public void setBackground(Color color) {
+		Color oldColor = contentPanel.getBackground();
 		contentPanel.setBackground(color);
-		
+		performedActions.add(new ActionBackground(oldColor, color, this));
+		basicDesign.getToolbar().setEnabledUndoButton(true);
 	}
 
 	public void rotate(int degrees) {
 		contentPanel.rotate(degrees);
-		
+		performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
+		basicDesign.getToolbar().setEnabledUndoButton(true);
 	}
 	//END CommandInterface
 
@@ -118,10 +127,10 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
             Integer diffY = mouseY - oldMouseY;
 
             // Update position for every image in the image list.
-            MyImage i = contentPanel.getSelectedPicture();
-                if(i != null){
-                    i.setX(i.getX() + diffX);
-                    i.setY(i.getY() + diffY);
+            draggingPicture = contentPanel.getSelectedPicture();
+                if(draggingPicture != null){
+                	draggingPicture.setX(draggingPicture.getX() + diffX);
+                	draggingPicture.setY(draggingPicture.getY() + diffY);
                 }
 
             // Set old mouse position to current position.
@@ -142,7 +151,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 		if(currentAction.equals("select")|| currentAction.equals("move")){ //Why do we have a separate move button anyway?
 			contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
 		}else if(currentAction.equals("rotate")){
-			contentPanel.rotate();
+			rotate(45);
 		}
 
 	}
@@ -159,9 +168,13 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 		// Not using this.	
 	}
 
-	public void mouseReleased(MouseEvent arg0) {
-    	oldMouseX = -1;
-    	oldMouseY = -1;
+	public void mouseReleased(MouseEvent e) {
+		if(draggingPicture != null){
+			performedActions.add(new ActionMove(draggingPicture, oldMouseX, oldMouseY, e.getX(), e.getY(), this));
+			draggingPicture = null;
+			oldMouseX = -1;
+			oldMouseY = -1;
+		}
 	}
 	//END MouseListeners
 	
@@ -206,13 +219,24 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 
 
     
-    public void toolbarButtonClicked(String action) {
-    	if(action == "undo"){
-    		// TODO implement
-    	}else if(action == "redo"){
-    		//TODO implement
+    public void toolbarButtonClicked(String button) {
+    	if(button == "undo"){
+    		Action action = performedActions.remove(performedActions.size()-1);
+    		action.undo();
+    		undoneActions.add(action);
+    		basicDesign.getToolbar().setEnabledRedoButton(true);
+    		if(performedActions.isEmpty()){
+    			basicDesign.getToolbar().setEnabledUndoButton(false);
+    		}
+    	}else if(button == "redo"){
+    		Action action = undoneActions.remove(undoneActions.size()-1);
+    		action.redo();
+    		basicDesign.getToolbar().setEnabledUndoButton(true);
+    		if(undoneActions.isEmpty()){
+    			basicDesign.getToolbar().setEnabledRedoButton(false);
+    		}
     	}else{
-    		currentAction = action;
+    		currentAction = button;
     	}
     }
     //END ToolbarListener
@@ -224,12 +248,29 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 		int picNr = Integer.parseInt(e.getActionCommand());
 		MyImage image = basicDesign.getLibrary()[picNr];
         contentPanel.addPictureToCurrentPage(image);
+        performedActions.add(new ActionAddPic(image, this));
+        basicDesign.getToolbar().setEnabledUndoButton(true);
+        contentPanel.repaint();
 	}
 	//END ActionListener
 
 	public void selectPicture(MyImage image){
 		contentPanel.selectPicture(image);
+		contentPanel.repaint();
 	}
 	
+	public void addPictureToCurrentPage(MyImage image){
+		contentPanel.addPictureToCurrentPage(image);
+        performedActions.add(new ActionAddPic(image, this));
+        basicDesign.getToolbar().setEnabledUndoButton(true);
+        contentPanel.repaint();
+	}
+	
+	/*
+	 * Kinda nasty hack. I use this to make sure undone actions don't go back in the performedActions list.
+	 */
+	public void removeLastActionFromList(){
+		performedActions.remove(performedActions.size()-1);
+	}
 	
 }

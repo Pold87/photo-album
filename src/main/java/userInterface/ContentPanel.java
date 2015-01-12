@@ -59,7 +59,9 @@ public class ContentPanel extends JPanel {
     }
     
     public void selectPicture(MyImage image){
-    	selectedImage.setSelected(false);
+    	if(selectedImage != null){
+    		selectedImage.setSelected(false);
+    	}
     	selectedImage = image;
     	image.setSelected(true);
     	repaint();
@@ -68,6 +70,9 @@ public class ContentPanel extends JPanel {
     }
     
     public void selectPicture(int nr){
+    	if(selectedImage != null){
+    		selectedImage.setSelected(false);
+    	}
     	selectedImage = imageList.get(nr);
     	selectedImage.setSelected(true);
     	imageList.remove(selectedImage);
@@ -117,17 +122,20 @@ public class ContentPanel extends JPanel {
     
     /**
      * Also needs an edit when we have multiple pages.
-     * @param nr 
+     * @param nr
+     * @return The deleted Image, can be useful. 
      */
-    public void deletePictureFromCurrentPage(int nr){
+    public MyImage deletePictureFromCurrentPage(int nr){
     	MyImage image = imageList.remove(nr);
     	image.setSelected(false);
     	repaint();
+    	return image;
     }
-    public void deleteSelectedPicture(){
+    public MyImage deleteSelectedPicture(){
     	selectedImage.setSelected(false);
     	imageList.remove(selectedImage);
     	repaint();
+    	return selectedImage;
     }
     
     public void rotate(){

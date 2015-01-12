@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +20,6 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private Controller controller = new Controller();
     private MyImage[] library;
-    private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>();
 
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
@@ -172,4 +170,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
     public DebugPanel getDebugPanel(){
     	return debugPanel;
     }
+    
+    public Toolbar getToolbar(){
+    	return toolbar;
+    }
+    
 }

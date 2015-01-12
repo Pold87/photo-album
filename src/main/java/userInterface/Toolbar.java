@@ -4,6 +4,7 @@ import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -23,7 +24,8 @@ public class Toolbar extends JToolBar {
     private JButton redoButton;
     private ToolBarListener listener;
 
-    public Toolbar() {
+    @SuppressWarnings("serial")
+	public Toolbar() {
 
         // Set toolbar layout.
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -104,6 +106,9 @@ public class Toolbar extends JToolBar {
         add(rotateButton);
         add(undoButton);
         add(redoButton);
+        
+        undoButton.setEnabled(false);
+        redoButton.setEnabled(false);
 
         // Use non-draggable toolbar.
         setFloatable(false);
@@ -120,5 +125,13 @@ public class Toolbar extends JToolBar {
 
     public void setToolBarListener(ToolBarListener listener) {
         this.listener = listener;
+    }
+    
+    public void setEnabledUndoButton(boolean b){
+    	undoButton.setEnabled(b);
+    }
+    
+    public void setEnabledRedoButton(boolean b){
+    	redoButton.setEnabled(b);
     }
 }
