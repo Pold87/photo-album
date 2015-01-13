@@ -14,7 +14,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
-	private int oldMouseX = -1, oldMouseY = -1;
+	private int previousMouseX = -1, previousMouseY = -1, oldXPos, oldYPos;
 	private String currentAction = "select";
     private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
     private MyImage draggingPicture = null;
@@ -113,29 +113,31 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
+		draggingPicture = contentPanel.getSelectedPicture();
+		
+		if(draggingPicture != null)
         // Set mouse position, if there is no old Mouse position.
-        if (oldMouseX == -1) {
-            oldMouseX = mouseEvent.getX();
-            oldMouseY = mouseEvent.getY();
+        if (previousMouseX == -1) {
+            previousMouseX = mouseEvent.getX();
+            previousMouseY = mouseEvent.getY();
+            oldXPos = draggingPicture.getX();
+            oldYPos = draggingPicture.getY();
         } else {
             // Get current mouse position
             int mouseX = mouseEvent.getX();
             int mouseY = mouseEvent.getY();
 
             // Get difference between old mouse position and current position
-            Integer diffX = mouseX - oldMouseX;
-            Integer diffY = mouseY - oldMouseY;
+            Integer diffX = mouseX - previousMouseX;
+            Integer diffY = mouseY - previousMouseY;
 
             // Update position for every image in the image list.
-            draggingPicture = contentPanel.getSelectedPicture();
-                if(draggingPicture != null){
-                	draggingPicture.setX(draggingPicture.getX() + diffX);
-                	draggingPicture.setY(draggingPicture.getY() + diffY);
-                }
+            draggingPicture.setX(draggingPicture.getX() + diffX);
+            draggingPicture.setY(draggingPicture.getY() + diffY);
 
             // Set old mouse position to current position.
-            oldMouseX = mouseX;
-            oldMouseY = mouseY;
+            previousMouseX = mouseX;
+            previousMouseY = mouseY;
         }
 
         // Repaint everything in order to see changes.
@@ -144,7 +146,6 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
-		
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
@@ -170,10 +171,10 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 
 	public void mouseReleased(MouseEvent e) {
 		if(draggingPicture != null){
-			performedActions.add(new ActionMove(draggingPicture, oldMouseX, oldMouseY, e.getX(), e.getY(), this));
+			performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
 			draggingPicture = null;
-			oldMouseX = -1;
-			oldMouseY = -1;
+			previousMouseX = -1;
+			previousMouseY = -1;
 		}
 	}
 	//END MouseListeners

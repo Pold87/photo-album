@@ -127,11 +127,13 @@ public class ContentPanel extends JPanel {
      */
     public MyImage deletePictureFromCurrentPage(int nr){
     	MyImage image = imageList.remove(nr);
+    	image.setActive(false);
     	image.setSelected(false);
     	repaint();
     	return image;
     }
     public MyImage deleteSelectedPicture(){
+    	selectedImage.setActive(false);
     	selectedImage.setSelected(false);
     	imageList.remove(selectedImage);
     	repaint();
