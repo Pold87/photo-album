@@ -146,27 +146,48 @@ public class Wit {
         }
     }
 
+
+    /**
+     * Shift extracted numbers by 10. See if it's better to use 10 as a parameter,
+     * so that other shifts can be used as well.
+     * @return
+     */
+
+    public ArrayList<Integer> extractNumbersShifted() {
+
+        ArrayList<Integer> numbers = this.extractNumbers();
+        ArrayList<Integer> shiftedNumbers = new ArrayList<>();
+
+        for (Integer i : numbers) {
+            shiftedNumbers.add(i - 10);
+        }
+
+        return shiftedNumbers;
+
+    }
+
     /**
      * Extract the Integer values in a JSON object
      * @return
      */
-    public ArrayList<Integer> getPictureNumbers() {
+    public ArrayList<Integer> extractNumbers() {
 
         ArrayList<Integer> imageNumbers = new ArrayList<>();
 
-        JsonObject entities = this.getEntities();
-        JsonArray jsonArray = entities.getJsonArray("number");
+        if (this.getEntities().getJsonArray("number") != null) {
 
-        for (int i = 0; i < jsonArray.size(); i++) {
+            JsonObject entities = this.getEntities();
+            JsonArray jsonArray = entities.getJsonArray("number");
 
-            JsonObject obj = jsonArray.getJsonObject(i);
-            int value = obj.getInt("value");
-            imageNumbers.add(value);
+            for (int i = 0; i < jsonArray.size(); i++) {
 
+                JsonObject obj = jsonArray.getJsonObject(i);
+                int value = obj.getInt("value");
+                imageNumbers.add(value);
+
+            }
         }
-
-        return imageNumbers;
-
+            return imageNumbers;
     }
 
     /**

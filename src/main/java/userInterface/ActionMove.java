@@ -4,26 +4,26 @@ public class ActionMove implements Action {
 
 	private MyImage target;
 	private int oldX, oldY, newX, newY;
-	private Controller controller;
+	private OurController ourController;
 	
-	public ActionMove(MyImage target, int oldX, int oldY, int newX, int newY, Controller controller) {
+	public ActionMove(MyImage target, int oldX, int oldY, int newX, int newY, OurController ourController) {
 		this.target = target;
 		this.oldX = oldX;
 		this.oldY = oldY;
 		this.newX = newX;
 		this.newY = newY;
-		this.controller = controller;
+		this.ourController = ourController;
 	}
 
 	public void redo() {
-		controller.selectPicture(target);
-		controller.movePicture(newX, newY);
+		ourController.selectPicture(target);
+		ourController.movePicture(newX, newY);
 	}
 
 	public void undo() {
-		controller.selectPicture(target);
-		controller.movePicture(oldX, oldY);
-		controller.removeLastActionFromList();
+		ourController.selectPicture(target);
+		ourController.movePicture(oldX, oldY);
+		ourController.removeLastActionFromList();
 	}
 
 }

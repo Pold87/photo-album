@@ -2,24 +2,24 @@ package main.java.userInterface;
 
 public class ActionDelete implements Action {
 	private MyImage image;
-	private Controller controller;
+	private OurController ourController;
 	//private Page page; //Implement when page functionality is added.
 	
-	public ActionDelete(MyImage image, Controller controller) {
+	public ActionDelete(MyImage image, OurController ourController) {
 		this.image = image;
-		this.controller = controller;
+		this.ourController = ourController;
 	}
 
 	@Override
 	public void redo() {
-		controller.selectPicture(image);
-		controller.deleteSelectedPicture();
+		ourController.selectPicture(image);
+		ourController.deleteSelectedPicture();
 	}
 
 	@Override
 	public void undo() {
-		controller.addPictureToCurrentPage(image);
-		controller.removeLastActionFromList();
+		ourController.addPictureToCurrentPage(image);
+		ourController.removeLastActionFromList();
 	}
 
 }

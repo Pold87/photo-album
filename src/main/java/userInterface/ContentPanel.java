@@ -17,13 +17,13 @@ public class ContentPanel extends JPanel {
 	private ArrayList<MyImage> imageList;
 	private MyImage selectedImage;
 
-    public ContentPanel(Controller controller) throws IOException {
+    public ContentPanel(OurController ourController) throws IOException {
     	setPreferredSize(new Dimension(600, 600));
         imageList = new ArrayList<MyImage>();
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(Color.white);
-        addMouseListener(controller);
-        addMouseMotionListener(controller);
+        addMouseListener(ourController);
+        addMouseMotionListener(ourController);
     }
 
     public ArrayList<MyImage> getImageList() { 
@@ -64,19 +64,25 @@ public class ContentPanel extends JPanel {
     	}
     	selectedImage = image;
     	image.setSelected(true);
-    	repaint();
     	imageList.remove(selectedImage);
 		imageList.add(selectedImage);
+		repaint();
     }
     
     public void selectPicture(int nr){
     	if(selectedImage != null){
     		selectedImage.setSelected(false);
     	}
-    	selectedImage = imageList.get(nr);
-    	selectedImage.setSelected(true);
-    	imageList.remove(selectedImage);
-		imageList.add(selectedImage);	
+
+		for (MyImage i : this.imageList) {
+
+			if (i.getNum() == nr) {
+				i.setSelected(true);
+				imageList.remove(i);
+				imageList.add(i);
+				this.selectedImage = i;
+			}
+		}
 		repaint();
     }
 

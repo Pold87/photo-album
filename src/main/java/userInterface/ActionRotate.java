@@ -3,26 +3,26 @@ package main.java.userInterface;
 public class ActionRotate implements Action {
 	private MyImage image;
 	private int degrees;
-	private Controller controller;
+	private OurController ourController;
 	
 	
-	public ActionRotate(MyImage image, int degrees, Controller controller) {
+	public ActionRotate(MyImage image, int degrees, OurController ourController) {
 		this.image = image;
 		this.degrees = degrees;
-		this.controller = controller;
+		this.ourController = ourController;
 	}
 
 	@Override
 	public void redo() {
-		controller.selectPicture(image);
-		controller.rotate(degrees);
+		ourController.selectPicture(image);
+		ourController.rotate(degrees);
 	}
 
 	@Override
 	public void undo() {
-		controller.selectPicture(image);
-		controller.rotate(-degrees);
-		controller.removeLastActionFromList();
+		ourController.selectPicture(image);
+		ourController.rotate(-degrees);
+		ourController.removeLastActionFromList();
 	}
 
 }

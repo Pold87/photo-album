@@ -10,6 +10,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.leapmotion.leap.Controller;
+import main.java.gesturerecognition.VolkerLeapListener;
+
 public class BasicDesign extends JFrame implements ComponentListener {
 
 	private static final long serialVersionUID = 1L;
@@ -18,8 +21,16 @@ public class BasicDesign extends JFrame implements ComponentListener {
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
-    private Controller controller = new Controller();
     private MyImage[] library;
+    public OurController ourController;
+
+    // Leap stuff
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private int scr_width = screenSize.width;
+    private int scr_height = screenSize.height;
+    // TODO: See if there is a conflict between Controller classes
+    public Controller leapController = new Controller();
+    public VolkerLeapListener leapListener = new VolkerLeapListener();
 
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
@@ -53,16 +64,18 @@ public class BasicDesign extends JFrame implements ComponentListener {
                 System.out.println(imageFiles[i].getName());
             }
         }
-        
+
+        this.ourController = new OurController();
+
         this.toolbar = new Toolbar();
         int preferredThumbSize = 100;
-        PhotoBar photoBar = new PhotoBar(images, controller);
+        PhotoBar photoBar = new PhotoBar(images, ourController);
         this.tabbedPane = new TabbedPane(photoBar);
         tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
         library = photoBar.loadImages(path, preferredThumbSize);
 
-        this.contentPanel = new ContentPanel(controller);
-        controller.initialize(contentPanel, this);
+        this.contentPanel = new ContentPanel(ourController);
+        ourController.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
         
@@ -80,8 +93,19 @@ public class BasicDesign extends JFrame implements ComponentListener {
         add(toolbar, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
         add(debugPanel, BorderLayout.SOUTH);
+        toolbar.setToolBarListener(ourController);
 
-        toolbar.setToolBarListener(controller);
+
+        /**************************/
+        // Leap STUFF
+        //leapListener.setSystemPanel(systemPanel);
+        leapListener.setScrHeight(scr_height);
+        leapListener.setScrWidth(scr_width);
+        leapListener.setOurController(this.ourController);
+        leapController.addListener(leapListener);
+//        leapController.addListener(leapListener); // not necessary if our controller can do the stuff
+        /**************************/
+
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

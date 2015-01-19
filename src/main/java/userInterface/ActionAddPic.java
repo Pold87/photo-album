@@ -2,24 +2,24 @@ package main.java.userInterface;
 
 public class ActionAddPic implements Action {
 	private MyImage picture;
-	private Controller controller;
+	private OurController ourController;
 	//private Page page; //Add when page functionality is available.
 	
-	public ActionAddPic(MyImage picture, Controller controller) {
+	public ActionAddPic(MyImage picture, OurController ourController) {
 		this.picture = picture;
-		this.controller = controller;
+		this.ourController = ourController;
 	}
 	
 	@Override
 	public void redo() {
-		controller.addPictureToCurrentPage(picture);
+		ourController.addPictureToCurrentPage(picture);
 	}
 
 	@Override
 	public void undo() {
-		controller.selectPicture(picture);
-		controller.deleteSelectedPicture();
-		controller.removeLastActionFromList();
+		ourController.selectPicture(picture);
+		ourController.deleteSelectedPicture();
+		ourController.removeLastActionFromList();
 	}
 
 }

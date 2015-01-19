@@ -5,22 +5,22 @@ import java.awt.Color;
 public class ActionBackground implements Action {
 	
 	private Color oldBackground, newBackground;
-	private Controller controller;
+	private OurController ourController;
 
 	public ActionBackground(Color oldBackground, Color newBackground,
-			Controller controller) {
+			OurController ourController) {
 		this.oldBackground = oldBackground;
 		this.newBackground = newBackground;
-		this.controller = controller;
+		this.ourController = ourController;
 	}
 	
 	public void redo() {
-		controller.setBackground(newBackground);
+		ourController.setBackground(newBackground);
 	}
 
 	public void undo() {
-		controller.setBackground(oldBackground);
-		controller.removeLastActionFromList();
+		ourController.setBackground(oldBackground);
+		ourController.removeLastActionFromList();
 	}
 
 }

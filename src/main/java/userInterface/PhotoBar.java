@@ -15,7 +15,7 @@ public class PhotoBar extends JToolBar {
     private ActionListener listener;
     private MyImage [] photos;
 
-    public PhotoBar(String[] images, Controller listener) throws Exception {
+    public PhotoBar(String[] images, OurController listener) throws Exception {
     	this.listener = listener;
         setOrientation(SwingConstants.VERTICAL);
         setBackground(Color.white);

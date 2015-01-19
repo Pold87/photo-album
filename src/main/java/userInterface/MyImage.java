@@ -115,7 +115,7 @@ public class MyImage {
 
     //Resizes an image to have the given width and height
     public BufferedImage getScaledImage(int w, int h){
-        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = resizedImg.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         g2.drawImage(this.img, 0, 0, w, h, null);
@@ -135,13 +135,15 @@ public class MyImage {
 
     public void paint(Graphics g){
     	System.out.println("Drawing picture: " + num);
-    	Graphics2D g2d = (Graphics2D) g;
     	//System.out.print("X: "+ x +" Y: "+y );
     	//g2d.translate(0, 0);
+
+        Graphics2D g2d = (Graphics2D) g;
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
-    	g2d.drawImage(img, x, y, null);
-    	
-    	if(selected){
+        g2d.drawImage(img, x, y, null);
+
+
+        if(selected){
                 //draw blue frame around image if it is now selected
                 double thickness = 3;
                 Stroke oldStroke = g2d.getStroke();
@@ -151,6 +153,7 @@ public class MyImage {
                 g2d.setStroke(oldStroke);
     	}
     	g2d.setTransform(new AffineTransform());
+        g2d.dispose();
     }
 
     

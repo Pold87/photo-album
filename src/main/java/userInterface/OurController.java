@@ -7,10 +7,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+
 import main.java.speechrecognition.Wit;
 
 
-public class Controller implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
@@ -20,7 +22,8 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
     private MyImage draggingPicture = null;
 	
     
-	public Controller(){
+	public OurController(){
+		super();
 	}
 	
 	public void initialize(ContentPanel cp, BasicDesign bd){
@@ -62,6 +65,7 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
+		contentPanel.repaint();
 	}
 
 	public void selectPicture(int x, int y) {
@@ -184,20 +188,34 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
         basicDesign.getDebugPanel().appendText(text);
     }
 
-    // TODO: definitely improve theses functions, they are just dirty hacks
-    // Hmm, I might have moved too much functionality to the controller now.. Not sure
-	
+
+	/**
+	 * This function determines what action should be taken after a response from wit.ai is received.
+	 * @param response
+	 */
     public void recognizedWitResponse(Wit response) {
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
 		switch (intent) {
-			case "select":
-				ArrayList<Integer> pictureNumbers = response.getPictureNumbers();
-				for (MyImage i : contentPanel.getImageList()) {
-					if (pictureNumbers.contains(i.getNum())) {
-						i.setSelected(!i.isSelected());
-					}
+			case "add":
+				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
+				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
+				picturesToAdd.forEach(this :: selectPicture);
+				break;
+			case "rotate":
+				ArrayList<Integer> rotations = response.extractNumbersShifted();
+				if (rotations.isEmpty()) {
+					this.rotate(90); // Rotate 90 degrees if nothing else is said.
+				} else {
+					// Only use first number if several rotation degrees have been detected.
+					this.rotate(rotations.get(0));
 				}
+
+				break;
+			case "select":
+				ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
+				System.out.println(pictureNumbers.toString());
+				pictureNumbers.forEach(this :: selectPicture);
 				break;
 			case "background":
 				Color color = response.getBackgroundColor();
@@ -273,5 +291,8 @@ public class Controller implements CommandInterface, MouseMotionListener, MouseL
 	public void removeLastActionFromList(){
 		performedActions.remove(performedActions.size()-1);
 	}
-	
+
+	public ContentPanel getContentPanel() {
+		return contentPanel;
+	}
 }
