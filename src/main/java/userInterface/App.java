@@ -14,9 +14,7 @@ public class App {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new BasicDesign(600,
-                            600,
-                            "/pictures/");
+                    new BasicDesign("/pictures/");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

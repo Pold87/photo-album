@@ -10,6 +10,7 @@ import edu.cmu.sphinx.api.*;
 import edu.cmu.sphinx.result.ConfidenceResult;
 import edu.cmu.sphinx.result.Lattice;
 import edu.cmu.sphinx.result.MAPConfidenceScorer;
+import main.java.gesturerecognition.Main;
 
 /**
  * The speech recognition class. It is composed of two parts:
@@ -27,8 +28,8 @@ import edu.cmu.sphinx.result.MAPConfidenceScorer;
 
 public class SpeechCommands {
 
-	private static final String ACOUSTIC_MODEL = "resource:/speechrecognition/voxforge";
-	private static final String DICTIONARY_PATH = "resource:/speechrecognition/voxforge/cmudict.0.6d";
+	private static final String ACOUSTIC_MODEL = Main.class.getResourceAsStream("resource:/speechrecognition/voxforge");
+	private static final String DICTIONARY_PATH = Main.class.getResourceAsStream("resource:/speechrecognition/voxforge/cmudict.0.6d");
 	private static final String GRAMMAR_PATH = "resource:/speechrecognition/";
 	private static final String GRAMMAR_NAME = "commands";
 	private static final String LANGUAGE_MODEL = "resource:/edu/cmu/sphinx/models/language/en-us.lm.dmp";

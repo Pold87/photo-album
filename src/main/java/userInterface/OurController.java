@@ -86,6 +86,16 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		contentPanel.repaint();
 	}
 
+	private void darker(){
+		Color oldColor = contentPanel.getBackground();
+		this.setBackground(oldColor.darker());
+	}
+
+	private void brighter(){
+		Color oldColor = contentPanel.getBackground();
+		this.setBackground(oldColor.brighter());
+	}
+
 	
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
@@ -225,6 +235,17 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 					System.out.println("Unknown color: " + color.toString());
 				}
 				break;
+			case "undo":
+				this.undo();
+				break;
+			case "redo":
+				this.redo();
+				break;
+			case "darker":
+				this.darker();
+				break;
+			case "brighter":
+				this.brighter();
 			default:
 				System.out.println("The recognized intent is unknown: " + intent);
 				System.out.println("But I'm also in default");
@@ -236,28 +257,34 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 		}
 
+	private void undo() {
+		Action action = performedActions.remove(performedActions.size() - 1);
+		action.undo();
+		undoneActions.add(action);
+		basicDesign.getToolbar().setEnabledRedoButton(true);
+		if (performedActions.isEmpty()) {
+			basicDesign.getToolbar().setEnabledUndoButton(false);
+		}
+	}
 
-    
+	private void redo() {
+		Action action = undoneActions.remove(undoneActions.size() - 1);
+		action.redo();
+		basicDesign.getToolbar().setEnabledUndoButton(true);
+		if (undoneActions.isEmpty()) {
+			basicDesign.getToolbar().setEnabledRedoButton(false);
+		}
+	}
+
     public void toolbarButtonClicked(String button) {
-    	if(button == "undo"){
-    		Action action = performedActions.remove(performedActions.size()-1);
-    		action.undo();
-    		undoneActions.add(action);
-    		basicDesign.getToolbar().setEnabledRedoButton(true);
-    		if(performedActions.isEmpty()){
-    			basicDesign.getToolbar().setEnabledUndoButton(false);
-    		}
-    	}else if(button == "redo"){
-    		Action action = undoneActions.remove(undoneActions.size()-1);
-    		action.redo();
-    		basicDesign.getToolbar().setEnabledUndoButton(true);
-    		if(undoneActions.isEmpty()){
-    			basicDesign.getToolbar().setEnabledRedoButton(false);
-    		}
-    	}else{
-    		currentAction = button;
-    	}
-    }
+		if (button == "undo") {
+			this.undo();
+		} else if (button == "redo") {
+			this.redo();
+		} else {
+			currentAction = button;
+		}
+	}
     //END ToolbarListener
 
     

@@ -28,6 +28,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private int scr_width = screenSize.width;
     private int scr_height = screenSize.height;
+
     // TODO: See if there is a conflict between Controller classes
     public Controller leapController = new Controller();
     public VolkerLeapListener leapListener = new VolkerLeapListener();
@@ -35,7 +36,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
 
-    public BasicDesign(int hi, int wi, String path) throws Exception {
+    public BasicDesign(String path) throws Exception {
 
         super("Photoalbum");
         try {
@@ -50,8 +51,11 @@ public class BasicDesign extends JFrame implements ComponentListener {
             System.out.println("Could not find Look & Feel 'Nimbus', using standard theme instead.");
         }
 
-        //this.setMaximumSize(new Dimension(hi, wi));
-        this.setPreferredSize(new Dimension(hi, wi));
+        super.setSize(new Dimension(scr_width, scr_height));
+        this.setPreferredSize(new Dimension(scr_width, scr_height));
+        super.setLocationRelativeTo(null);
+        super.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
         File[] imageFiles = dir.listFiles();
@@ -69,10 +73,18 @@ public class BasicDesign extends JFrame implements ComponentListener {
 
         this.toolbar = new Toolbar();
         int preferredThumbSize = 100;
+
+        // Specify content for tabs on the left hand side
+
         PhotoBar photoBar = new PhotoBar(images, ourController);
-        this.tabbedPane = new TabbedPane(photoBar);
+        BackgroundBar backgroundBar = new BackgroundBar(ourController);
+
+
+        this.tabbedPane = new TabbedPane(photoBar, backgroundBar);
         tabbedPane.setPreferredSize(new Dimension(2*preferredThumbSize, (int) getPreferredSize().getHeight()));
         library = photoBar.loadImages(path, preferredThumbSize);
+
+
 
         this.contentPanel = new ContentPanel(ourController);
         ourController.initialize(contentPanel, this);

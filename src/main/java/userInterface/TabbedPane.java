@@ -2,6 +2,8 @@ package main.java.userInterface;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 
 /**
  * Created by pold on 12/10/14.
@@ -11,7 +13,7 @@ public class TabbedPane extends JTabbedPane{
 	String[] images;
     String path;
 
-    public TabbedPane(PhotoBar photoBar) throws Exception{
+    public TabbedPane(PhotoBar photoBar, BackgroundBar backgroundBar) throws Exception{
 
         super(JTabbedPane.LEFT);
 
@@ -24,12 +26,12 @@ public class TabbedPane extends JTabbedPane{
         panel_2.setLayout(new BorderLayout(0, 0));
 
         VTextIcon textIcon2 = new VTextIcon(this, "Backgrounds");
-        JScrollPane scrollPane_2 = new JScrollPane();
+        JScrollPane scrollPane_2 = new JScrollPane(backgroundBar);
         addTab(null, textIcon2, scrollPane_2);
 
-        VTextIcon textIcon3 = new VTextIcon(this, "Frames");
-        JScrollPane scrollPane_3 = new JScrollPane();
-        addTab(null, textIcon3, scrollPane_3);
+//        VTextIcon textIcon3 = new VTextIcon(this, "Frames");
+//        JScrollPane scrollPane_3 = new JScrollPane();
+//        addTab(null, textIcon3, scrollPane_3);
     }
 
     //Tabbed Pane that holds library
@@ -40,6 +42,8 @@ public class TabbedPane extends JTabbedPane{
 //    gbc_tabbedPane.gridy = 0;
 //    panel.add(tabbedPane, gbc_tabbedPane);
 //    tabbedPane.addComponentListener(this);
+
+
 
 
     public void addPanel() {

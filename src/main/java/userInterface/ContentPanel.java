@@ -115,18 +115,21 @@ public class ContentPanel extends JPanel {
     /**
      * Edit when functionality for more pages is created.
      */
-    public void addPictureToCurrentPage(MyImage image){
+    public void addPictureToCurrentPage(MyImage image) {
+
+		System.out.println(image.getNum());
+
 		image.setActive(!image.isActive());
-        if (image.isActive()) {
-            this.imageList.add(image);
-        }
-        else {
-            this.imageList.remove(image);
-        }
-        repaint();
-    }
-    
-    /**
+		if (image.isActive()) {
+			this.imageList.add(image);
+		} else {
+			this.imageList.remove(image);
+		}
+
+		repaint();
+	}
+
+	/**
      * Also needs an edit when we have multiple pages.
      * @param nr
      * @return The deleted Image, can be useful. 

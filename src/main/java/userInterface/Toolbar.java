@@ -43,9 +43,12 @@ public class Toolbar extends JToolBar {
                     // Url for recording speech input
                     URL url = getClass().getResource("/recording.wav");
 
+                    File normalRecord = new File(url.toURI());
+                    File erikRecord = new File("/Users/erikeppenhof/recording.wav");
+
                     // Record wav with external program
-                    Record.recordExtern(new File(url.toURI()));
-                    Wit wit = new Wit(new File(url.toURI()), "wav");
+                    Record.recordExtern(normalRecord);
+                    Wit wit = new Wit(normalRecord, "wav");
 
                     // Send recognized
                     listener.recognizedText(wit.getWitRawJSONString());

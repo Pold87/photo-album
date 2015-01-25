@@ -153,7 +153,6 @@ public class MyImage {
                 g2d.setStroke(oldStroke);
     	}
     	g2d.setTransform(new AffineTransform());
-        g2d.dispose();
     }
 
     
