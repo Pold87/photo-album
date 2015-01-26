@@ -19,10 +19,24 @@ public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
+	private boolean keyTapped = false;
 
-	// Shapes for displaying hand position
+	public boolean isKeyTapped() {
+		return keyTapped;
+	}
+
+	public void setKeyTapped(boolean keyTapped) {
+		this.keyTapped = keyTapped;
+
+	}
+
+		// Shapes for displaying hand position
 	int x = 0;
 	int y = 0;
+
+	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	private int scr_width = screenSize.width;
+	private int scr_height = screenSize.height;
 
 	// Speech Processing sign
 	boolean speechProcessing = false;
@@ -260,14 +274,6 @@ public class ContentPanel extends JPanel {
 		cursorY = YPos;
 		cursorX = XPos;
 
-		// Select active shape or image
-		for (int i = 0; i < shapesList.size(); i++) {
-			if (shapesList.get(i).getSprite().intersects(XPos, YPos, 5, 5)) {
-				activeShape = shapesList.get(i);
-				System.out.println("New active shape: " + activeShape);
-			}
-		}
-
 		switch (toolModeIndex) {
 			case MOVE:
 			case ENLARGE:
@@ -305,13 +311,24 @@ public class ContentPanel extends JPanel {
 
 				if (sprite.intersects(leapPos)) {
 
-
 					Stroke oldStroke = g2d.getStroke();
 					g2d.setColor(Color.black);
 					Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 					g2d.setStroke(dashed);
 					g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
 					g2d.setStroke(oldStroke);
+				}
+
+				if (leapRightClick) {
+					for (MyImage im : imageList) {
+						Rectangle2D sp = new Rectangle2D.Double(im.getX(), im.getY(), im.getWidth(), im.getHeight());
+						Rectangle2D le = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+
+						if (sp.intersects(le)) {
+							im.setSelected(!im.isSelected());
+						}
+
+					}
 				}
 
 			}
@@ -321,9 +338,10 @@ public class ContentPanel extends JPanel {
 		// TODO! Or exclude (it displays a red rectangle)
 
 		if (this.speechProcessing) {
-//			g2d.setColor(Color.red);
-//			g2d.fillRect(200, 200, 200, 200);
-//			System.out.println("Content hatter aber auch!");
+		g2d.setColor(Color.red);
+
+			g2d.fillRect(300, 300, 100, 100);
+			g2d.fillRect(370, 300, 100, 100);
 		}
 
 
@@ -469,8 +487,11 @@ public class ContentPanel extends JPanel {
     	if(selectedImage != null){
     			for(MyImage i2: imageList){
     				i2.setSelected(false);
-    			}                        	
-    			selectedImage.setSelected(true);
+    			}
+
+			// TODO CHANGED THAT CAUSE I COULD NOT UNSELECT
+
+    			selectedImage.setSelected(!selectedImage.isSelected());
     			imageList.remove(selectedImage);
     			imageList.add(selectedImage);
     	}
@@ -488,11 +509,21 @@ public class ContentPanel extends JPanel {
 
 		image.setActive(!image.isActive());
 		if (image.isActive()) {
-			image.setSelected(true);
 
 			// TODO this is for the position !!!
-			image.setX(leapRightX);
-			image.setY(leapRightY);
+
+			if (leapRightX < 0 ||leapRightX > scr_width ) {
+				image.setX(20);
+			}
+
+			else if (leapRightY < 0 || leapRightY > scr_height) {
+				image.setY(20);
+
+			} else {
+				image.setX(leapRightX);
+				image.setY(leapRightY);
+			}
+
 
 			this.imageList.add(image);
 		} else {

@@ -71,7 +71,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapRightClick(false);
 			contentPanel.setLeapLeftClick(false);
 			// Update gestures
-//			updateGestures(frame);
+			updateGestures(frame);
 		}
 
 	private void updateGestures(Frame frame) {
@@ -113,18 +113,18 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 							case STATE_START:
 								//Handle starting gestures
 								break;
-							case STATE_UPDATE:
-								//Handle continuing gestures
-								// Determine direction
-								CircleGesture circle = new CircleGesture(gesture);
-								boolean clockwise;
-								if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI / 2) {
-									clockwise = true;
-								} else {
-									clockwise = false;
-								}
-								this.ourController.rotate(5);
-								break;
+//							case STATE_UPDATE:
+//								//Handle continuing gestures
+//								// Determine direction
+//								CircleGesture circle = new CircleGesture(gesture);
+//								boolean clockwise;
+//								if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI / 2) {
+//									clockwise = true;
+//								} else {
+//									clockwise = false;
+//								}
+//								this.ourController.rotate(5);
+//								break;
 							case STATE_STOP:
 								//Handle ending gestures
 								break;
@@ -149,12 +149,13 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 						// Update drawpanel
 						contentPanel.setLeapRightX(rightHandXPos);
 						contentPanel.setLeapRightY(rightHandYPos);
-						contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
-						contentPanel.setLeapRightClick(rightHandClick);
-						contentPanel.setLeapRightFingers(rightHandFingerCount);
-
-
-						contentPanel.repaint();
+//						contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
+//						contentPanel.setLeapRightClick(rightHandClick);
+//						contentPanel.setLeapRightFingers(rightHandFingerCount);
+						ourController.selectPicture(rightHandXPos, rightHandYPos);
+//
+//
+//						contentPanel.repaint();
 					default:
 						break;
 				}
@@ -210,8 +211,8 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 //				contentPanel.setToolMode(BasicDesign.ToolMode.REDUCE);
 					break;
 				case 1: // MOVE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.MOVE);
-//					ourController.movePicture(rightHandXPos / 2, rightHandYPos / 2);
+				contentPanel.setToolMode(ContentPanel.ToolMode.MOVE);
+					ourController.movePicture(rightHandXPos, rightHandYPos);
 //					contentPanel.update(rightHandXPos, rightHandYPos);
 //					ourController.movePicture(rightHandXPos, rightHandYPos);
 					break;

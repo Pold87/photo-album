@@ -42,6 +42,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 	public void recognizeSpeech() throws Exception {
 		// Url for recording speech input
+
 		URL url = getClass().getResource("/recording.wav");
 
 		File normalRecord = new File(url.toURI());
@@ -62,9 +63,8 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 	public void toggleSpeechProcessing() {
 
-		contentPanel.repaint();
-
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
+		contentPanel.repaint();
 	}
 
     //START CommandInterface
@@ -101,7 +101,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
-
 		contentPanel.repaint();
 	}
 
@@ -137,7 +136,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
-
 		if (image != null) {
 			int oldX = image.getX(), oldY = image.getY();
 			image.setX(x);
