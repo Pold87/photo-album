@@ -198,6 +198,37 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
         // Repaint everything in order to see changes.
         contentPanel.repaint();
 	}
+	
+	public void fingerDragged(int x, int y) {
+		draggingPicture = contentPanel.getSelectedPicture();
+		
+		if(draggingPicture != null)
+        // Set mouse position, if there is no old Mouse position.
+        if (previousMouseX == -1) {
+            previousMouseX = x;
+            previousMouseY = y;
+            oldXPos = draggingPicture.getX();
+            oldYPos = draggingPicture.getY();
+        } else {
+            // Get current mouse position
+
+
+            // Get difference between old mouse position and current position
+            Integer diffX = x - previousMouseX;
+            Integer diffY = y - previousMouseY;
+
+            // Update position for every image in the image list.
+            draggingPicture.setX(draggingPicture.getX() + diffX);
+            draggingPicture.setY(draggingPicture.getY() + diffY);
+
+            // Set old mouse position to current position.
+            previousMouseX = x;
+            previousMouseY = y;
+        }
+
+        // Repaint everything in order to see changes.
+        contentPanel.repaint();
+	}
 
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
