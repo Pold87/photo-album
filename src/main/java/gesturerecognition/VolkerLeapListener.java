@@ -141,7 +141,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 								* scrHeight) - 30;
 
 						System.out.println(rightHandXPos + ", " + rightHandYPos);
-						System.out.println(contentPanel.getSelectedPicture().getX() + ", " + contentPanel.getSelectedPicture().getY());
+//						System.out.println(contentPanel.getSelectedPicture().getX() + ", " + contentPanel.getSelectedPicture().getY());
 
 						System.out.println("Key TAP!!!");
 
@@ -150,12 +150,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 						contentPanel.setLeapRightX(rightHandXPos);
 						contentPanel.setLeapRightY(rightHandYPos);
 //						contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
-//						contentPanel.setLeapRightClick(rightHandClick);
+						contentPanel.setLeapRightClick(rightHandClick);
 //						contentPanel.setLeapRightFingers(rightHandFingerCount);
-						ourController.selectPicture(rightHandXPos, rightHandYPos);
-//
-//
-//						contentPanel.repaint();
+						contentPanel.selectPictureAtLeap();
+						contentPanel.repaint();
 					default:
 						break;
 				}
@@ -188,11 +186,14 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			// To click or not to click
 			boolean rightHandClick = rightHandDistanceToScreen < clickThresholdRight;
 
-			// Cursor Pressed
-			if (rightHandClick && !prevRightClick) {
-				contentPanel.cursorPressed(rightHandXPos, rightHandYPos);
-				prevRightClick = true;
-			}
+//			// Cursor Pressed
+//			if (rightHandClick && !prevRightClick) {
+//				contentPanel.selectPictureAtLeap(rightHandXPos, rightHandYPos);
+//				System.out.println("Leap " + rightHandXPos + ", " + rightHandYPos);
+//				prevRightClick = true;
+//
+//
+//			}
 
 			// Cursor Released
 			if (!rightHandClick && prevRightClick) {

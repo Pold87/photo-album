@@ -286,8 +286,10 @@ public class ContentPanel extends JPanel {
 				break;
 
 		}
-	}
 
+		this.selectPictureAt(XPos, YPos);
+
+	}
 
 	// End Leap Stuff
 
@@ -319,17 +321,19 @@ public class ContentPanel extends JPanel {
 					g2d.setStroke(oldStroke);
 				}
 
-				if (leapRightClick) {
-					for (MyImage im : imageList) {
-						Rectangle2D sp = new Rectangle2D.Double(im.getX(), im.getY(), im.getWidth(), im.getHeight());
-						Rectangle2D le = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
-
-						if (sp.intersects(le)) {
-							im.setSelected(!im.isSelected());
-						}
-
-					}
-				}
+//				if (leapRightClick) {
+//					for (MyImage im : imageList) {
+//						Rectangle2D sp = new Rectangle2D.Double(im.getX(), im.getY(), im.getWidth(), im.getHeight());
+//						Rectangle2D le = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+//
+//						System.out.println();
+//
+//						if (sp.intersects(le)) {
+//							im.setSelected(!im.isSelected());
+//						}
+//
+//					}
+//				}
 
 			}
 		}
@@ -474,34 +478,61 @@ public class ContentPanel extends JPanel {
     }
 
     public MyImage selectPictureAt(int x, int y){
-		
-    	// For each image in the image list, get its area and determine if the mouse click occurred in this area.
-    	selectedImage = null;
-    	for (MyImage i : imageList) {
-    		//Does this still work when the picture is rotated? Nope, fix pending.
-    		Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-    		if (pictureArea.contains(new Point(x, y))) {
-    			selectedImage = i;
-    		}
-    	}
-    	if(selectedImage != null){
-    			for(MyImage i2: imageList){
-    				i2.setSelected(false);
-    			}
 
-			// TODO CHANGED THAT CAUSE I COULD NOT UNSELECT
+		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
+		selectedImage = null;
+		for (MyImage i : imageList) {
+			//Does this still work when the picture is rotated? Nope, fix pending.
+			Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
+			if (pictureArea.contains(new Point(x, y))) {
+				selectedImage = i;
+			}
+		}
+		if(selectedImage != null){
+			for(MyImage i2: imageList){
+				i2.setSelected(false);
+			}
+			selectedImage.setSelected(true);
+			imageList.remove(selectedImage);
+			imageList.add(selectedImage);
+		}
+		// Repaint everything in order to see changes
+		repaint();
 
-    			selectedImage.setSelected(!selectedImage.isSelected());
-    			imageList.remove(selectedImage);
-    			imageList.add(selectedImage);
-    	}
-    	// Repaint everything in order to see changes
-    	repaint();
-    	
-    	
-    	return selectedImage;
+
+		return selectedImage;
     }
-    
+
+
+	public MyImage selectPictureAtLeap(){
+
+		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
+		selectedImage = null;
+
+		// Draw each image in the image list (if it's active)
+		for (MyImage i : imageList) {
+			if (i.isActive()) {
+
+
+				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+
+				if (sprite.intersects(leapPos)) {
+					this.selectPicture(i);
+					selectedImage.setSelected(!selectedImage.isSelected());
+					imageList.remove(selectedImage);
+					imageList.add(selectedImage);
+				}
+			}
+
+		}
+
+		// Repaint everything in order to see changes
+		repaint();
+		return selectedImage;
+	}
+
+
     /**
      * Edit when functionality for more pages is created.
      */
