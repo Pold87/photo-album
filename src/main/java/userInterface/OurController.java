@@ -6,9 +6,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
+import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 
 public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
@@ -20,7 +27,9 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	private String currentAction = "select";
     private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
     private MyImage draggingPicture = null;
-	
+	private String[] numberStrings = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
+
+
     
 	public OurController(){
 		super();
@@ -30,7 +39,34 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		contentPanel = cp;
 		basicDesign = bd;
 	}
-    
+
+	public void recognizeSpeech() throws Exception {
+		// Url for recording speech input
+		URL url = getClass().getResource("/recording.wav");
+
+		File normalRecord = new File(url.toURI());
+		File erikRecord = new File("/Users/erikeppenhof/recording.wav");
+
+		// Record wav with external program
+		toggleSpeechProcessing();
+
+		Record.recordExtern(normalRecord);
+		Wit wit = new Wit(normalRecord, "wav");
+
+		// Send recognized
+		recognizedText(wit.getWitRawJSONString());
+		recognizedWitResponse(wit);
+		toggleSpeechProcessing();
+		Process p2 = new ProcessBuilder("killall", "xflux").start();
+	}
+
+	public void toggleSpeechProcessing() {
+
+		contentPanel.repaint();
+
+		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
+	}
+
     //START CommandInterface
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
@@ -65,6 +101,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
+
 		contentPanel.repaint();
 	}
 
@@ -100,13 +137,15 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
-		int oldX = image.getX(), oldY = image.getY();
-		image.setX(x);
-		image.setY(y);
-		
-		performedActions.add(new ActionMove(image, oldX, oldY, x, y, this));
-		basicDesign.getToolbar().setEnabledUndoButton(true);
-		contentPanel.repaint();
+
+		if (image != null) {
+			int oldX = image.getX(), oldY = image.getY();
+			image.setX(x);
+			image.setY(y);
+			performedActions.add(new ActionMove(image, oldX, oldY, x, y, this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+			contentPanel.repaint();
+		}
 	}
 
 	//Also needs edit when we got multiple pages
@@ -118,9 +157,13 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	}
 
 	public void rotate(int degrees) {
-		contentPanel.rotate(degrees);
-		performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
-		basicDesign.getToolbar().setEnabledUndoButton(true);
+
+		if (contentPanel.getSelectedPicture() != null) {
+			contentPanel.rotate(degrees);
+			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+		}
+
 	}
 	//END CommandInterface
 
@@ -203,12 +246,32 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 * @param response
 	 */
-    public void recognizedWitResponse(Wit response) {
+    public void recognizedWitResponse(Wit response) throws FileNotFoundException {
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
+
+
+
 		switch (intent) {
 			case "add":
 				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
+//				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
+
+				PriorityQueue<StringAndInt> levenshteinPrio = new PriorityQueue<StringAndInt>();
+				for (String s : this.numberStrings) {
+					for (Integer p : picturesToAdd) {
+
+//						int lev = this.calcLevenshteinDistance(s, p);
+//						levenshteinPrio.add(new StringAndInt(s, lev));
+					}
+				}
+
+
+//				String[];
+//				for (StringAndInt si : levenshteinPrio) {
+//
+//				}
+
 				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
 				picturesToAdd.forEach(this :: selectPicture);
 				break;
@@ -246,6 +309,9 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				break;
 			case "brighter":
 				this.brighter();
+				break;
+			case "exit":
+				System.exit(0);
 			default:
 				System.out.println("The recognized intent is unknown: " + intent);
 				System.out.println("But I'm also in default");
@@ -322,4 +388,49 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public ContentPanel getContentPanel() {
 		return contentPanel;
 	}
+
+
+	// from
+	// http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
+	public int calcLevenshteinDistance (String s0, String s1) {
+		int len0 = s0.length() + 1;
+		int len1 = s1.length() + 1;
+
+		// the array of distances
+		int[] cost = new int[len0];
+		int[] newcost = new int[len0];
+
+		// initial cost of skipping prefix in String s0
+		for (int i = 0; i < len0; i++) cost[i] = i;
+
+		// dynamicaly computing the array of distances
+
+		// transformation cost for each letter in s1
+		for (int j = 1; j < len1; j++) {
+			// initial cost of skipping prefix in String s1
+			newcost[0] = j;
+
+			// transformation cost for each letter in s0
+			for(int i = 1; i < len0; i++) {
+				// matching current letters in both strings
+				int match = (s0.charAt(i - 1) == s1.charAt(j - 1)) ? 0 : 1;
+
+				// computing cost for each transformation
+				int cost_replace = cost[i - 1] + match;
+				int cost_insert  = cost[i] + 1;
+				int cost_delete  = newcost[i - 1] + 1;
+
+				// keep minimum cost
+				newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
+			}
+
+			// swap cost/newcost arrays
+			int[] swap = cost; cost = newcost; newcost = swap;
+		}
+
+		// the distance is the cost for transforming all letters in both strings
+		return cost[len0 - 1];
+	}
+
+
 }

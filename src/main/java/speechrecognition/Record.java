@@ -4,6 +4,8 @@ package main.java.speechrecognition;
 //import it.sauronsoftware.jave.Encoder;
 //import it.sauronsoftware.jave.EncodingAttributes;
 
+import main.java.userInterface.OurController;
+
 import javax.sound.sampled.*;
 
 import java.io.*;
@@ -87,6 +89,8 @@ public class Record {
 
 		Process p = new ProcessBuilder("rec", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
 		p.waitFor();
+
+
 	}
 
 	public void convertWavToMp3External(File source, File target) throws Exception {

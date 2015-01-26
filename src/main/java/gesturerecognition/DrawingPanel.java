@@ -28,7 +28,6 @@ import main.java.userInterface.*;
 public class DrawingPanel extends JPanel {
 
 	private List<Imagedata> shapesList = new ArrayList<Imagedata>();
-
 	public List<Imagedata> getShapesList() {
 		return shapesList;
 	}

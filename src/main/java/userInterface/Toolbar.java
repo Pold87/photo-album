@@ -23,9 +23,12 @@ public class Toolbar extends JToolBar {
     private JButton undoButton;
     private JButton redoButton;
     private ToolBarListener listener;
+    private OurController controller;
 
     @SuppressWarnings("serial")
 	public Toolbar() {
+
+        super();
 
         // Set toolbar layout.
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -37,50 +40,38 @@ public class Toolbar extends JToolBar {
             }
         });
         speechButton = new JButton(new AbstractAction("speech") {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
-                    // Url for recording speech input
-                    URL url = getClass().getResource("/recording.wav");
-
-                    File normalRecord = new File(url.toURI());
-                    File erikRecord = new File("/Users/erikeppenhof/recording.wav");
-
-                    // Record wav with external program
-                    Record.recordExtern(normalRecord);
-                    Wit wit = new Wit(normalRecord, "wav");
-
-                    // Send recognized
-                    listener.recognizedText(wit.getWitRawJSONString());
-                    listener.recognizedWitResponse(wit);
+                    controller.recognizeSpeech();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         moveButton = new JButton(new AbstractAction("move") {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.toolbarButtonClicked("move");
             }
         });
 
         rotateButton = new JButton(new AbstractAction("rotate") {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.toolbarButtonClicked("rotate");
             }
         });
-        
+
         undoButton = new JButton(new AbstractAction("undo") {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.toolbarButtonClicked("undo");
             }
         });
-        
+
         redoButton = new JButton(new AbstractAction("redo") {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 listener.toolbarButtonClicked("redo");
             }
@@ -93,7 +84,7 @@ public class Toolbar extends JToolBar {
         rotateButton.setIcon(createIcon("/icons/Backup Green Button.png"));
         undoButton.setIcon(createIcon("/icons/Undo.png"));
         redoButton.setIcon(createIcon("/icons/Redo.png"));
-        
+
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");
         speechButton.setToolTipText("Start and stop speech recognition");
@@ -109,7 +100,7 @@ public class Toolbar extends JToolBar {
         add(rotateButton);
         add(undoButton);
         add(redoButton);
-        
+
         undoButton.setEnabled(false);
         redoButton.setEnabled(false);
 
@@ -136,5 +127,9 @@ public class Toolbar extends JToolBar {
     
     public void setEnabledRedoButton(boolean b){
     	redoButton.setEnabled(b);
+    }
+
+    public void setController(OurController ourController) {
+        this.controller = ourController;
     }
 }

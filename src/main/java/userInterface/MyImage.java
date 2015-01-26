@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -17,7 +18,13 @@ import java.net.URL;
 public class MyImage {
 
     private BufferedImage img; // The actual picture
-    private int x, y, width, height; // 2D-coordinates
+    private int x;
+    private int y;
+
+
+
+    private int width;
+    private int height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
     private int rotationDegrees; // Degrees of rotation for image.
     private boolean active; //indicates whether image is being displayed on contentPanel
@@ -134,7 +141,7 @@ public class MyImage {
 
 
     public void paint(Graphics g){
-    	System.out.println("Drawing picture: " + num);
+//    	System.out.println("Drawing picture: " + num);
     	//System.out.print("X: "+ x +" Y: "+y );
     	//g2d.translate(0, 0);
 
@@ -145,12 +152,13 @@ public class MyImage {
 
         if(selected){
                 //draw blue frame around image if it is now selected
-                double thickness = 3;
-                Stroke oldStroke = g2d.getStroke();
-                g2d.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                g2d.setPaint(Color.blue);
-                g2d.drawRect(x, y, width, height);
-                g2d.setStroke(oldStroke);
+            double thickness = 3;
+            Stroke oldStroke = g2d.getStroke();
+            g2d.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2d.setPaint(Color.blue);
+            g2d.drawRect(x, y, width, height);
+            g2d.setStroke(oldStroke);
+
     	}
     	g2d.setTransform(new AffineTransform());
     }
@@ -159,6 +167,14 @@ public class MyImage {
     public boolean contains(Point p){
 
     	return false;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
 }

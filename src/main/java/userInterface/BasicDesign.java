@@ -5,12 +5,15 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.AffineTransformOp;
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 import com.leapmotion.leap.Controller;
+import main.java.gesturerecognition.Imagedata;
+import main.java.gesturerecognition.Line;
 import main.java.gesturerecognition.VolkerLeapListener;
 
 public class BasicDesign extends JFrame implements ComponentListener {
@@ -25,20 +28,21 @@ public class BasicDesign extends JFrame implements ComponentListener {
     public OurController ourController;
 
     // Leap stuff
+
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private int scr_width = screenSize.width;
     private int scr_height = screenSize.height;
+
 
     // TODO: See if there is a conflict between Controller classes
     public Controller leapController = new Controller();
     public VolkerLeapListener leapListener = new VolkerLeapListener();
 
-    Map<Integer, Color> colors = new HashMap<Integer, Color>();
-
 
     public BasicDesign(String path) throws Exception {
 
         super("Photoalbum");
+        repaint();
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -72,6 +76,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
         this.ourController = new OurController();
 
         this.toolbar = new Toolbar();
+        toolbar.setController(this.ourController);
         int preferredThumbSize = 100;
 
         // Specify content for tabs on the left hand side
@@ -90,7 +95,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
         ourController.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
-        
+
+        leapListener.setContentPanel(contentPanel);
+
 
         // Create MenuBar (File, View, etc.).
         setJMenuBar(createMenuBar());
@@ -99,8 +106,6 @@ public class BasicDesign extends JFrame implements ComponentListener {
         setLayout(new BorderLayout());
 
         debugPanel.setPreferredSize(new Dimension(800, 200));
-
-        addColors();
 
         add(toolbar, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
@@ -117,6 +122,21 @@ public class BasicDesign extends JFrame implements ComponentListener {
         leapController.addListener(leapListener);
 //        leapController.addListener(leapListener); // not necessary if our controller can do the stuff
         /**************************/
+
+
+        Graphics2D g2d = (Graphics2D) this.getGraphics();
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         setLocationRelativeTo(null);
@@ -136,7 +156,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
     public MyImage [] getLibrary(){
     	return library;
     }
-    
+
     public void componentResized(ComponentEvent e) {
         System.out.println(e.getComponent().getClass().getName() + " --- Resized");
 //    	//Resizing thumbnails with window
@@ -188,7 +208,7 @@ public class BasicDesign extends JFrame implements ComponentListener {
         menuBar.add(windowMenu);
 
         exitItem.addActionListener(new ActionListener() {
-            
+
             public void actionPerformed(ActionEvent actionEvent) {
                 System.exit(0);
             }
@@ -197,18 +217,13 @@ public class BasicDesign extends JFrame implements ComponentListener {
         return menuBar;
     }
 
-    private void addColors() {
-        colors.put(0, Color.BLUE);
-        colors.put(1, Color.RED);
-        colors.put(1, Color.GREEN);
-    }
-    
     public DebugPanel getDebugPanel(){
     	return debugPanel;
     }
-    
+
     public Toolbar getToolbar(){
     	return toolbar;
     }
-    
+
+
 }

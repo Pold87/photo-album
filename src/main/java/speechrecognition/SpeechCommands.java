@@ -28,8 +28,9 @@ import main.java.gesturerecognition.Main;
 
 public class SpeechCommands {
 
-	private static final String ACOUSTIC_MODEL = Main.class.getResourceAsStream("resource:/speechrecognition/voxforge");
-	private static final String DICTIONARY_PATH = Main.class.getResourceAsStream("resource:/speechrecognition/voxforge/cmudict.0.6d");
+	// UNCOMMENT AGAIN!
+	private static final String ACOUSTIC_MODEL = "resource:/speechrecognition/voxforge";
+	private static final String DICTIONARY_PATH = "resource:/speechrecognition/voxforge/cmudict.0.6d";
 	private static final String GRAMMAR_PATH = "resource:/speechrecognition/";
 	private static final String GRAMMAR_NAME = "commands";
 	private static final String LANGUAGE_MODEL = "resource:/edu/cmu/sphinx/models/language/en-us.lm.dmp";

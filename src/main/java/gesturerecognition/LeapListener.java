@@ -96,7 +96,6 @@ public class LeapListener extends com.leapmotion.leap.Listener {
 		        	else {
 		        	    clockwise = false;
 		        	}
-		        	System.out.println("Circle detected.");
 					contentPanel.rotate(clockwise);
 		            break;
 		        case STATE_STOP:

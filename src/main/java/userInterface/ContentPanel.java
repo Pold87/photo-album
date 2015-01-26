@@ -1,10 +1,16 @@
 package main.java.userInterface;
 
+import main.java.gesturerecognition.Imagedata;
+import main.java.gesturerecognition.Line;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by pold on 12/10/14.
@@ -12,7 +18,15 @@ import java.util.ArrayList;
 public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+
+	// Shapes for displaying hand position
+	int x = 0;
+	int y = 0;
+
+	// Speech Processing sign
+	boolean speechProcessing = false;
+
 	//Needs edit when we make multiple pages
 	private ArrayList<MyImage> imageList;
 	private MyImage selectedImage;
@@ -26,24 +40,370 @@ public class ContentPanel extends JPanel {
         addMouseMotionListener(ourController);
     }
 
+
     public ArrayList<MyImage> getImageList() { 
     	return imageList;
     }
 
+
+
+	// Leap Stuff
+
+
+	// Remove after integration
+	private java.util.List<Imagedata> shapesList = new ArrayList<Imagedata>();
+	// Which object is selected
+	private Imagedata activeShape;
+	ToolMode toolModeIndex = ToolMode.MOVE;
+
+
+	// Resize mode
+	private double cursorX;
+	private double cursorY;
+
+
+
+	// Tool Mode
+	public enum ToolMode {
+		MOVE, ENLARGE, REDUCE, ROTATE, CUT
+	}
+
+	// Shape Mode
+	public enum ShapeMode {
+		IMAGE
+	}
+
+	private ShapeMode shapeModeIndex = ShapeMode.IMAGE;
+
+
+	// Leap cursor right
+	private int leapRightX = 9999, leapRightY = 9999;
+	private float leapRightScreenDist = 1.0f;
+	private boolean leapRightClick = false;
+	private int leapRightFingers = 0;
+
+	// Leap cursor left
+	private int leapLeftX = 9999, leapLeftY = 9999;
+	private float leapLeftScreenDist = 1.0f;
+	private boolean leapLeftClick = false;
+	private int leapLeftFingers = 0;
+
+	// Transform for rotation
+	AffineTransformOp op;
+
+
+	public void cursorMoved(int XPos, int YPos) {
+		final int x = XPos;
+		final int y = YPos;
+		// Only display a hand if the cursor is hovering over the items
+		boolean foundobject = false;
+
+
+		for (MyImage i : this.imageList) {
+
+			}
+		}
+
+
+	public void setShapeMode(ShapeMode shapeMode) {
+		this.shapeModeIndex = shapeMode;
+	}
+
+	public void setToolMode(ToolMode toolMode) {
+		this.toolModeIndex = toolMode;
+	}
+
+	public void setLeapRightFingers(int leapFingers) {
+		this.leapRightFingers = leapFingers;
+		repaint();
+	}
+
+	public void setLeapRightClick(boolean leapClick) {
+		this.leapRightClick = leapClick;
+		repaint();
+	}
+
+	public void setLeapRightX(int leapX) {
+		this.leapRightX = leapX;
+		repaint();
+	}
+
+	public void setLeapRightY(int leapY) {
+		this.leapRightY = leapY;
+		repaint();
+	}
+
+	public void setLeapRightScreenDist(float leapScreenDist) {
+		this.leapRightScreenDist = leapScreenDist;
+		repaint();
+	}
+
+	public void setLeapLeftFingers(int leapFingers) {
+		this.leapLeftFingers = leapFingers;
+		repaint();
+	}
+
+	public void setLeapLeftClick(boolean leapClick) {
+		this.leapLeftClick = leapClick;
+		repaint();
+	}
+
+	public void setLeapLeftX(int leapX) {
+		this.leapLeftX = leapX;
+		repaint();
+	}
+
+	public void setLeapLeftY(int leapY) {
+		this.leapLeftY = leapY;
+		repaint();
+	}
+
+	public void setLeapLeftScreenDist(float leapScreenDist) {
+		this.leapLeftScreenDist = leapScreenDist;
+		repaint();
+	}
+
+
+	public void cursorReleased(int XPos, int YPos) {
+		switch (toolModeIndex) {
+			case MOVE:
+			case ENLARGE:
+			case REDUCE:
+			case ROTATE:
+			case CUT:
+				if (XPos < 0 || XPos > this.getWidth() || YPos < 0
+						|| YPos > this.getHeight())
+					shapesList.remove(activeShape);
+				break;
+			default:
+				System.out.println("Tool not found: " + toolModeIndex);
+				break;
+		}
+	}
+
+	public void cursorDragged(int XPos, int YPos) {
+		double deltaY, deltaX;
+		double normalizerX, normalizerY;
+		if(!(activeShape==null)) {
+			switch (toolModeIndex) {
+				case ENLARGE:
+					System.out.println("Enlarge");
+					// Mouse movement since previous calculation
+					deltaY = YPos - cursorY;
+					deltaX = XPos - cursorX;
+
+					normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
+					normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
+
+					// Moving up increases height, down decreases height
+					activeShape.setY1((int) (activeShape.getY1() + normalizerY));
+					activeShape.setY2((int) (activeShape.getY2() - 2*normalizerY));
+
+					// Moving right increases width
+					activeShape.setX1((int) (activeShape.getX1() - normalizerX));
+					activeShape.setX2((int) (activeShape.getX2() + 2*normalizerX));
+					break;
+				case REDUCE:
+					System.out.println("Reduce");
+					// Mouse movement since previous calculation
+					deltaY = YPos - cursorY;
+					deltaX = XPos - cursorX;
+
+					normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
+					normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
+
+					if(activeShape.getHeight() > 10) {
+						// Moving up increases height, down decreases height
+						activeShape.setY1((int) (activeShape.getY1() - 2*normalizerY));
+						activeShape.setY2((int) (activeShape.getY2() + 2*normalizerY));
+					}
+					if(activeShape.getWidth() > 10) {
+						// Moving right increases width
+						activeShape.setX1((int) (activeShape.getX1() + 2*normalizerX));
+						activeShape.setX2((int) (activeShape.getX2() - 2*normalizerX));
+					}
+					break;
+				case MOVE:
+					System.out.println("Move");
+					// Mouse-movement since previous calculation
+					deltaY = YPos - cursorY;
+					deltaX = XPos - cursorX;
+
+					// Moving up increases height, down decreases height
+					activeShape.setY1((int) (activeShape.getY1() + deltaY));
+					activeShape.setY2((int) (activeShape.getY2() + deltaY));
+
+					// Moving right increases width
+					activeShape.setX1((int) (activeShape.getX1() + deltaX));
+					activeShape.setX2((int) (activeShape.getX2() + deltaX));
+					break;
+				case ROTATE:
+					// do nothing
+					break;
+				default:
+					System.out.println("No Tool selected");
+					break;
+			}
+
+			// Update mouse Coords
+			cursorY = YPos;
+			cursorX = XPos;
+			repaint();
+		}
+	}
+
+
+	public void cursorPressed(int XPos, int YPos) {
+		this.requestFocusInWindow();
+
+		// Update mouse Coords
+		cursorY = YPos;
+		cursorX = XPos;
+
+		// Select active shape or image
+		for (int i = 0; i < shapesList.size(); i++) {
+			if (shapesList.get(i).getSprite().intersects(XPos, YPos, 5, 5)) {
+				activeShape = shapesList.get(i);
+				System.out.println("New active shape: " + activeShape);
+			}
+		}
+
+		switch (toolModeIndex) {
+			case MOVE:
+			case ENLARGE:
+			case REDUCE:
+			case CUT:
+			case ROTATE:
+				repaint();
+				break;
+			default:
+				break;
+
+		}
+	}
+
+
+	// End Leap Stuff
+
+
+
+
     public void paintComponent(Graphics g) {
 
         // Casting to 2D seems to be beneficial.
-        Graphics2D g2 = (Graphics2D) g;
-        super.paintComponent(g2);
+        Graphics2D g2d = (Graphics2D) g;
+        super.paintComponent(g2d);
 
         // Draw each image in the image list (if it's active)
-        System.out.println("Draw all the things!!");
         for (MyImage i : imageList) {
-            if (i.isActive()) {
-            	i.paint(g2);
-            }
+			if (i.isActive()) {
+				i.paint(g2d);
 
-        }
+
+				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+
+				if (sprite.intersects(leapPos)) {
+
+
+					Stroke oldStroke = g2d.getStroke();
+					g2d.setColor(Color.black);
+					Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+					g2d.setStroke(dashed);
+					g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
+					g2d.setStroke(oldStroke);
+				}
+
+			}
+		}
+
+		// Show progress for speech
+		// TODO! Or exclude (it displays a red rectangle)
+
+		if (this.speechProcessing) {
+//			g2d.setColor(Color.red);
+//			g2d.fillRect(200, 200, 200, 200);
+//			System.out.println("Content hatter aber auch!");
+		}
+
+
+		//////// Leap cursor right ////////
+		g2d.setStroke(new BasicStroke(1)); // Thickness
+		// Outline - border
+		g2d.setColor(Color.darkGray);
+		int leapRightCursorSize = (int) (40 * (leapRightScreenDist + 1));
+
+		g2d.drawOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
+				leapRightCursorSize, leapRightCursorSize);
+		// Filling
+		g2d.setColor(this.leapRightClick ? new Color(0, 150, 0, 50) : new Color(
+				255, 0, 0, 50));
+		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
+				leapRightCursorSize, leapRightCursorSize);
+
+		// Finger count indicator
+		g2d.setColor(Color.black);
+		Font font = new Font("Verdana", Font.BOLD, 18);
+		g2d.setFont(font);
+		// Show which action
+		switch (toolModeIndex) {
+			case MOVE:
+				g2d.drawString("M", leapRightX - 6, leapRightY + 6);
+				break;
+			case ENLARGE:
+				g2d.drawString("E", leapRightX - 6, leapRightY + 6);
+				break;
+			case REDUCE:
+				g2d.drawString("Re", leapRightX - 6, leapRightY + 6);
+				break;
+			case ROTATE:
+				g2d.drawString("Ro", leapRightX - 6, leapRightY + 6);
+				break;
+			case CUT:
+				g2d.drawString("C", leapRightX - 6, leapRightY + 6);
+				break;
+			default:
+				break;
+		}
+		//g2d.drawString(String.valueOf(this.leapRightFingers), leapRightX - 6, leapRightY + 6);
+
+		// Finger count indicator
+		g2d.setColor(Color.darkGray);
+		g2d.setFont(font);
+
+		// Show which action
+		switch (toolModeIndex) {
+			case MOVE:
+				g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
+				break;
+			case ENLARGE:
+				g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
+				break;
+			case REDUCE:
+				g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
+				break;
+			case ROTATE:
+				g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
+				break;
+			case CUT:
+				g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
+				break;
+			default:
+				break;
+		}
+		//g2d.drawString(String.valueOf(this.leapLeftFingers), leapLeftX - 6, leapLeftY + 6);
+
+		// Outline
+		g2d.setStroke(new BasicStroke(1));
+		g2d.setColor(Color.black);
+		g2d.drawRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
+		g2d.setColor(Color.white);
+		g2d.drawLine(1, 0, 298, 0);
+
+
+		// Finger count indicator
+		g2d.setColor(Color.darkGray);
+		repaint();
     }
     
     /**
@@ -57,6 +417,15 @@ public class ContentPanel extends JPanel {
     	}
     	return null;
     }
+
+
+	// Show Leap Hand Position
+	public void update(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+
     
     public void selectPicture(MyImage image){
     	if(selectedImage != null){
@@ -117,15 +486,18 @@ public class ContentPanel extends JPanel {
      */
     public void addPictureToCurrentPage(MyImage image) {
 
-		System.out.println(image.getNum());
-
 		image.setActive(!image.isActive());
 		if (image.isActive()) {
+			image.setSelected(true);
+
+			// TODO this is for the position !!!
+			image.setX(leapRightX);
+			image.setY(leapRightY);
+
 			this.imageList.add(image);
 		} else {
 			this.imageList.remove(image);
 		}
-
 		repaint();
 	}
 
@@ -154,8 +526,19 @@ public class ContentPanel extends JPanel {
     	repaint();
     }
 
-    public void rotate(int degrees){
-    	selectedImage.incrementRotation(degrees);
-    	repaint();
-    }
+    public void rotate(int degrees) {
+		if (this.selectedImage != null) {
+			selectedImage.incrementRotation(degrees);
+		}
+		repaint();
+	}
+
+	public boolean isSpeechProcessing() {
+		return speechProcessing;
+	}
+
+	public void setSpeechProcessing(boolean speechProcessing) {
+		this.speechProcessing = speechProcessing;
+	}
+
 }
