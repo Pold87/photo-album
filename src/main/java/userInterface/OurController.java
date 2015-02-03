@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
@@ -21,12 +20,16 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
-	private int previousMouseX = -1, previousMouseY = -1, oldXPos, oldYPos;
+	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos;
 	private String currentAction = "select";
     private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
     private MyImage draggingPicture = null;
 	private String[] numberStrings = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-
+	// Tool Mode
+	public enum ToolMode {
+		MOVE, ENLARGE, REDUCE, ROTATE, CUT
+	}
+	public ToolMode toolModeIndex = ToolMode.MOVE;
 
     
 	public OurController(){
@@ -103,7 +106,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		Color oldColor = contentPanel.getBackground();
 		this.setBackground(oldColor.brighter());
 	}
-
 	
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
@@ -118,7 +120,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		}
 	}
 
-	//Also needs edit when we got multiple pages
 	public void setBackground(Color color) {
 		Color oldColor = contentPanel.getBackground();
 		contentPanel.setBackground(color);
@@ -127,7 +128,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	}
 
 	public void rotate(int degrees) {
-
 		if (contentPanel.getSelectedPicture() != null) {
 			contentPanel.rotate(degrees);
 			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
@@ -140,35 +140,114 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
-		draggingPicture = contentPanel.getSelectedPicture();
-		
-		if(draggingPicture != null)
-        // Set mouse position, if there is no old Mouse position.
-        if (previousMouseX == -1) {
-            previousMouseX = mouseEvent.getX();
-            previousMouseY = mouseEvent.getY();
-            oldXPos = draggingPicture.getX();
-            oldYPos = draggingPicture.getY();
-        } else {
-            // Get current mouse position
-            int mouseX = mouseEvent.getX();
-            int mouseY = mouseEvent.getY();
+		fingerDragged(mouseEvent.getX(), mouseEvent.getY());
+	}
+	
+	public void fingerMoved(int x, int y){
+		contentPanel.setLeapRightX(x);
+		contentPanel.setLeapRightY(y);
+	}
+	
+	//Currently not used, but we're going to.
+	public void fingerPressed(int XPos, int YPos) {
+		contentPanel.requestFocusInWindow();
 
-            // Get difference between old mouse position and current position
-            Integer diffX = mouseX - previousMouseX;
-            Integer diffY = mouseY - previousMouseY;
+		// Update Finger Coords
+		contentPanel.setLeapRightX(XPos);
+		contentPanel.setLeapRightY(YPos);
+		contentPanel.selectPictureAt(XPos, YPos);
+	}
+	
+	public void fingerReleased(int XPos, int YPos) {
+		switch (toolModeIndex) {
+			case MOVE:
+			case ENLARGE:
+			case REDUCE:
+			case ROTATE:
+			case CUT:
+				if(draggingPicture != null){
+					performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
+					draggingPicture = null;
+					previousCursorX = -1;
+					previousCursorY = -1;
+				}
+				break;
+			default:
+				System.out.println("Tool not found: " + toolModeIndex);
+		}
+	}
+	
 
-            // Update position for every image in the image list.
-            draggingPicture.setX(draggingPicture.getX() + diffX);
-            draggingPicture.setY(draggingPicture.getY() + diffY);
+	public void cursorDragged(int XPos, int YPos) {
+		int deltaY =YPos - previousCursorY, deltaX = XPos - previousCursorX;
+		double normalizerX, normalizerY;
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		if(selectedImage != null) {
+		       if (previousCursorX == -1) {
+		            previousCursorX = XPos;
+		            previousCursorY = YPos;
+		            oldXPos = selectedImage.getX();
+		            oldYPos = selectedImage.getY();
+		        } else {
+			switch (toolModeIndex) {
+				case ENLARGE:
+					System.out.println("Enlarge");
 
-            // Set old mouse position to current position.
-            previousMouseX = mouseX;
-            previousMouseY = mouseY;
-        }
+					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
+					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
+					
+					//TODO Fix this function. In our current implementation of MyImage, it doesn't work.
+					/*
+					// Moving up increases height, down decreases height
+					selectedImage.setY((int) (selectedImage.getY() + normalizerY));
+					selectedImage.setWidth((int) (selectedImage.getY2() - 2*normalizerY));
 
-        // Repaint everything in order to see changes.
-        contentPanel.repaint();
+					// Moving right increases width
+					selectedImage.setX1((int) (selectedImage.getX1() - normalizerX));
+					selectedImage.setX2((int) (selectedImage.getX2() + 2*normalizerX));
+					*/
+					break;
+				case REDUCE:
+					System.out.println("Reduce");
+					// Mouse movement since previous calculation
+
+					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
+					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
+
+					//TODO: Same goes here as for Enlarge.
+					/*
+					if(selectedImage.getHeight() > 10) {
+						// Moving up increases height, down decreases height
+						selectedImage.setY1((int) (selectedImage.getY1() - 2*normalizerY));
+						selectedImage.setY2((int) (selectedImage.getY2() + 2*normalizerY));
+					}
+					if(selectedImage.getWidth() > 10) {
+						// Moving right increases width
+						selectedImage.setX1((int) (selectedImage.getX1() + 2*normalizerX));
+						selectedImage.setX2((int) (selectedImage.getX2() - 2*normalizerX));
+					}
+					*/
+					break;
+				case MOVE:
+					System.out.println("Move");
+					selectedImage.setX(selectedImage.getX() + deltaX);
+					selectedImage.setY(selectedImage.getY() + deltaY);
+
+					break;
+				case ROTATE:
+					// do nothing
+					break;
+				default:
+					System.out.println("No Tool selected");
+					break;
+			}
+
+			// Update mouse Coords
+			previousCursorY = YPos;
+			previousCursorX = XPos;
+			contentPanel.repaint();
+		}
+		}
 	}
 	
 	public void fingerDragged(int x, int y) {
@@ -176,26 +255,25 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		
 		if(draggingPicture != null)
         // Set mouse position, if there is no old Mouse position.
-        if (previousMouseX == -1) {
-            previousMouseX = x;
-            previousMouseY = y;
+        if (previousCursorX == -1) {
+            previousCursorX = x;
+            previousCursorY = y;
             oldXPos = draggingPicture.getX();
             oldYPos = draggingPicture.getY();
         } else {
             // Get current mouse position
-
-
+        	
             // Get difference between old mouse position and current position
-            Integer diffX = x - previousMouseX;
-            Integer diffY = y - previousMouseY;
+            Integer diffX = x - previousCursorX;
+            Integer diffY = y - previousCursorY;
 
             // Update position for every image in the image list.
             draggingPicture.setX(draggingPicture.getX() + diffX);
             draggingPicture.setY(draggingPicture.getY() + diffY);
 
             // Set old mouse position to current position.
-            previousMouseX = x;
-            previousMouseY = y;
+            previousCursorX = x;
+            previousCursorY = y;
         }
 
         // Repaint everything in order to see changes.
@@ -231,8 +309,8 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		if(draggingPicture != null){
 			performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
 			draggingPicture = null;
-			previousMouseX = -1;
-			previousMouseY = -1;
+			previousCursorX = -1;
+			previousCursorY = -1;
 		}
 	}
 	//END MouseListeners
