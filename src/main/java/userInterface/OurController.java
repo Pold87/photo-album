@@ -6,16 +6,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
 
 public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
@@ -42,6 +40,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 	public void recognizeSpeech() throws Exception {
 		// Url for recording speech input
+
 		URL url = getClass().getResource("/recording.wav");
 
 		File normalRecord = new File(url.toURI());
@@ -61,45 +60,19 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 	public void toggleSpeechProcessing() {
 
-		contentPanel.repaint();
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
+		contentPanel.repaint();
 	}
 
     //START CommandInterface
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
 	}
-
-	public void nextPage() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void previousPage() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void selectSpecificPage(int nr) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void insertPages() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void removeCurrentPages() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	public void addPictureFromLibrary(int nr) {
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
-
 		contentPanel.repaint();
 	}
 
@@ -135,7 +108,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
-
 		if (image != null) {
 			int oldX = image.getX(), oldY = image.getY();
 			image.setX(x);
@@ -193,6 +165,37 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
             // Set old mouse position to current position.
             previousMouseX = mouseX;
             previousMouseY = mouseY;
+        }
+
+        // Repaint everything in order to see changes.
+        contentPanel.repaint();
+	}
+	
+	public void fingerDragged(int x, int y) {
+		draggingPicture = contentPanel.getSelectedPicture();
+		
+		if(draggingPicture != null)
+        // Set mouse position, if there is no old Mouse position.
+        if (previousMouseX == -1) {
+            previousMouseX = x;
+            previousMouseY = y;
+            oldXPos = draggingPicture.getX();
+            oldYPos = draggingPicture.getY();
+        } else {
+            // Get current mouse position
+
+
+            // Get difference between old mouse position and current position
+            Integer diffX = x - previousMouseX;
+            Integer diffY = y - previousMouseY;
+
+            // Update position for every image in the image list.
+            draggingPicture.setX(draggingPicture.getX() + diffX);
+            draggingPicture.setY(draggingPicture.getY() + diffY);
+
+            // Set old mouse position to current position.
+            previousMouseX = x;
+            previousMouseY = y;
         }
 
         // Repaint everything in order to see changes.
@@ -278,7 +281,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				if (color != null) {
 					contentPanel.setBackground(color);
 				} else {
-					System.out.println("Unknown color: " + color.toString());
+					System.out.println("Unknown color: ");
 				}
 				break;
 			case "undo":

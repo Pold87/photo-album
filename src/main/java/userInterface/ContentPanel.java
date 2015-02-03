@@ -19,10 +19,26 @@ public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
+	private OurController ourController;
 
-	// Shapes for displaying hand position
+	private boolean keyTapped = false;
+
+	public boolean isKeyTapped() {
+		return keyTapped;
+	}
+
+	public void setKeyTapped(boolean keyTapped) {
+		this.keyTapped = keyTapped;
+
+	}
+
+		// Shapes for displaying hand position
 	int x = 0;
 	int y = 0;
+
+	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	private int scr_width = screenSize.width;
+	private int scr_height = screenSize.height;
 
 	// Speech Processing sign
 	boolean speechProcessing = false;
@@ -38,6 +54,7 @@ public class ContentPanel extends JPanel {
         setBackground(Color.white);
         addMouseListener(ourController);
         addMouseMotionListener(ourController);
+		this.ourController = ourController;
     }
 
 
@@ -260,14 +277,6 @@ public class ContentPanel extends JPanel {
 		cursorY = YPos;
 		cursorX = XPos;
 
-		// Select active shape or image
-		for (int i = 0; i < shapesList.size(); i++) {
-			if (shapesList.get(i).getSprite().intersects(XPos, YPos, 5, 5)) {
-				activeShape = shapesList.get(i);
-				System.out.println("New active shape: " + activeShape);
-			}
-		}
-
 		switch (toolModeIndex) {
 			case MOVE:
 			case ENLARGE:
@@ -280,8 +289,10 @@ public class ContentPanel extends JPanel {
 				break;
 
 		}
-	}
 
+		this.selectPictureAt(XPos, YPos);
+
+	}
 
 	// End Leap Stuff
 
@@ -305,7 +316,6 @@ public class ContentPanel extends JPanel {
 
 				if (sprite.intersects(leapPos)) {
 
-
 					Stroke oldStroke = g2d.getStroke();
 					g2d.setColor(Color.black);
 					Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
@@ -314,6 +324,20 @@ public class ContentPanel extends JPanel {
 					g2d.setStroke(oldStroke);
 				}
 
+//				if (leapRightClick) {
+//					for (MyImage im : imageList) {
+//						Rectangle2D sp = new Rectangle2D.Double(im.getX(), im.getY(), im.getWidth(), im.getHeight());
+//						Rectangle2D le = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+//
+//						System.out.println();
+//
+//						if (sp.intersects(le)) {
+//							im.setSelected(!im.isSelected());
+//						}
+//
+//					}
+//				}
+
 			}
 		}
 
@@ -321,9 +345,10 @@ public class ContentPanel extends JPanel {
 		// TODO! Or exclude (it displays a red rectangle)
 
 		if (this.speechProcessing) {
-//			g2d.setColor(Color.red);
-//			g2d.fillRect(200, 200, 200, 200);
-//			System.out.println("Content hatter aber auch!");
+		g2d.setColor(Color.red);
+
+			g2d.fillRect(300, 300, 100, 100);
+			g2d.fillRect(370, 300, 100, 100);
 		}
 
 
@@ -456,31 +481,57 @@ public class ContentPanel extends JPanel {
     }
 
     public MyImage selectPictureAt(int x, int y){
-		
-    	// For each image in the image list, get its area and determine if the mouse click occurred in this area.
-    	selectedImage = null;
-    	for (MyImage i : imageList) {
-    		//Does this still work when the picture is rotated? Nope, fix pending.
-    		Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-    		if (pictureArea.contains(new Point(x, y))) {
-    			selectedImage = i;
-    		}
-    	}
-    	if(selectedImage != null){
-    			for(MyImage i2: imageList){
-    				i2.setSelected(false);
-    			}                        	
-    			selectedImage.setSelected(true);
-    			imageList.remove(selectedImage);
-    			imageList.add(selectedImage);
-    	}
-    	// Repaint everything in order to see changes
-    	repaint();
-    	
-    	
-    	return selectedImage;
+
+		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
+		selectedImage = null;
+		for (MyImage i : imageList) {
+			//Does this still work when the picture is rotated? Nope, fix pending.
+			Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
+			if (pictureArea.contains(new Point(x, y))) {
+				selectedImage = i;
+			}
+		}
+		if(selectedImage != null){
+			for(MyImage i2: imageList){
+				i2.setSelected(false);
+			}
+			selectedImage.setSelected(true);
+			imageList.remove(selectedImage);
+			imageList.add(selectedImage);
+		}
+		// Repaint everything in order to see changes
+		repaint();
+
+
+		return selectedImage;
     }
-    
+
+
+	public MyImage selectPictureAtLeap(){
+
+		// Draw each image in the image list (if it's active)
+		for (MyImage i : imageList) {
+			if (i.isActive()) {
+
+				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX - 200, leapRightY - 200, 200, 200);
+
+				if (this.getSelectedPicture() == null) {
+					this.ourController.selectPicture(i);
+				} else {
+
+					this.getSelectedPicture().setSelected(!this.getSelectedPicture().isSelected());
+
+				}
+			}
+
+		}
+		// Repaint everything in order to see changes
+		repaint();
+		return selectedImage;
+	}
+
+
     /**
      * Edit when functionality for more pages is created.
      */
@@ -488,11 +539,21 @@ public class ContentPanel extends JPanel {
 
 		image.setActive(!image.isActive());
 		if (image.isActive()) {
-			image.setSelected(true);
 
 			// TODO this is for the position !!!
-			image.setX(leapRightX);
-			image.setY(leapRightY);
+
+			if (leapRightX < 0 ||leapRightX > scr_width ) {
+				image.setX(20);
+			}
+
+			else if (leapRightY < 0 || leapRightY > scr_height) {
+				image.setY(20);
+
+			} else {
+				image.setX(leapRightX);
+				image.setY(leapRightY);
+			}
+
 
 			this.imageList.add(image);
 		} else {
