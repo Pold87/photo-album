@@ -80,7 +80,7 @@ public class Wit {
         System.out.println("filetype: " + fileType);
         long a = System.currentTimeMillis();
 
-        Process p1 = new ProcessBuilder("xflux","-g", "0", "-l", "0").start();
+//        Process p1 = new ProcessBuilder("xflux","-g", "0", "-l", "0").start();
 
         // Get the data from wit.AI
         HttpResponse speechResponse = client.execute(post);

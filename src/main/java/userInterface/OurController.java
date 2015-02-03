@@ -55,7 +55,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		recognizedText(wit.getWitRawJSONString());
 		recognizedWitResponse(wit);
 		toggleSpeechProcessing();
-		Process p2 = new ProcessBuilder("killall", "xflux").start();
+//		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
 	public void toggleSpeechProcessing() {

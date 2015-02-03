@@ -345,10 +345,21 @@ public class ContentPanel extends JPanel {
 		// TODO! Or exclude (it displays a red rectangle)
 
 		if (this.speechProcessing) {
-		g2d.setColor(Color.red);
+			ClassLoader cldr = this.getClass().getClassLoader();
+			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
+			ImageIcon imageIcon = new ImageIcon(imageURL);
+			JLabel iconLabel = new JLabel();
+			iconLabel.setIcon(imageIcon);
+			imageIcon.setImageObserver(iconLabel);
 
-			g2d.fillRect(300, 300, 100, 100);
-			g2d.fillRect(370, 300, 100, 100);
+			JLabel label = new JLabel("Listening...");
+			this.add(iconLabel);
+			this.add(label);
+
+		//g2d.setColor(Color.red);
+
+			//g2d.fillRect(300, 300, 100, 100);
+			//g2d.fillRect(370, 300, 100, 100);
 		}
 
 
