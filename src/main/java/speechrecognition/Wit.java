@@ -209,6 +209,7 @@ public class Wit {
             color = (Color)field.get(null);
         } catch (Exception e) {
             color = null;
+            System.out.println("Unknown colour: " + colorString);
         }
 
         return color;

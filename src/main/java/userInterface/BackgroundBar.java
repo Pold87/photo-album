@@ -1,10 +1,9 @@
 package main.java.userInterface;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 /**
  * Created by pold on 1/25/15.
@@ -25,7 +24,8 @@ public class BackgroundBar extends JToolBar{
 
     }
 
-    private void createIcon() {
+    @SuppressWarnings("serial")
+	private void createIcon() {
 
         Color[] colorArray = {
                   Color.WHITE

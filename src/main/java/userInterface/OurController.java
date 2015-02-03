@@ -6,16 +6,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 import main.java.speechrecognition.Record;
 import main.java.speechrecognition.Wit;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
 
 public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
@@ -71,32 +69,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
 	}
-
-	public void nextPage() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void previousPage() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void selectSpecificPage(int nr) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void insertPages() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void removeCurrentPages() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	public void addPictureFromLibrary(int nr) {
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
@@ -286,21 +259,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
 
-				PriorityQueue<StringAndInt> levenshteinPrio = new PriorityQueue<StringAndInt>();
-				for (String s : this.numberStrings) {
-					for (Integer p : picturesToAdd) {
-
-//						int lev = this.calcLevenshteinDistance(s, p);
-//						levenshteinPrio.add(new StringAndInt(s, lev));
-					}
-				}
-
-
-//				String[];
-//				for (StringAndInt si : levenshteinPrio) {
-//
-//				}
-
 				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
 				picturesToAdd.forEach(this :: selectPicture);
 				break;
@@ -324,7 +282,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				if (color != null) {
 					contentPanel.setBackground(color);
 				} else {
-					System.out.println("Unknown color: " + color.toString());
+					System.out.println("Unknown color: ");
 				}
 				break;
 			case "undo":
@@ -347,9 +305,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				break;
 		}
 
-		// TODO: See if this is really necessary
 		basicDesign.repaint();
-
 		}
 
 	private void undo() {
