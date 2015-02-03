@@ -45,7 +45,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		URL url = getClass().getResource("/recording.wav");
 
 		File normalRecord = new File(url.toURI());
-		File erikRecord = new File("/Users/erikeppenhof/recording.wav");
 
 		// Record wav with external program
 		toggleSpeechProcessing();
@@ -63,7 +62,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void toggleSpeechProcessing() {
 
 		contentPanel.repaint();
-
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
 	}
 
@@ -257,21 +255,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
 
-				PriorityQueue<StringAndInt> levenshteinPrio = new PriorityQueue<StringAndInt>();
-				for (String s : this.numberStrings) {
-					for (Integer p : picturesToAdd) {
-
-//						int lev = this.calcLevenshteinDistance(s, p);
-//						levenshteinPrio.add(new StringAndInt(s, lev));
-					}
-				}
-
-
-//				String[];
-//				for (StringAndInt si : levenshteinPrio) {
-//
-//				}
-
 				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
 				picturesToAdd.forEach(this :: selectPicture);
 				break;
@@ -312,15 +295,12 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				break;
 			case "exit":
 				System.exit(0);
+				break;
 			default:
 				System.out.println("The recognized intent is unknown: " + intent);
-				System.out.println("But I'm also in default");
 				break;
 		}
-
-		// TODO: See if this is really necessary
 		basicDesign.repaint();
-
 		}
 
 	private void undo() {
