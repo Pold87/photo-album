@@ -19,6 +19,8 @@ public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
+	private OurController ourController;
+
 	private boolean keyTapped = false;
 
 	public boolean isKeyTapped() {
@@ -52,6 +54,7 @@ public class ContentPanel extends JPanel {
         setBackground(Color.white);
         addMouseListener(ourController);
         addMouseMotionListener(ourController);
+		this.ourController = ourController;
     }
 
 
@@ -506,27 +509,23 @@ public class ContentPanel extends JPanel {
 
 	public MyImage selectPictureAtLeap(){
 
-		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
-		selectedImage = null;
-
 		// Draw each image in the image list (if it's active)
 		for (MyImage i : imageList) {
 			if (i.isActive()) {
 
-
 				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
-				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX - 200, leapRightY - 200, 200, 200);
 
-				if (sprite.intersects(leapPos)) {
-					this.selectPicture(i);
-					selectedImage.setSelected(!selectedImage.isSelected());
-					imageList.remove(selectedImage);
-					imageList.add(selectedImage);
+				if (this.getSelectedPicture() == null) {
+					this.ourController.selectPicture(i);
+				} else {
+
+					this.getSelectedPicture().setSelected(!this.getSelectedPicture().isSelected());
+
 				}
 			}
 
 		}
-
 		// Repaint everything in order to see changes
 		repaint();
 		return selectedImage;

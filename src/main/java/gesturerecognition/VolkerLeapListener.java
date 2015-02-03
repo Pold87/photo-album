@@ -149,9 +149,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 						// Update drawpanel
 						contentPanel.setLeapRightX(rightHandXPos);
 						contentPanel.setLeapRightY(rightHandYPos);
-//						contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
-						contentPanel.setLeapRightClick(rightHandClick);
-//						contentPanel.setLeapRightFingers(rightHandFingerCount);
 						contentPanel.selectPictureAtLeap();
 						contentPanel.repaint();
 					default:
@@ -302,6 +299,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 //				contentPanel.setToolMode(BasicDesign.ToolMode.MOVE);
 					break;
 				case 2: // ROTATE
+					ourController.rotate(1);
 //				contentPanel.setToolMode(BasicDesign.ToolMode.ROTATE);
 					break;
 				case 3:
@@ -312,7 +310,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 					break;
 				case 5: // ENLARGE
 //				contentPanel.setToolMode(BasicDesign.ToolMode.ENLARGE);
-					ourController.rotate(1);
+
 					break;
 				default:
 					System.out.println("Hoeveel vingers heb je eigenlijk?");
