@@ -1,13 +1,9 @@
 package main.java.userInterface;
 
-import main.java.speechrecognition.Record;
-import main.java.speechrecognition.Wit;
-
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.net.URL;
 
 /**
@@ -42,11 +38,19 @@ public class Toolbar extends JToolBar {
         speechButton = new JButton(new AbstractAction("speech") {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    controller.recognizeSpeech();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+                Thread speechThread = new Thread() {
+                    public void run() {
+                        try {
+                            controller.recognizeSpeech();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                speechThread.start();
+
             }
         });
         moveButton = new JButton(new AbstractAction("move") {

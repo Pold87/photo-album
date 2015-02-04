@@ -8,9 +8,6 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -27,9 +24,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.stream.JsonParser;
-
-import static main.java.speechrecognition.Record.recordExtern;
 
 
 public class Wit {
@@ -40,7 +34,7 @@ public class Wit {
 
     public Wit(File audioFileWav, String fileType) throws Exception {
 
-        final Record recorder = new Record(audioFileWav);
+        final Recorder recorder = new Recorder(audioFileWav);
 
         // creates a new thread that waits for a specified
         // of time before stopping

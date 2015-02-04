@@ -63,7 +63,9 @@ public class BasicDesign extends JFrame implements ComponentListener {
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
         File[] imageFiles = dir.listFiles();
+
         String[] images = new String[imageFiles.length];
+
         for (int i = 0; i < imageFiles.length; ++i){
             if (imageFiles[i].isDirectory() || imageFiles[i].isHidden()) {
                 System.out.println(imageFiles[i].getName());

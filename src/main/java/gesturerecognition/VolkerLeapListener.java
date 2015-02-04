@@ -11,7 +11,7 @@ import static java.awt.Color.blue;
 
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	/** Members **/
-    private ContentPanel contentPanel; // TODO: Not yet assigned
+    private ContentPanel contentPanel;
 
 	private int scrWidth, scrHeight;
 	float clickThresholdRight = 0.0f;
@@ -72,6 +72,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapLeftClick(false);
 			// Update gestures
 			updateGestures(frame);
+		contentPanel.repaint();
 		}
 
 	private void updateGestures(Frame frame) {

@@ -1,19 +1,25 @@
 package main.java.userInterface;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
-import main.java.speechrecognition.Record;
+import main.java.speechrecognition.Recorder;
 import main.java.speechrecognition.Wit;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+
+import javax.swing.*;
 
 
 public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
@@ -26,8 +32,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
     private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
     private MyImage draggingPicture = null;
 	private String[] numberStrings = {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
-
-
     
 	public OurController(){
 		super();
@@ -41,21 +45,30 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void recognizeSpeech() throws Exception {
 		// Url for recording speech input
 
-		URL url = getClass().getResource("/recording.wav");
-
-		File normalRecord = new File(url.toURI());
-
-		// Record wav with external program
 		toggleSpeechProcessing();
 
-		Record.recordExtern(normalRecord);
+		// Record wav with external program
+		//Record.recordExtern(normalRecord);
+
+		URL url = getClass().getResource("/recording.wav");
+		File normalRecord = new File(url.toURI());
+		Recorder recorder = new Recorder(normalRecord);
+
+		Thread runnable = new Thread(recorder);
+
+		runnable.start();
+
+		Thread.sleep(5000);
+
+		recorder.finish();
+
 		Wit wit = new Wit(normalRecord, "wav");
 
 		// Send recognized
 		recognizedText(wit.getWitRawJSONString());
 		recognizedWitResponse(wit);
 		toggleSpeechProcessing();
-		Process p2 = new ProcessBuilder("killall", "xflux").start();
+//		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
 	public void toggleSpeechProcessing() {
@@ -242,7 +255,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
         basicDesign.getDebugPanel().appendText(text);
     }
 
-
 	/**
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 * @param response
@@ -250,8 +262,6 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
-
-
 
 		switch (intent) {
 			case "add":
