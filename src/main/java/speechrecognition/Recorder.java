@@ -88,7 +88,7 @@ public class Recorder implements Runnable{
 
 	public static void recordExtern(File file) throws IOException, InterruptedException {
 
-		Process p = new ProcessBuilder("rec", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
+		Process p = new ProcessBuilder("sox", "-d", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
 		p.waitFor();
 	}
 

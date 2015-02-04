@@ -1,16 +1,25 @@
 package main.java.userInterface;
 
-import main.java.gesturerecognition.Imagedata;
-import main.java.gesturerecognition.Line;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import main.java.gesturerecognition.Imagedata;
+import main.java.userInterface.OurController.ToolMode;
 
 /**
  * Created by pold on 12/10/14.
@@ -29,12 +38,7 @@ public class ContentPanel extends JPanel {
 
 	public void setKeyTapped(boolean keyTapped) {
 		this.keyTapped = keyTapped;
-
 	}
-
-		// Shapes for displaying hand position
-	int x = 0;
-	int y = 0;
 
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int scr_width = screenSize.width;
@@ -57,33 +61,12 @@ public class ContentPanel extends JPanel {
 		this.ourController = ourController;
     }
 
-
     public ArrayList<MyImage> getImageList() { 
     	return imageList;
     }
 
-
-
 	// Leap Stuff
-
-
-	// Remove after integration
-	private java.util.List<Imagedata> shapesList = new ArrayList<Imagedata>();
-	// Which object is selected
-	private Imagedata activeShape;
 	ToolMode toolModeIndex = ToolMode.MOVE;
-
-
-	// Resize mode
-	private double cursorX;
-	private double cursorY;
-
-
-
-	// Tool Mode
-	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, ROTATE, CUT
-	}
 
 	// Shape Mode
 	public enum ShapeMode {
@@ -108,25 +91,11 @@ public class ContentPanel extends JPanel {
 	// Transform for rotation
 	AffineTransformOp op;
 
-
-	public void cursorMoved(int XPos, int YPos) {
-		final int x = XPos;
-		final int y = YPos;
-		// Only display a hand if the cursor is hovering over the items
-		boolean foundobject = false;
-
-
-		for (MyImage i : this.imageList) {
-
-			}
-		}
-
-
 	public void setShapeMode(ShapeMode shapeMode) {
 		this.shapeModeIndex = shapeMode;
 	}
 
-	public void setToolMode(ToolMode toolMode) {
+	public void setToolMode(OurController.ToolMode toolMode) {
 		this.toolModeIndex = toolMode;
 	}
 
@@ -180,125 +149,6 @@ public class ContentPanel extends JPanel {
 		repaint();
 	}
 
-
-	public void cursorReleased(int XPos, int YPos) {
-		switch (toolModeIndex) {
-			case MOVE:
-			case ENLARGE:
-			case REDUCE:
-			case ROTATE:
-			case CUT:
-				if (XPos < 0 || XPos > this.getWidth() || YPos < 0
-						|| YPos > this.getHeight())
-					shapesList.remove(activeShape);
-				break;
-			default:
-				System.out.println("Tool not found: " + toolModeIndex);
-				break;
-		}
-	}
-
-	public void cursorDragged(int XPos, int YPos) {
-		double deltaY, deltaX;
-		double normalizerX, normalizerY;
-		if(!(activeShape==null)) {
-			switch (toolModeIndex) {
-				case ENLARGE:
-					System.out.println("Enlarge");
-					// Mouse movement since previous calculation
-					deltaY = YPos - cursorY;
-					deltaX = XPos - cursorX;
-
-					normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
-					normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
-
-					// Moving up increases height, down decreases height
-					activeShape.setY1((int) (activeShape.getY1() + normalizerY));
-					activeShape.setY2((int) (activeShape.getY2() - 2*normalizerY));
-
-					// Moving right increases width
-					activeShape.setX1((int) (activeShape.getX1() - normalizerX));
-					activeShape.setX2((int) (activeShape.getX2() + 2*normalizerX));
-					break;
-				case REDUCE:
-					System.out.println("Reduce");
-					// Mouse movement since previous calculation
-					deltaY = YPos - cursorY;
-					deltaX = XPos - cursorX;
-
-					normalizerX = (double) activeShape.getWidth() / (double) (activeShape.getWidth() + activeShape.getHeight());
-					normalizerY = - ((double) activeShape.getHeight() / (double) (activeShape.getWidth() + activeShape.getHeight()));
-
-					if(activeShape.getHeight() > 10) {
-						// Moving up increases height, down decreases height
-						activeShape.setY1((int) (activeShape.getY1() - 2*normalizerY));
-						activeShape.setY2((int) (activeShape.getY2() + 2*normalizerY));
-					}
-					if(activeShape.getWidth() > 10) {
-						// Moving right increases width
-						activeShape.setX1((int) (activeShape.getX1() + 2*normalizerX));
-						activeShape.setX2((int) (activeShape.getX2() - 2*normalizerX));
-					}
-					break;
-				case MOVE:
-					System.out.println("Move");
-					// Mouse-movement since previous calculation
-					deltaY = YPos - cursorY;
-					deltaX = XPos - cursorX;
-
-					// Moving up increases height, down decreases height
-					activeShape.setY1((int) (activeShape.getY1() + deltaY));
-					activeShape.setY2((int) (activeShape.getY2() + deltaY));
-
-					// Moving right increases width
-					activeShape.setX1((int) (activeShape.getX1() + deltaX));
-					activeShape.setX2((int) (activeShape.getX2() + deltaX));
-					break;
-				case ROTATE:
-					// do nothing
-					break;
-				default:
-					System.out.println("No Tool selected");
-					break;
-			}
-
-			// Update mouse Coords
-			cursorY = YPos;
-			cursorX = XPos;
-			repaint();
-		}
-	}
-
-
-	public void cursorPressed(int XPos, int YPos) {
-		this.requestFocusInWindow();
-
-		// Update mouse Coords
-		cursorY = YPos;
-		cursorX = XPos;
-
-		switch (toolModeIndex) {
-			case MOVE:
-			case ENLARGE:
-			case REDUCE:
-			case CUT:
-			case ROTATE:
-				repaint();
-				break;
-			default:
-				break;
-
-		}
-
-		this.selectPictureAt(XPos, YPos);
-
-	}
-
-	// End Leap Stuff
-
-
-
-
     public void paintComponent(Graphics g) {
 
         // Casting to 2D seems to be beneficial.
@@ -309,46 +159,29 @@ public class ContentPanel extends JPanel {
         for (MyImage i : imageList) {
 			if (i.isActive()) {
 				i.paint(g2d);
-
-
-				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
-				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
-
-				if (sprite.intersects(leapPos)) {
-
-					Stroke oldStroke = g2d.getStroke();
-					g2d.setColor(Color.black);
-					Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-					g2d.setStroke(dashed);
-					g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
-					g2d.setStroke(oldStroke);
-				}
-
-//				if (leapRightClick) {
-//					for (MyImage im : imageList) {
-//						Rectangle2D sp = new Rectangle2D.Double(im.getX(), im.getY(), im.getWidth(), im.getHeight());
-//						Rectangle2D le = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
-//
-//						System.out.println();
-//
-//						if (sp.intersects(le)) {
-//							im.setSelected(!im.isSelected());
-//						}
-//
-//					}
-//				}
-
+				drawDashedBox(g2d, i);
 			}
 		}
 
 		// Show progress for speech
-		// TODO! Or exclude (it displays a red rectangle)
+		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
 		if (this.speechProcessing) {
-		g2d.setColor(Color.red);
+			ClassLoader cldr = this.getClass().getClassLoader();
+			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
+			ImageIcon imageIcon = new ImageIcon(imageURL);
+			JLabel iconLabel = new JLabel();
+			iconLabel.setIcon(imageIcon);
+			imageIcon.setImageObserver(iconLabel);
 
-			g2d.fillRect(300, 300, 100, 100);
-			g2d.fillRect(370, 300, 100, 100);
+			JLabel label = new JLabel("Listening...");
+			this.add(iconLabel);
+			this.add(label);
+
+		//g2d.setColor(Color.red);
+
+			//g2d.fillRect(300, 300, 100, 100);
+			//g2d.fillRect(370, 300, 100, 100);
 		}
 
 
@@ -416,7 +249,6 @@ public class ContentPanel extends JPanel {
 			default:
 				break;
 		}
-		//g2d.drawString(String.valueOf(this.leapLeftFingers), leapLeftX - 6, leapLeftY + 6);
 
 		// Outline
 		g2d.setStroke(new BasicStroke(1));
@@ -430,11 +262,7 @@ public class ContentPanel extends JPanel {
 		g2d.setColor(Color.darkGray);
 		repaint();
     }
-    
-    /**
-     *  Needs update if we want to select multiple images at once.
-     * @return null if no picture is selected.
-     */
+
     public MyImage getSelectedPicture(){
     	for(MyImage i: imageList){
     		if(i.isSelected())
@@ -442,14 +270,6 @@ public class ContentPanel extends JPanel {
     	}
     	return null;
     }
-
-
-	// Show Leap Hand Position
-	public void update(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
 
     
     public void selectPicture(MyImage image){
@@ -467,7 +287,6 @@ public class ContentPanel extends JPanel {
     	if(selectedImage != null){
     		selectedImage.setSelected(false);
     	}
-
 		for (MyImage i : this.imageList) {
 
 			if (i.getNum() == nr) {
@@ -481,7 +300,6 @@ public class ContentPanel extends JPanel {
     }
 
     public MyImage selectPictureAt(int x, int y){
-
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
 		selectedImage = null;
 		for (MyImage i : imageList) {
@@ -501,14 +319,12 @@ public class ContentPanel extends JPanel {
 		}
 		// Repaint everything in order to see changes
 		repaint();
-
-
 		return selectedImage;
     }
 
-
+    //TODO This method should be removed and the method above should be called.
+    //But we still need to make sure that the X and Y positions of the LEAP and the interface match.
 	public MyImage selectPictureAtLeap(){
-
 		// Draw each image in the image list (if it's active)
 		for (MyImage i : imageList) {
 			if (i.isActive()) {
@@ -521,22 +337,15 @@ public class ContentPanel extends JPanel {
 				} else {
 
 					this.getSelectedPicture().setSelected(!this.getSelectedPicture().isSelected());
-
 				}
 			}
-
 		}
 		// Repaint everything in order to see changes
 		repaint();
 		return selectedImage;
 	}
 
-
-    /**
-     * Edit when functionality for more pages is created.
-     */
     public void addPictureToCurrentPage(MyImage image) {
-
 		image.setActive(!image.isActive());
 		if (image.isActive()) {
 
@@ -574,6 +383,7 @@ public class ContentPanel extends JPanel {
     	repaint();
     	return image;
     }
+    
     public MyImage deleteSelectedPicture(){
     	selectedImage.setActive(false);
     	selectedImage.setSelected(false);
@@ -600,6 +410,19 @@ public class ContentPanel extends JPanel {
 
 	public void setSpeechProcessing(boolean speechProcessing) {
 		this.speechProcessing = speechProcessing;
+	}
+	
+	private void drawDashedBox(Graphics2D g2d, MyImage i){
+		Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+		Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+		if (sprite.intersects(leapPos)) {
+			Stroke oldStroke = g2d.getStroke();
+			g2d.setColor(Color.black);
+			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+			g2d.setStroke(dashed);
+			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
+			g2d.setStroke(oldStroke);
+		}
 	}
 
 }

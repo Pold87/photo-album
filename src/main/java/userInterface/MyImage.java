@@ -20,9 +20,6 @@ public class MyImage {
     private BufferedImage img; // The actual picture
     private int x;
     private int y;
-
-
-
     private int width;
     private int height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
@@ -31,7 +28,6 @@ public class MyImage {
     private boolean selected; //indicates whether image is selected in contentPanel
     
     public MyImage(String path, int x, int y, int num) throws IOException {
-
         // Create URL for image (to handle OS difficulties)
         URL url = getClass().getResource(path);
         System.out.println("Creating image: " + url);
@@ -44,8 +40,7 @@ public class MyImage {
         this.rotationDegrees=0;
         setDisplaySize();
         width = img.getWidth();
-        height = img.getHeight();
-        
+        height = img.getHeight();   
     }
     
     public boolean isActive() {
@@ -141,14 +136,9 @@ public class MyImage {
 
 
     public void paint(Graphics g){
-//    	System.out.println("Drawing picture: " + num);
-    	//System.out.print("X: "+ x +" Y: "+y );
-    	//g2d.translate(0, 0);
-
         Graphics2D g2d = (Graphics2D) g;
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
         g2d.drawImage(img, x, y, null);
-
 
         if(selected){
                 //draw blue frame around image if it is now selected
@@ -162,7 +152,6 @@ public class MyImage {
     	}
     	g2d.setTransform(new AffineTransform());
     }
-
     
     public boolean contains(Point p){
 
@@ -176,5 +165,4 @@ public class MyImage {
     public int getHeight() {
         return height;
     }
-
 }

@@ -195,13 +195,13 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 			// Cursor Released
 			if (!rightHandClick && prevRightClick) {
-				contentPanel.cursorReleased(rightHandXPos, rightHandYPos);
+				ourController.fingerReleased(rightHandXPos, rightHandYPos);
 				prevRightClick = false;
 			}
 
 			// Cursor dragged
 			if (rightHandClick && prevRightClick) {
-				contentPanel.cursorDragged(rightHandXPos, rightHandYPos);
+				ourController.fingerDragged(rightHandXPos, rightHandYPos);
 			}
 
 			// Shape Mode
@@ -210,7 +210,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 //				contentPanel.setToolMode(BasicDesign.ToolMode.REDUCE);
 					break;
 				case 1: // MOVE
-				contentPanel.setToolMode(ContentPanel.ToolMode.MOVE);
+				contentPanel.setToolMode(OurController.ToolMode.MOVE);
 					ourController.movePicture(rightHandXPos, rightHandYPos);
 //					contentPanel.update(rightHandXPos, rightHandYPos);
 //					ourController.movePicture(rightHandXPos, rightHandYPos);
