@@ -22,7 +22,7 @@ import sun.audio.AudioStream;
 import javax.swing.*;
 
 
-public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;

@@ -15,7 +15,7 @@ import java.awt.image.AffineTransformOp;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import main.java.gesturerecognition.Imagedata;
