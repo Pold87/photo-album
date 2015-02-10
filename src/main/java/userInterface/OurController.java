@@ -1,29 +1,23 @@
 package main.java.userInterface;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import main.java.speechrecognition.Recorder;
 import main.java.speechrecognition.Wit;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-
-import javax.swing.*;
 
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 
+	public Logger logger = new Logger(0);
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
