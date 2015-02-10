@@ -128,17 +128,12 @@ public class MyImage {
     public void incrementRotation(int degree){
     	rotationDegrees += degree;   	
     }
-    
-    //Is this a necessary method?
-    public void setRotation(int degree){
-    	rotationDegrees = degree;
-    }
-
 
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
         g2d.drawImage(img, x, y, null);
+        g2d.drawString(Integer.toString(this.num), x, y - 5);
 
         if(selected){
                 //draw blue frame around image if it is now selected
@@ -153,11 +148,6 @@ public class MyImage {
     	g2d.setTransform(new AffineTransform());
     }
     
-    public boolean contains(Point p){
-
-    	return false;
-    }
-
     public int getWidth() {
         return width;
     }

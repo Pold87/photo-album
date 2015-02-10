@@ -6,15 +6,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import edu.cmu.sphinx.api.Configuration;
+import edu.cmu.sphinx.api.LiveSpeechRecognizer;
+import edu.cmu.sphinx.api.SpeechResult;
+import main.java.speechrecognition.Production;
 import main.java.speechrecognition.Recorder;
+import main.java.speechrecognition.SpeechCommands;
 import main.java.speechrecognition.Wit;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
@@ -37,14 +39,20 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		MOVE, ENLARGE, REDUCE, ROTATE, CUT
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
-    
+
+	// CMU Sphinx
+
+	public SpeechCommands speechCommands;
+
 	public OurController(){
 		super();
 	}
-	
-	public void initialize(ContentPanel cp, BasicDesign bd){
+
+	public void initialize(ContentPanel cp, BasicDesign bd) throws IOException {
 		contentPanel = cp;
 		basicDesign = bd;
+
+		this.speechCommands = new SpeechCommands();
 	}
 
 	public void recognizeSpeech() throws Exception {
@@ -76,6 +84,22 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
+	public void recognizeSimpleSpeech() {
+
+		SpeechResult utterance = this.speechCommands.recognizeCommand();
+		System.out.println(utterance.getHypothesis());
+		System.out.println(utterance.getResult());
+		System.out.println(utterance.getNbest(3));
+		System.out.println(utterance.getLattice());
+		System.out.println(utterance.getWords());
+	}
+
+	public void recognizeCombined() {
+
+
+
+	}
+
 	public void toggleSpeechProcessing() {
 
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
@@ -86,7 +110,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
 	}
-	
+
 	public void addPictureFromLibrary(int nr) {
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
@@ -104,7 +128,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		basicDesign.getToolbar().setEnabledUndoButton(true);
 		contentPanel.repaint();
 	}
-	
+
 	public void deleteSelectedPicture(){
 		MyImage image = contentPanel.deleteSelectedPicture();
 		performedActions.add(new ActionDelete(image, this));
@@ -121,7 +145,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		Color oldColor = contentPanel.getBackground();
 		this.setBackground(oldColor.brighter());
 	}
-	
+
 	public void movePicture(int x, int y) {
 		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
@@ -152,17 +176,17 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	}
 	//END CommandInterface
 
-	
+
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
 		fingerDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
-	
+
 	public void fingerMoved(int x, int y){
 		contentPanel.setLeapRightX(x);
 		contentPanel.setLeapRightY(y);
 	}
-	
+
 	//Currently not used, but we're going to.
 	public void fingerPressed(int XPos, int YPos) {
 		contentPanel.requestFocusInWindow();
@@ -172,7 +196,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		contentPanel.setLeapRightY(YPos);
 		contentPanel.selectPictureAt(XPos, YPos);
 	}
-	
+
 	public void fingerReleased(int XPos, int YPos) {
 		switch (toolModeIndex) {
 			case MOVE:
@@ -181,7 +205,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 			case ROTATE:
 			case CUT:
 				if(draggingPicture != null){
-					performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
+					performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));
 					draggingPicture = null;
 					previousCursorX = -1;
 					previousCursorY = -1;
@@ -191,7 +215,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				System.out.println("Tool not found: " + toolModeIndex);
 		}
 	}
-	
+
 
 	public void cursorDragged(int XPos, int YPos) {
 		int deltaY =YPos - previousCursorY, deltaX = XPos - previousCursorX;
@@ -210,7 +234,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
 					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-					
+
 					//TODO Fix this function. In our current implementation of MyImage, it doesn't work.
 					/*
 					// Moving up increases height, down decreases height
@@ -264,10 +288,10 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		}
 		}
 	}
-	
+
 	public void fingerDragged(int x, int y) {
 		draggingPicture = contentPanel.getSelectedPicture();
-		
+
 		if(draggingPicture != null)
         // Set mouse position, if there is no old Mouse position.
         if (previousCursorX == -1) {
@@ -277,7 +301,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
             oldYPos = draggingPicture.getY();
         } else {
             // Get current mouse position
-        	
+
             // Get difference between old mouse position and current position
             Integer diffX = x - previousCursorX;
             Integer diffY = y - previousCursorY;
@@ -298,7 +322,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
 	}
-	
+
 	public void mouseClicked(MouseEvent mouseEvent) {
 		if(currentAction.equals("select")|| currentAction.equals("move")){ //Why do we have a separate move button anyway?
 			contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
@@ -322,14 +346,14 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 
 	public void mouseReleased(MouseEvent e) {
 		if(draggingPicture != null){
-			performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
+			performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));
 			draggingPicture = null;
 			previousCursorX = -1;
 			previousCursorY = -1;
 		}
 	}
 	//END MouseListeners
-	
+
 	//START toolbarListener
 	public void recognizedText(String text) {
         basicDesign.getDebugPanel().appendText(text);
@@ -339,7 +363,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 * @param response
 	 */
-    public void recognizedWitResponse(Wit response) throws FileNotFoundException {
+    public void recognizedWitResponse(Wit response) throws Exception {
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
 
@@ -354,7 +378,7 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 			case "rotate":
 				ArrayList<Integer> rotations = response.extractNumbersShifted();
 				if (rotations.isEmpty()) {
-					this.rotate(90); // Rotate 90 degrees if nothing else is said.
+					this.rotate(45); // Rotate 90 degrees if nothing else is said.
 				} else {
 					// Only use first number if several rotation degrees have been detected.
 					this.rotate(rotations.get(0));
@@ -371,7 +395,10 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				if (color != null) {
 					contentPanel.setBackground(color);
 				} else {
-					System.out.println("Unknown color: ");
+					System.out.println("Unknown color");
+					Production production = new Production();
+					production.tts("Unknown color");
+					production.play();
 				}
 				break;
 			case "undo":
@@ -385,6 +412,9 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 				break;
 			case "brighter":
 				this.brighter();
+				break;
+			case "move":
+				this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
 				break;
 			case "exit":
 				System.exit(0);
@@ -415,18 +445,24 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		}
 	}
 
-    public void toolbarButtonClicked(String button) {
+    public void toolbarButtonClicked(String button)  {
 		if (button == "undo") {
 			this.undo();
 		} else if (button == "redo") {
 			this.redo();
+		} else if (button == "simpleSpeech") {
+			try {
+				this.recognizeSimpleSpeech();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			currentAction = button;
 		}
 	}
     //END ToolbarListener
 
-    
+
     //START ActionListener
     //Used Only by the PhotoBar
 	public void actionPerformed(ActionEvent e) {
@@ -443,14 +479,14 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		contentPanel.selectPicture(image);
 		contentPanel.repaint();
 	}
-	
+
 	public void addPictureToCurrentPage(MyImage image){
 		contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
         basicDesign.getToolbar().setEnabledUndoButton(true);
         contentPanel.repaint();
 	}
-	
+
 	/*
 	 * Kinda nasty hack. I use this to make sure undone actions don't go back in the performedActions list.
 	 */

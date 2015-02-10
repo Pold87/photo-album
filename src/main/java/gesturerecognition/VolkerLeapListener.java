@@ -34,8 +34,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 	public void onConnect(Controller controller) {
 		System.out.println("Leap Motion Connected");
-		controller.enableGesture(Gesture.Type.TYPE_SWIPE);
-		controller.enableGesture(Gesture.Type.TYPE_SCREEN_TAP);
 		controller.config().setFloat("Gesture.Swipe.MinLength", 250.0f);
 		controller.config().save();
 	}
@@ -48,6 +46,8 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 		System.out.println("Leap Motion Initialization");
 		// Enable recognition of circle gesture
 		controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
+		controller.enableGesture(Gesture.Type.TYPE_SWIPE);
+		controller.enableGesture(Gesture.Type.TYPE_SCREEN_TAP);
 	}
 
 	public void onFrame(Controller controller) {
@@ -70,9 +70,9 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 		}
 			contentPanel.setLeapRightClick(false);
 			contentPanel.setLeapLeftClick(false);
+			contentPanel.setLeapLeftClick(false);
 			// Update gestures
 			updateGestures(frame);
-		contentPanel.repaint();
 		}
 
 	private void updateGestures(Frame frame) {
@@ -151,7 +151,14 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 						contentPanel.setLeapRightX(rightHandXPos);
 						contentPanel.setLeapRightY(rightHandYPos);
 						contentPanel.selectPictureAtLeap();
-						contentPanel.repaint();
+						break;
+					case TYPE_SWIPE:
+
+						if (contentPanel.getSelectedPicture() != null) {
+							contentPanel.addPictureToCurrentPage(contentPanel.getSelectedPicture());
+						}
+						System.out.println("Swipe !!!");
+					break;
 					default:
 						break;
 				}

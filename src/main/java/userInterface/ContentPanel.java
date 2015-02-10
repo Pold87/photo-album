@@ -15,7 +15,7 @@ import java.awt.image.AffineTransformOp;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import main.java.gesturerecognition.Imagedata;
@@ -75,7 +75,6 @@ public class ContentPanel extends JPanel {
 
 	private ShapeMode shapeModeIndex = ShapeMode.IMAGE;
 
-
 	// Leap cursor right
 	private int leapRightX = 9999, leapRightY = 9999;
 	private float leapRightScreenDist = 1.0f;
@@ -97,6 +96,14 @@ public class ContentPanel extends JPanel {
 
 	public void setToolMode(OurController.ToolMode toolMode) {
 		this.toolModeIndex = toolMode;
+	}
+
+	public int getLeapRightX() {
+		return leapRightX;
+	}
+
+	public int getLeapRightY() {
+		return leapRightY;
 	}
 
 	public void setLeapRightFingers(int leapFingers) {
@@ -167,16 +174,16 @@ public class ContentPanel extends JPanel {
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
 		if (this.speechProcessing) {
-			ClassLoader cldr = this.getClass().getClassLoader();
-			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
-			ImageIcon imageIcon = new ImageIcon(imageURL);
-			JLabel iconLabel = new JLabel();
-			iconLabel.setIcon(imageIcon);
-			imageIcon.setImageObserver(iconLabel);
-
-			JLabel label = new JLabel("Listening...");
-			this.add(iconLabel);
-			this.add(label);
+//			ClassLoader cldr = this.getClass().getClassLoader();
+//			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
+//			ImageIcon imageIcon = new ImageIcon(imageURL);
+//			JLabel iconLabel = new JLabel();
+//			iconLabel.setIcon(imageIcon);
+//			imageIcon.setImageObserver(iconLabel);
+//
+//			JLabel label = new JLabel("Listening...");
+//			this.add(iconLabel);
+//			this.add(label);
 
 		//g2d.setColor(Color.red);
 

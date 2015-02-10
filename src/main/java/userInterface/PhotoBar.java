@@ -38,6 +38,7 @@ public class PhotoBar extends JToolBar {
             	//ThumbnailAction thumbAction = new ThumbnailAction(photo,buttonWidth, pic);
             	JButton thumbButton = new JButton(new ImageIcon(photo.getScaledImage(buttonWidth, buttonWidth)));
             	thumbButton.setActionCommand(i + "");
+                thumbButton.setText(Integer.toString(photo.getNum()));
             	this.add(thumbButton);
             	thumbButton.addActionListener(listener);
             	x = x+20;
