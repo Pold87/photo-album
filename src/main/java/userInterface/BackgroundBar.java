@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pold on 1/25/15.
@@ -30,9 +32,9 @@ public class BackgroundBar extends JToolBar{
         Color[] colorArray = {
                   Color.WHITE
                 , Color.BLACK
+                , Color.RED
                 , Color.BLUE
                 , Color.CYAN
-                , Color.DARK_GRAY
                 , Color.MAGENTA
                 , Color.PINK
                 , Color.GREEN
@@ -40,6 +42,19 @@ public class BackgroundBar extends JToolBar{
                 , Color.GRAY
                 , Color.ORANGE
         };
+
+        Map<Color, String> colorMap = new HashMap<Color, String>();
+        colorMap.put(Color.WHITE, "White");
+        colorMap.put(Color.BLACK, "Black");
+        colorMap.put(Color.RED, "Red");
+        colorMap.put(Color.BLUE, "Blue");
+        colorMap.put(Color.CYAN, "Cyan");
+        colorMap.put(Color.MAGENTA, "Magenta");
+        colorMap.put(Color.PINK, "Pink");
+        colorMap.put(Color.GREEN, "Green");
+        colorMap.put(Color.YELLOW, "Yellow");
+        colorMap.put(Color.GRAY, "Gray");
+        colorMap.put(Color.ORANGE, "Orange");
 
 
         for (final Color c : colorArray) {
@@ -52,8 +67,12 @@ public class BackgroundBar extends JToolBar{
             });
 
             imageButton.setPreferredSize(new Dimension(100, 100));
-
             imageButton.setBackground(c);
+            if (c.equals(Color.BLACK)) {
+                imageButton.setForeground(Color.WHITE);
+            }
+
+            imageButton.setText(colorMap.get(c));
             imageButton.setOpaque(true);
             this.add(imageButton);
 

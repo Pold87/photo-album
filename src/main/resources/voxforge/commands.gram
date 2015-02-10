@@ -1,6 +1,11 @@
 #JSGF V1.0;
+/**
+ * JSGF Grammar for Hello World example
+ */
+grammar photoalbum;
 
-
-<exit_command> = exit;
-
-public <command> =   <exit_command>;
+<action> = open | close | delete | move;
+<object> = [the | a] (window | file | menu);
+<startPolite> = (please | kindly | could you | oh mighty computer) *;
+<endPolite> = [ please | thanks | thank you ];
+public <command> = <action> <object>;

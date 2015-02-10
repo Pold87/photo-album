@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -18,6 +19,7 @@ public class Toolbar extends JToolBar {
     private JButton rotateButton;
     private JButton undoButton;
     private JButton redoButton;
+    private JButton simpleSpeechButton;
     private ToolBarListener listener;
     private OurController controller;
 
@@ -32,7 +34,11 @@ public class Toolbar extends JToolBar {
         // Create buttons and add listeners.
         selectButton = new JButton(new AbstractAction("select") {
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.toolbarButtonClicked("select");
+                try {
+                    listener.toolbarButtonClicked("select");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         speechButton = new JButton(new AbstractAction("speech") {
@@ -56,28 +62,57 @@ public class Toolbar extends JToolBar {
         moveButton = new JButton(new AbstractAction("move") {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.toolbarButtonClicked("move");
+                try {
+                    listener.toolbarButtonClicked("move");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         rotateButton = new JButton(new AbstractAction("rotate") {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.toolbarButtonClicked("rotate");
+                try {
+                    listener.toolbarButtonClicked("rotate");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         undoButton = new JButton(new AbstractAction("undo") {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.toolbarButtonClicked("undo");
+                try {
+                    listener.toolbarButtonClicked("undo");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         redoButton = new JButton(new AbstractAction("redo") {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                listener.toolbarButtonClicked("redo");
+                try {
+                    listener.toolbarButtonClicked("redo");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        simpleSpeechButton = new JButton(new AbstractAction("simpleSpeech") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                try {
+                    listener.toolbarButtonClicked("simpleSpeech");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -104,6 +139,7 @@ public class Toolbar extends JToolBar {
         add(rotateButton);
         add(undoButton);
         add(redoButton);
+        add(simpleSpeechButton);
 
         undoButton.setEnabled(false);
         redoButton.setEnabled(false);
