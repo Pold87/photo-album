@@ -10,12 +10,15 @@ public class ActionRotate implements Action {
 		this.image = image;
 		this.degrees = degrees;
 		this.ourController = ourController;
+
+		ourController.logger.logAction("Rotated picture " + image.getNum() + "  " + degrees + " degrees.");
 	}
 
 
 	public void redo() {
 		ourController.selectPicture(image);
 		ourController.rotate(degrees);
+		ourController.logger.logAction("Redo");
 	}
 
 
@@ -24,6 +27,7 @@ public class ActionRotate implements Action {
 		ourController.selectPicture(image);
 		ourController.rotate(-degrees);
 		ourController.removeLastActionFromList();
+		ourController.logger.logAction("Undo");
 	}
 
 }

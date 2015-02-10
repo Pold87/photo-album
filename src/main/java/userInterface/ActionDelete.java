@@ -8,18 +8,21 @@ public class ActionDelete implements Action {
 	public ActionDelete(MyImage image, OurController ourController) {
 		this.image = image;
 		this.ourController = ourController;
+		ourController.logger.logAction("Delete picture " + image.getNum());
 	}
 
 
 	public void redo() {
 		ourController.selectPicture(image);
 		ourController.deleteSelectedPicture();
+		ourController.logger.logAction("Redo");
 	}
 
 
 	public void undo() {
 		ourController.addPictureToCurrentPage(image);
 		ourController.removeLastActionFromList();
+		ourController.logger.logAction("Undo");
 	}
 
 }

@@ -102,6 +102,7 @@ public class ContentPanel extends JPanel {
 		this.shapeModeIndex = shapeMode;
 	}
 
+
 	public void setLeapRightFingers(int leapFingers) {
 		this.leapRightFingers = leapFingers;
 		repaint();
@@ -170,23 +171,44 @@ public class ContentPanel extends JPanel {
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
 		if (this.speechProcessing) {
-			ClassLoader cldr = this.getClass().getClassLoader();
-			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
-			ImageIcon imageIcon = new ImageIcon(imageURL);
-			JLabel iconLabel = new JLabel();
-			iconLabel.setIcon(imageIcon);
-			imageIcon.setImageObserver(iconLabel);
+//			ClassLoader cldr = this.getClass().getClassLoader();
+//			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
+//			ImageIcon imageIcon = new ImageIcon(imageURL);
+//			JLabel iconLabel = new JLabel();
+//			iconLabel.setIcon(imageIcon);
+//			imageIcon.setImageObserver(iconLabel);
+//
+//			JLabel label = new JLabel("Listening...");
+//			this.add(iconLabel);
+//			this.add(label);
 
-			JLabel label = new JLabel("Listening...");
-			this.add(iconLabel);
-			this.add(label);
-
-			//g2d.setColor(Color.red);
 
 			//g2d.fillRect(300, 300, 100, 100);
 			//g2d.fillRect(370, 300, 100, 100);
 		}
 
+		// Finger count indicator
+		g2d.setColor(Color.black);
+		Font font = new Font("Verdana", Font.BOLD, 18);
+		g2d.setFont(font);
+
+		////// Leap cursor left /////////
+		g2d.setStroke(new BasicStroke(1)); // Thickness
+		// Outline - border
+		g2d.setColor(Color.darkGray);
+		int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
+
+		g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
+		// Filling
+		g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
+				255, 0, 0, 50));
+		g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
+
+		// Finger count indicator
+		g2d.setColor(Color.darkGray);
+		g2d.setFont(font);
 
 		//////// Leap cursor right ////////
 		g2d.setStroke(new BasicStroke(1)); // Thickness
@@ -203,10 +225,11 @@ public class ContentPanel extends JPanel {
 		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
 				leapRightCursorSize, leapRightCursorSize);
 
+
 		// Finger count indicator
 		g2d.setColor(Color.black);
-		Font font = new Font("Verdana", Font.BOLD, 18);
 		g2d.setFont(font);
+
 		// Show which action
 		switch (toolModeIndex) {
 			case MOVE:
@@ -228,48 +251,7 @@ public class ContentPanel extends JPanel {
 				break;
 		}
 		//g2d.drawString(String.valueOf(this.leapRightFingers), leapRightX - 6, leapRightY + 6);
-		
-		/////// Leap cursor left /////////
-		g2d.setStroke(new BasicStroke(1)); // Thickness
-		// Outline - border
-		g2d.setColor(Color.darkGray);
-		int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
 
-		g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-				leapLeftCursorSize, leapLeftCursorSize);
-		// Filling
-		g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
-				255, 0, 0, 50));
-		g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-				leapLeftCursorSize, leapLeftCursorSize);
-
-		// Finger count indicator
-		g2d.setColor(Color.darkGray);
-		g2d.setFont(font);
-		
-		// Show which action
-		switch (toolModeIndex) {
-		case MOVE:
-			g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
-			break;
-		case ENLARGE:
-			g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
-			break;
-		case REDUCE:
-			g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
-			break;
-		case ROTATE:
-			g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
-			break;
-		case CUT:
-			g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
-			break;
-		default:
-			break;
-		}
-		// Finger count indicator
-		//g2d.setColor(Color.darkGray);
-		//g2d.setFont(font);
 
 		// Show which action
 		switch (toolModeIndex) {

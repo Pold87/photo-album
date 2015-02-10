@@ -129,18 +129,6 @@ public class BasicDesign extends JFrame implements ComponentListener {
         Graphics2D g2d = (Graphics2D) this.getGraphics();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);

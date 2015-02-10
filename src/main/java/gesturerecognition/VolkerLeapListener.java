@@ -117,7 +117,15 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			            //Handle unrecognized states
 			            break;
 				}
+				
 		    }
+			break;
+			case TYPE_SWIPE:
+
+				if (contentPanel.getSelectedPicture() != null) {
+					contentPanel.addPictureToCurrentPage(contentPanel.getSelectedPicture());
+				}
+				System.out.println("Swipe !!!");
 			break;
 			default:
 				System.out.println(gesture.toString() + " detected");

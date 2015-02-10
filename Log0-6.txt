@@ -1,0 +1,24 @@
+Added picture 2
+Move picture 2 to 1497 265
+Move picture 2 to 918 442
+Move picture 2 to 1035 808
+Added picture 2
+Added picture 3
+Move picture 3 to 1670 383
+Move picture 3 to 673 647
+Move picture 3 to 1670 294
+Move picture 3 to 1670 325
+Added picture 3
+Move picture 3 to 1009 623
+Rotated picture 3  16 degrees.
+Move picture 3 to -250 5
+Added picture 0
+Move picture 0 to 1670 -30
+Added picture 2
+Added picture 2
+Added picture 2
+Added picture 2
+Move picture 2 to 832 587
+Move picture 2 to 1558 420
+Move picture 2 to 1670 497
+Move picture 2 to 1670 276

@@ -1,6 +1,7 @@
 package main.java.userInterface;
 
 import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -21,11 +22,26 @@ import main.java.speechrecognition.Wit;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
 
+import edu.cmu.sphinx.api.LiveSpeechRecognizer;
+import edu.cmu.sphinx.api.SpeechResult;
+import main.java.speechrecognition.Production;
+import main.java.speechrecognition.Recorder;
+import main.java.speechrecognition.SpeechCommands;
+import main.java.speechrecognition.Wit;
+
 import javax.swing.*;
 
+import java.io.FileNotFoundException;
+import java.net.URL;
+import java.util.ArrayList;
 
-public class OurController implements CommandInterface, MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+import main.java.speechrecognition.Recorder;
+import main.java.speechrecognition.Wit;
 
+
+public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+
+	public Logger logger = new Logger(0);
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
     //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
@@ -82,6 +98,16 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
+	public void recognizeSimpleSpeech() {
+
+//		SpeechResult utterance = this.speechCommands.recognizeCommand();
+//		System.out.println(utterance.getHypothesis());
+//		System.out.println(utterance.getResult());
+//		System.out.println(utterance.getNbest(3));
+//		System.out.println(utterance.getLattice());
+//		System.out.println(utterance.getWords());
+	}
+	
 	public void toggleSpeechProcessing() {
 
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
@@ -166,8 +192,10 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 		}
 	}
 	//END CommandInterface
+//			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
 
-	
+
+
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());//fingerDragged(mouseEvent.getX(), mouseEvent.getY());
@@ -177,6 +205,11 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 	//	contentPanel.setLeapRightX(x);
 	//	contentPanel.setLeapRightY(y);
 	//}
+
+	public void fingerMoved(int x, int y){
+		contentPanel.setLeapRightX(x);
+		contentPanel.setLeapRightY(y);
+	}
 	
 	//Currently not used, but we're going to.
 	public void fingerPressed(int XPos, int YPos) {
@@ -317,105 +350,8 @@ public class OurController implements CommandInterface, MouseMotionListener, Mou
 			contentPanel.repaint();
 		}
 	}
-
-	/*public void cursorMoved(int XPos, int YPos) {
-		final int x = XPos;
-		final int y = YPos;
-		// Only display a hand if the cursor is hovering over the items
-		boolean foundobject = false;
-		for (int i = shapesList.size() - 1; i >= 0; i--) {
-			if (shapesList.get(i).getSprite().intersects(x, y, 5, 5)
-					&& foundobject == false) {
-				foundobject = true;
-			}
-		}
-
-		if (foundobject && toolModeIndex != ToolMode.MOVE)
-			this.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		else
-			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	}*/
-	
-	
-	
-
-	/*public void cursorDragged(int XPos, int YPos) {
-		int deltaY =YPos - previousCursorY, deltaX = XPos - previousCursorX;
-		double normalizerX, normalizerY;
-		MyImage selectedImage = contentPanel.getSelectedPicture();
-		if(selectedImage != null) {
-		       if (previousCursorX == -1) {
-		            previousCursorX = XPos;
-		            previousCursorY = YPos;
-		            oldXPos = selectedImage.getX();
-		            oldYPos = selectedImage.getY();
-		        } else {
-			switch (toolModeIndex) {
-				case ENLARGE:
-					System.out.println("Enlarge");
-
-					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-					
-					//TODO Fix this function. In our current implementation of MyImage, it doesn't work.
-					/*
-					// Moving up increases height, down decreases height
-					selectedImage.setY((int) (selectedImage.getY() + normalizerY));
-					selectedImage.setWidth((int) (selectedImage.getY2() - 2*normalizerY));
-
-					// Moving right increases width
-					selectedImage.setX1((int) (selectedImage.getX1() - normalizerX));
-					selectedImage.setX2((int) (selectedImage.getX2() + 2*normalizerX));
-					*/
-	/*
-					break;
-				case REDUCE:
-					System.out.println("Reduce");
-					// Mouse movement since previous calculation
-
-					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-
-					//TODO: Same goes here as for Enlarge.
-					/*
-					if(selectedImage.getHeight() > 10) {
-						// Moving up increases height, down decreases height
-						selectedImage.setY1((int) (selectedImage.getY1() - 2*normalizerY));
-						selectedImage.setY2((int) (selectedImage.getY2() + 2*normalizerY));
-					}
-					if(selectedImage.getWidth() > 10) {
-						// Moving right increases width
-						selectedImage.setX1((int) (selectedImage.getX1() + 2*normalizerX));
-						selectedImage.setX2((int) (selectedImage.getX2() - 2*normalizerX));
-					}
-					*/
-	/*
-					break;
-				case MOVE:
-					System.out.println("Move");
-					selectedImage.setX(selectedImage.getX() + deltaX);
-					selectedImage.setY(selectedImage.getY() + deltaY);
-
-					break;
-				case ROTATE:
-					// do nothing
-					break;
-				default:
-					System.out.println("No Tool selected");
-					break;
-			}
-
-			// Update mouse Coords
-			previousCursorY = YPos;
-			previousCursorX = XPos;
-			contentPanel.repaint();
-		}
-		}
-	}
-	*/
 	
 	public void fingerDragged(int x, int y) {
-		System.out.println("Finger Dragged");
 		draggingPicture = contentPanel.getSelectedPicture();
 		
 		if(draggingPicture != null)

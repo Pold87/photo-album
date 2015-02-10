@@ -13,11 +13,13 @@ public class ActionMove implements Action {
 		this.newX = newX;
 		this.newY = newY;
 		this.ourController = ourController;
+		ourController.logger.logAction("Move picture " + target.getNum() + " to " + newX + " " + newY);
 	}
 
 	public void redo() {
 		ourController.selectPicture(target);
 		ourController.movePicture(newX, newY);
+		ourController.logger.logAction("Redo");
 	}
 
 	public void undo() {
@@ -25,6 +27,7 @@ public class ActionMove implements Action {
 		ourController.selectPicture(target);
 		ourController.movePicture(oldX, oldY);
 		ourController.removeLastActionFromList();
+		ourController.logger.logAction("Undo");
 	}
 
 }

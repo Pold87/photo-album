@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+<<<<<<< HEAD
   <component name="NewModuleRootManager" inherit-compiler-output="false">
+=======
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+>>>>>>> 076a58355e500931701ddb82b807bc157d1ad8cb
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -9,6 +13,10 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+<<<<<<< HEAD
+=======
+    <orderEntry type="library" name="Maven: javax.media:jmf:2.1.1e" level="project" />
+>>>>>>> 076a58355e500931701ddb82b807bc157d1ad8cb
     <orderEntry type="library" name="Maven: edu.cmu.sphinx:sphinx4-core:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.2" level="project" />
     <orderEntry type="library" name="Maven: edu.cmu.sphinx:sphinx4-data:1.0-SNAPSHOT" level="project" />
@@ -31,5 +39,9 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: org.glassfish:javax.json:1.0.4" level="project" />
+<<<<<<< HEAD
+=======
+    <orderEntry type="library" name="Maven: javax.media:jmf:2.1.1e" level="project" />
+>>>>>>> 076a58355e500931701ddb82b807bc157d1ad8cb
   </component>
 </module>
