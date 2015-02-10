@@ -15,10 +15,11 @@ import java.awt.image.AffineTransformOp;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import main.java.gesturerecognition.Imagedata;
 import main.java.userInterface.OurController.ToolMode;
 
 /**
