@@ -12,6 +12,7 @@ import static java.awt.Color.blue;
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	/** Members **/
     private ContentPanel contentPanel;
+	double totalDegrees = 0;
 
 	private int scrWidth, scrHeight;
 	float clickThresholdRight = 0.0f;
@@ -60,16 +61,19 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			if (h.isLeft()) {
 				try {
 					this.updateLeftHand(frame, h);
+					contentPanel.setLeapRightClick(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			if (h.isRight()) {
 				this.updateRightHand(frame, h);
+				contentPanel.setLeapLeftClick(false);
 			}
-		}
+		} if (frame.hands().isEmpty()) {
 			contentPanel.setLeapRightClick(false);
 			contentPanel.setLeapLeftClick(false);
+		}
 			// Update gestures
 			updateGestures(frame);
 		contentPanel.repaint();
@@ -78,11 +82,54 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	private void updateGestures(Frame frame) {
 		// Check if gesture is circle
 
+		for(Gesture gesture : frame.gestures()) {
+			switch (gesture.type()) {
+				case TYPE_CIRCLE:
+					if(ourController.toolModeIndex == OurController.ToolMode.ROTATE) {
+						switch (gesture.state()) {
+							case STATE_START:
+								//Handle starting gestures
+								break;
+							case STATE_UPDATE:
+								//Handle continuing gestures
+								// Determine direction
+								CircleGesture circle = new CircleGesture(gesture);
+								//boolean clockwise;
+								if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI/2) {
+									//clockwise = true;
+									ourController.rotate(0.30);
+									totalDegrees += 0.30;
+								}
+								else {
+									//clockwise = false;
+									ourController.rotate(-0.30);
+									totalDegrees -= 0.30;
+								}
+								//contentPanel.rotate(clockwise);
+								break;
+							case STATE_STOP:
+								//Handle ending gestures
+								System.out.println("Degrees rotated: " + totalDegrees);
+								ourController.addRotateAction(totalDegrees);
+								totalDegrees = 0;
+								break;
+							default:
+								//Handle unrecognized states
+								break;
+						}
+					}
+					break;
+				default:
+					System.out.println(gesture.toString() + " detected");
+					break;
+			}
+		}
+
 		// Nr of extended fingers on left hand
 
 
 		// TODO that's dirty (include left as well)
-		Hand hand = frame.hand(0);
+		/*Hand hand = frame.hand(0);
 
 		if (hand.isRight()) {
 
@@ -156,7 +203,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 						break;
 				}
 			}
-		}
+		}*/
 	}
 
 	private void updateRightHand(Frame frame, Hand hand) {
@@ -184,47 +231,42 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			// To click or not to click
 			boolean rightHandClick = rightHandDistanceToScreen < clickThresholdRight;
 
-//			// Cursor Pressed
-//			if (rightHandClick && !prevRightClick) {
-//				contentPanel.selectPictureAtLeap(rightHandXPos, rightHandYPos);
-//				System.out.println("Leap " + rightHandXPos + ", " + rightHandYPos);
-//				prevRightClick = true;
-//
-//
-//			}
+		// Cursor Pressed
+		if (rightHandClick && !prevRightClick) {
+			//contentPanel.selectPictureAtLeap(rightHandXPos, rightHandYPos);
+			ourController.cursorPressed(rightHandXPos, rightHandYPos);
+			//System.out.println("Leap " + rightHandXPos + ", " + rightHandYPos);
+			prevRightClick = true;
+		}
 
 			// Cursor Released
 			if (!rightHandClick && prevRightClick) {
-				ourController.fingerReleased(rightHandXPos, rightHandYPos);
+				ourController.cursorReleased(rightHandXPos, rightHandYPos);
 				prevRightClick = false;
 			}
 
 			// Cursor dragged
-			if (rightHandClick && prevRightClick) {
-				ourController.fingerDragged(rightHandXPos, rightHandYPos);
-			}
+		if (rightHandClick && prevRightClick) {
+			ourController.cursorDragged(rightHandXPos, rightHandYPos);
+		}
 
 			// Shape Mode
 			switch (rightHandFingerCount) {
 				case 0: // REDUCE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.REDUCE);
+					contentPanel.setToolMode(OurController.ToolMode.REDUCE);
 					break;
 				case 1: // MOVE
-				contentPanel.setToolMode(OurController.ToolMode.MOVE);
-					ourController.movePicture(rightHandXPos, rightHandYPos);
-//					contentPanel.update(rightHandXPos, rightHandYPos);
-//					ourController.movePicture(rightHandXPos, rightHandYPos);
+					contentPanel.setToolMode(OurController.ToolMode.MOVE);
 					break;
 				case 2: // ROTATE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.ROTATE);
 					break;
 				case 3:
+					contentPanel.setToolMode(OurController.ToolMode.ROTATE);
 					break;
 				case 4:
 					break;
 				case 5: // ENLARGE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.ENLARGE);
-//					ourController.rotate(1);
+					contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
 					break;
 				default:
 					System.out.println("Hoeveel vingers heb je eigenlijk?");
@@ -276,41 +318,41 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 			// Cursor Pressed
 			if (leftHandClick && !prevRightClick) {
-//				contentPanel.cursorPressed(leftHandXPos, leftHandYPos);
+				ourController.cursorPressed(leftHandXPos, leftHandYPos);
 				prevRightClick = true;
 			}
 
 			// Cursor Released
 			if (!leftHandClick && prevRightClick) {
-//				contentPanel.cursorReleased(leftHandXPos, leftHandYPos);
+				ourController.cursorReleased(leftHandXPos, leftHandYPos);
 				prevRightClick = false;
 			}
 
 			// Cursor dragged
 			if (leftHandClick && prevRightClick) {
-//				contentPanel.cursorDragged(leftHandXPos, leftHandYPos);
+				ourController.cursorDragged(leftHandXPos, leftHandYPos);
 			}
 
 			// Shape Mode
 			switch (leftHandFingerCount) {
 				case 0: // REDUCE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.REDUCE);
+					contentPanel.setToolMode(OurController.ToolMode.REDUCE);
 					break;
 				case 1: // MOVE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.MOVE);
+					contentPanel.setToolMode(OurController.ToolMode.MOVE);
 					break;
 				case 2: // ROTATE
 					ourController.rotate(1);
 //				contentPanel.setToolMode(BasicDesign.ToolMode.ROTATE);
 					break;
 				case 3:
-
+					contentPanel.setToolMode(OurController.ToolMode.ROTATE);
 					break;
 				case 4:
 					ourController.recognizeSpeech();
 					break;
 				case 5: // ENLARGE
-//				contentPanel.setToolMode(BasicDesign.ToolMode.ENLARGE);
+					contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
 
 					break;
 				default:

@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -76,6 +77,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
+	public void setToolMode(OurController.ToolMode toolMode) {
+					this.toolModeIndex = toolMode;
+				}
+
 	public void toggleSpeechProcessing() {
 
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
@@ -142,20 +147,29 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		basicDesign.getToolbar().setEnabledUndoButton(true);
 	}
 
-	public void rotate(int degrees) {
+	public void rotate(double degrees) {
 		if (contentPanel.getSelectedPicture() != null) {
 			contentPanel.rotate(degrees);
-			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
+//			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 		}
 
 	}
+
+	public void addRotateAction(double degrees) {
+					if (contentPanel.getSelectedPicture() != null) {
+							//contentPanel.rotate(degrees);
+							System.out.println("actionrotate added");
+							performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
+							basicDesign.getToolbar().setEnabledUndoButton(true);
+						}
+				}
 	//END CommandInterface
 
-	
+
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
-		fingerDragged(mouseEvent.getX(), mouseEvent.getY());
+		cursorDragged(mouseEvent.getX(), mouseEvent.getY());//fingerDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 	
 	public void fingerMoved(int x, int y){
@@ -191,9 +205,112 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				System.out.println("Tool not found: " + toolModeIndex);
 		}
 	}
-	
+
+	/* MOUSE LISTENER */
+
+	public void cursorPressed(int XPos, int YPos) {
+		contentPanel.requestFocusInWindow();
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		// Update mouse Coords
+		oldXPos = XPos;
+		oldYPos = YPos;
+
+		previousCursorY = YPos;
+		previousCursorX = XPos;
+		ArrayList<MyImage> shapesList = contentPanel.getImageList();
+		// Select active shape or image
+		for (int i = 0; i < shapesList.size(); i++) {
+			if (shapesList.get(i).contains(new Point(XPos, YPos))) {//.intersects(XPos, YPos, 5, 5)) {
+				selectedImage = shapesList.get(i);
+				System.out.println("New active shape: " + selectedImage);
+			}
+		}
+
+		switch (toolModeIndex) {
+			case MOVE:
+			case ENLARGE:
+			case REDUCE:
+			case CUT:
+			case ROTATE:
+				contentPanel.repaint();
+				break;
+			default:
+				break;
+
+		}
+	}
+
+	public void cursorReleased(int XPos, int YPos) {
+		System.out.println("Cursor Released");
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		switch (toolModeIndex) {
+			case MOVE:
+			case ENLARGE:
+			case REDUCE:
+			case ROTATE:
+			case CUT:
+				performedActions.add(new ActionMove(selectedImage, oldXPos, oldYPos, XPos, YPos, this));
+				basicDesign.getToolbar().setEnabledUndoButton(true);
+				if (XPos < 0 || XPos > contentPanel.getWidth() || YPos < 0
+						|| YPos > contentPanel.getHeight())
+					contentPanel.deleteSelectedPicture();
+				break;
+			default:
+				System.out.println("Tool not found: " + toolModeIndex);
+				break;
+		}
+	}
+
 
 	public void cursorDragged(int XPos, int YPos) {
+
+		int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
+		//double deltaY, deltaX;
+		double normalizerX, normalizerY;
+		BufferedImage temp;
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		if(!(selectedImage==null)) {
+			switch (toolModeIndex) {
+				case ENLARGE:
+					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
+					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
+
+					selectedImage.setX((int) (selectedImage.getX() - normalizerX));
+					selectedImage.setY((int) (selectedImage.getY() + normalizerY));
+
+					selectedImage.resizeImg((int) (selectedImage.getWidth() + 6*normalizerX), (int) (selectedImage.getHeight() - 6*normalizerY));
+					break;
+				case REDUCE:
+					normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
+					normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
+
+					if(selectedImage.getHeight() > 10 && selectedImage.getWidth() > 10) {
+						selectedImage.setY((int) (selectedImage.getY() - 4*normalizerY));
+						selectedImage.setX((int) (selectedImage.getX() + 4*normalizerX));
+
+						selectedImage.resizeImg((int) (selectedImage.getWidth() - 8*normalizerX), (int) (selectedImage.getHeight() + 8*normalizerY));
+					}
+					break;
+				case MOVE:
+					selectedImage.setX((int) (selectedImage.getX() + deltaX));
+					selectedImage.setY((int) (selectedImage.getY() + deltaY));
+					break;
+				case ROTATE:
+					// do nothing
+					break;
+				default:
+					System.out.println("No Tool selected");
+					break;
+			}
+
+			// Update mouse Coords
+			previousCursorY = YPos;
+			previousCursorX = XPos;
+			contentPanel.repaint();
+		}
+	}
+		/*
+
 		int deltaY =YPos - previousCursorY, deltaX = XPos - previousCursorX;
 		double normalizerX, normalizerY;
 		MyImage selectedImage = contentPanel.getSelectedPicture();
@@ -221,8 +338,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 					selectedImage.setX1((int) (selectedImage.getX1() - normalizerX));
 					selectedImage.setX2((int) (selectedImage.getX2() + 2*normalizerX));
 					*/
-					break;
-				case REDUCE:
+					//break;
+	/*			case REDUCE:
 					System.out.println("Reduce");
 					// Mouse movement since previous calculation
 
@@ -242,8 +359,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 						selectedImage.setX2((int) (selectedImage.getX2() - 2*normalizerX));
 					}
 					*/
-					break;
-				case MOVE:
+//					break;
+		/*		case MOVE:
 					System.out.println("Move");
 					selectedImage.setX(selectedImage.getX() + deltaX);
 					selectedImage.setY(selectedImage.getY() + deltaY);
@@ -264,7 +381,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		}
 		}
 	}
-	
+	*/
 	public void fingerDragged(int x, int y) {
 		draggingPicture = contentPanel.getSelectedPicture();
 		

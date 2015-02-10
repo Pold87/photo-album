@@ -95,9 +95,10 @@ public class ContentPanel extends JPanel {
 		this.shapeModeIndex = shapeMode;
 	}
 
-	public void setToolMode(OurController.ToolMode toolMode) {
-		this.toolModeIndex = toolMode;
-	}
+	public void setToolMode(ToolMode toolModeIndex) {
+					this.toolModeIndex = toolModeIndex;
+					ourController.setToolMode(toolModeIndex);
+				}
 
 	public void setLeapRightFingers(int leapFingers) {
 		this.leapRightFingers = leapFingers;
@@ -184,6 +185,28 @@ public class ContentPanel extends JPanel {
 			//g2d.fillRect(370, 300, 100, 100);
 		}
 
+		// Finger count indicator
+		g2d.setColor(Color.black);
+		Font font = new Font("Verdana", Font.BOLD, 18);
+		g2d.setFont(font);
+
+		////// Leap cursor left /////////
+		g2d.setStroke(new BasicStroke(1)); // Thickness
+		// Outline - border
+		g2d.setColor(Color.darkGray);
+		int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
+
+		g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
+		// Filling
+		g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
+				255, 0, 0, 50));
+		g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
+
+		// Finger count indicator
+		g2d.setColor(Color.darkGray);
+		g2d.setFont(font);
 
 		//////// Leap cursor right ////////
 		g2d.setStroke(new BasicStroke(1)); // Thickness
@@ -199,10 +222,6 @@ public class ContentPanel extends JPanel {
 		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
 				leapRightCursorSize, leapRightCursorSize);
 
-		// Finger count indicator
-		g2d.setColor(Color.black);
-		Font font = new Font("Verdana", Font.BOLD, 18);
-		g2d.setFont(font);
 		// Show which action
 		switch (toolModeIndex) {
 			case MOVE:
@@ -397,7 +416,7 @@ public class ContentPanel extends JPanel {
     	repaint();
     }
 
-    public void rotate(int degrees) {
+    public void rotate(double degrees) {
 		if (this.selectedImage != null) {
 			selectedImage.incrementRotation(degrees);
 		}
