@@ -218,6 +218,7 @@ public class DrawingPanel extends JPanel {
 		g2d.drawOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
 				leapRightCursorSize, leapRightCursorSize);
 		// Filling
+		System.out.println("leapRightClick: " + leapRightClick);
 		g2d.setColor(this.leapRightClick ? new Color(0, 150, 0, 50) : new Color(
 				255, 0, 0, 50));
 		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,

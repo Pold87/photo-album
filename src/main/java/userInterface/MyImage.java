@@ -23,7 +23,7 @@ public class MyImage {
     private int width;
     private int height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
-    private int rotationDegrees; // Degrees of rotation for image.
+    private double rotationDegrees; // Degrees of rotation for image.
     private boolean active; //indicates whether image is being displayed on contentPanel
     private boolean selected; //indicates whether image is selected in contentPanel
     
@@ -40,7 +40,7 @@ public class MyImage {
         this.rotationDegrees=0;
         setDisplaySize();
         width = img.getWidth();
-        height = img.getHeight();   
+        height = img.getHeight();
     }
     
     public boolean isActive() {
@@ -78,7 +78,7 @@ public class MyImage {
         }
         this.img = getScaledImage((int) w, (int) h);
     }
-
+    
     public BufferedImage getImg() {
         return img;
     }
@@ -86,7 +86,62 @@ public class MyImage {
     public void setImg(BufferedImage img) {
         this.img = img;
     }
-
+    
+    
+    
+    public void resizeImg(int newW, int newH) {
+    	width = newW;
+    	height = newH;
+    }
+    
+    public void getScaledInstance(int targetWidth, int targetHeight, /*Object hint,*/ boolean higherQuality) {
+		int type = (img.getTransparency() == Transparency.OPAQUE) ?
+		BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+		
+		System.out.println("getScaledInstance: " + targetWidth + ", " + targetHeight);
+		System.out.println("Previous: " + img.getWidth() + ", " + img.getHeight());
+		
+		BufferedImage ret = img;
+		int w, h;
+		if (higherQuality) {
+			// Use multi-step technique: start with original size, then
+			// scale down in multiple passes with drawImage()
+			// until the target size is reached
+			w = img.getWidth();
+			h = img.getHeight();
+		} else {
+			// Use one-step technique: scale directly from original
+			// size to target size with a single drawImage() call
+			w = targetWidth;
+			h = targetHeight;
+		}
+		System.out.println("test..");
+		do {
+			if (higherQuality && w > targetWidth) {
+				w /= 2;
+				if (w < targetWidth) {
+					w = targetWidth;
+				}
+			}
+			
+			if (higherQuality && h > targetHeight) {
+				h /= 2;
+				if (h < targetHeight) {
+					h = targetHeight;
+				}
+			}
+			System.out.println("test2..");
+			BufferedImage tmp = new BufferedImage(w, h, type);
+			Graphics2D g2 = tmp.createGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, null);
+			g2.drawImage(ret, 0, 0, w, h, null);
+			g2.dispose();
+			ret = tmp;
+			
+		} while (w != targetWidth || h != targetHeight);
+		img = ret;
+	}
+    
     public int getX() {
         return x;
     }
@@ -125,7 +180,7 @@ public class MyImage {
         return resizedImg;
     }
 
-    public void incrementRotation(int degree){
+    public void incrementRotation(double degree){
     	rotationDegrees += degree;   	
     }
     
@@ -138,8 +193,8 @@ public class MyImage {
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
-        g2d.drawImage(img, x, y, null);
-
+        //g2d.drawImage(img, x, y, null);
+		g2d.drawImage(img, x, y, width, height, null);
         if(selected){
                 //draw blue frame around image if it is now selected
             double thickness = 3;

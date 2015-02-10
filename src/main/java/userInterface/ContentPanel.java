@@ -15,6 +15,8 @@ import java.awt.image.AffineTransformOp;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -91,12 +93,13 @@ public class ContentPanel extends JPanel {
 	// Transform for rotation
 	AffineTransformOp op;
 
+	public void setToolMode(ToolMode toolModeIndex) {
+		this.toolModeIndex = toolModeIndex;
+		ourController.setToolMode(toolModeIndex);
+	}
+	
 	public void setShapeMode(ShapeMode shapeMode) {
 		this.shapeModeIndex = shapeMode;
-	}
-
-	public void setToolMode(OurController.ToolMode toolMode) {
-		this.toolModeIndex = toolMode;
 	}
 
 	public void setLeapRightFingers(int leapFingers) {
@@ -178,7 +181,7 @@ public class ContentPanel extends JPanel {
 			this.add(iconLabel);
 			this.add(label);
 
-		//g2d.setColor(Color.red);
+			//g2d.setColor(Color.red);
 
 			//g2d.fillRect(300, 300, 100, 100);
 			//g2d.fillRect(370, 300, 100, 100);
@@ -194,6 +197,7 @@ public class ContentPanel extends JPanel {
 		g2d.drawOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
 				leapRightCursorSize, leapRightCursorSize);
 		// Filling
+		//System.out.println("leapRightClick: " + leapRightClick);
 		g2d.setColor(this.leapRightClick ? new Color(0, 150, 0, 50) : new Color(
 				255, 0, 0, 50));
 		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
@@ -224,10 +228,48 @@ public class ContentPanel extends JPanel {
 				break;
 		}
 		//g2d.drawString(String.valueOf(this.leapRightFingers), leapRightX - 6, leapRightY + 6);
+		
+		/////// Leap cursor left /////////
+		g2d.setStroke(new BasicStroke(1)); // Thickness
+		// Outline - border
+		g2d.setColor(Color.darkGray);
+		int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
+
+		g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
+		// Filling
+		g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
+				255, 0, 0, 50));
+		g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+				leapLeftCursorSize, leapLeftCursorSize);
 
 		// Finger count indicator
 		g2d.setColor(Color.darkGray);
 		g2d.setFont(font);
+		
+		// Show which action
+		switch (toolModeIndex) {
+		case MOVE:
+			g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
+			break;
+		case ENLARGE:
+			g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
+			break;
+		case REDUCE:
+			g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
+			break;
+		case ROTATE:
+			g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
+			break;
+		case CUT:
+			g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
+			break;
+		default:
+			break;
+		}
+		// Finger count indicator
+		//g2d.setColor(Color.darkGray);
+		//g2d.setFont(font);
 
 		// Show which action
 		switch (toolModeIndex) {
@@ -397,7 +439,7 @@ public class ContentPanel extends JPanel {
     	repaint();
     }
 
-    public void rotate(int degrees) {
+    public void rotate(double degrees) {
 		if (this.selectedImage != null) {
 			selectedImage.incrementRotation(degrees);
 		}

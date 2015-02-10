@@ -10,12 +10,12 @@ public class ActionAddPic implements Action {
 		this.ourController = ourController;
 	}
 	
-	@Override
+
 	public void redo() {
 		ourController.addPictureToCurrentPage(picture);
 	}
 
-	@Override
+
 	public void undo() {
 		ourController.selectPicture(picture);
 		ourController.deleteSelectedPicture();

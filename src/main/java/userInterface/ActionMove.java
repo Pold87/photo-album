@@ -21,6 +21,7 @@ public class ActionMove implements Action {
 	}
 
 	public void undo() {
+		System.out.println("undo move");
 		ourController.selectPicture(target);
 		ourController.movePicture(oldX, oldY);
 		ourController.removeLastActionFromList();

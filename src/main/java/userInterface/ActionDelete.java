@@ -10,13 +10,13 @@ public class ActionDelete implements Action {
 		this.ourController = ourController;
 	}
 
-	@Override
+
 	public void redo() {
 		ourController.selectPicture(image);
 		ourController.deleteSelectedPicture();
 	}
 
-	@Override
+
 	public void undo() {
 		ourController.addPictureToCurrentPage(image);
 		ourController.removeLastActionFromList();

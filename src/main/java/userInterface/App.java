@@ -2,6 +2,8 @@ package main.java.userInterface;
 
 import java.awt.*;
 
+import main.java.userInterface.BasicDesign;
+
 /**
  * Created by pold on 12/10/14.
  */

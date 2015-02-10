@@ -12,14 +12,15 @@ public class ActionRotate implements Action {
 		this.ourController = ourController;
 	}
 
-	@Override
+
 	public void redo() {
 		ourController.selectPicture(image);
 		ourController.rotate(degrees);
 	}
 
-	@Override
+
 	public void undo() {
+		System.out.println("undo rotate");
 		ourController.selectPicture(image);
 		ourController.rotate(-degrees);
 		ourController.removeLastActionFromList();

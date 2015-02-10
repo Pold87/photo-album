@@ -11,7 +11,7 @@ public interface CommandInterface {
 	abstract void deletePicture(int nr); //Both?
 	abstract void movePicture(int x, int y); //LEAP
 	abstract void setBackground(Color color); //Both? Maybe different parameters.
-	abstract void rotate(int degrees); //Both?
+	abstract void rotate(double degrees); //Both?
 	//abstract void 
 
 

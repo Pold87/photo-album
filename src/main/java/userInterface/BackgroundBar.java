@@ -42,11 +42,10 @@ public class BackgroundBar extends JToolBar{
         };
 
 
-        for (Color c : colorArray) {
+        for (final Color c : colorArray) {
 
             JButton imageButton = new JButton();
             imageButton.addActionListener(new AbstractAction() {
-                @Override
                 public void actionPerformed(ActionEvent actionEvent) {
                     listener.setBackground(c);
                 }
