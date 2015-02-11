@@ -11,7 +11,7 @@ public <command> =   <exit_command>;
  */
 grammar photoalbum;
 
-<action> = open | close | delete | move;
+<action> = open | close | delete | move | select | rotate | smaller | larger | resize | ;
 <object> = [the | a] (window | file | menu);
 <startPolite> = (please | kindly | could you | oh mighty computer) *;
 <endPolite> = [ please | thanks | thank you ];

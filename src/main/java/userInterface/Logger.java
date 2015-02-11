@@ -8,13 +8,13 @@ import java.io.IOException;
 public class Logger {
 	private BufferedWriter writer;
 	
-	public Logger(int participantNumber){
+	public Logger(){
 		try {
 			int x = 1;
-			File file = new File("logs/Log" + participantNumber + ".txt");
+			File file = new File("logs/" + App.testMode.toString() + "Log" + App.participantNr + ".txt");
 			while(file.exists()){
 				x++;
-				file = new File("logs/Log" + participantNumber + "-" + x + ".txt");
+				file = new File("logs/"+ App.testMode.toString() +"Log" + App.participantNr + "-" + x + ".txt");
 		}
 
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());

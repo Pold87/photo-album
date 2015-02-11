@@ -1,16 +1,10 @@
 package main.java.speechrecognition;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import edu.cmu.sphinx.api.*;
-import edu.cmu.sphinx.result.Lattice;
-import main.java.gesturerecognition.Main;
+import edu.cmu.sphinx.api.Configuration;
+import edu.cmu.sphinx.api.LiveSpeechRecognizer;
+import edu.cmu.sphinx.api.SpeechResult;
 
 /**
  * The speech recognition class. It is composed of two parts:

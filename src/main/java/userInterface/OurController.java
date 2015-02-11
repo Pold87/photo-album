@@ -19,7 +19,7 @@ import main.java.speechrecognition.Wit;
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 
-	public Logger logger  = new Logger(0);
+	public Logger logger;
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos;
@@ -40,6 +40,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void initialize(ContentPanel cp, BasicDesign bd){
 		contentPanel = cp;
 		basicDesign = bd;
+		logger  = new Logger();
 	}
 
 	public void setToolMode(OurController.ToolMode toolMode) {
@@ -97,18 +98,24 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		contentPanel.selectPicture(nr);
 	}
 	
-	public void addPictureFromLibrary(int nr) {
+	public void addPictureByNumber(int nr) {
+		System.out.println("Adding picture from this other method");
 		MyImage image = basicDesign.getLibrary()[nr];
-        contentPanel.addPictureToCurrentPage(image);
-        performedActions.add(new ActionAddPic(image, this));
-		contentPanel.repaint();
+        addPicture(image);
 	}
 	
 	public void deleteSelectedPicture(){
-		MyImage image = contentPanel.deleteSelectedPicture();
-		performedActions.add(new ActionDelete(image, this));
-		basicDesign.getToolbar().setEnabledUndoButton(true);
-		contentPanel.repaint();
+		
+		MyImage image = contentPanel.getSelectedPicture();
+		if(image != null){
+			System.out.println("Deleting picture");
+			contentPanel.deleteSelectedPicture();
+			performedActions.add(new ActionDelete(image, this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+			basicDesign.photoBar.addButton(image);
+			basicDesign.repaint();
+			contentPanel.repaint();
+		}
 	}
 
 	private void darker(){
@@ -153,7 +160,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void addRotateAction(double degrees) {
 		if (contentPanel.getSelectedPicture() != null) {
 			//contentPanel.rotate(degrees);
-			System.out.println("actionrotate added");
 			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 		}
@@ -164,6 +170,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
+		this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 	
@@ -171,22 +178,20 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void cursorPressed(int XPos, int YPos) {
 		contentPanel.requestFocusInWindow();
-		MyImage selectedImage;
+
 		// Update mouse Coords
 		oldXPos = XPos;
 		oldYPos = YPos;
-		
+		//Point p = new Point(XPos, YPos);
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
-		ArrayList<MyImage> shapesList = contentPanel.getImageList();
-		// Select active shape or image
-        for (MyImage aShapesList : shapesList) {
-            if (aShapesList.contains(new Point(XPos, YPos))) {
-                selectedImage = aShapesList;
-                contentPanel.selectPicture(selectedImage);
-            }
-        }
+		//if (contentPanel.getSelectedPicture() == null) {
+			contentPanel.selectPictureAt(XPos, YPos);
+		//}
+		//else {
+		//	contentPanel.unselectPicture(p);
+		//}
 		
 		switch (toolModeIndex) {
 		case MOVE:
@@ -214,7 +219,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 			if (XPos < 0 || XPos > contentPanel.getWidth() || YPos < 0
 					|| YPos > contentPanel.getHeight())
-				contentPanel.deleteSelectedPicture();
 			break;
 		default:
 			System.out.println("Tool not found: " + toolModeIndex);
@@ -253,17 +257,26 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 				break;
 			case MOVE:
+                
+                // TODO: See if constraining the image is better
+                
+				if (selectedImage.contains(new Point(XPos, YPos))) {
+//					selectedImage.setX(selectedImage.getX() + deltaX);
+//					selectedImage.setY(selectedImage.getY() + deltaY);
 
-                int xDelimited = selectedImage.getX() + deltaX;
-                int yDelimited = selectedImage.getY() + deltaY;
+                    int xDelimited = selectedImage.getX() + deltaX;
+                    int yDelimited = selectedImage.getY() + deltaY;
 
-				selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() - 200)));
-				selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() - 200)));
+                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() - 200)));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() - 200)));
+				}
+                
 				break;
 			case ROTATE:
 				// do nothing
 				break;
 			default:
+				System.out.println("No Tool selected");
 				break;
 			}
 	
@@ -295,8 +308,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		// Not using this.	
 	}
 
-	public void mousePressed(MouseEvent arg0) {
-		// Not using this.	
+	public void mousePressed(MouseEvent e) {
+		cursorPressed(e.getX(), e.getY());
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -326,7 +339,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
 
-				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
+				picturesToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
 				picturesToAdd.forEach(this :: selectPicture);
 				break;
 			case "rotate":
@@ -401,6 +414,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case "redo":
                 this.redo();
                 break;
+            case "delete":
+            	deleteSelectedPicture();
+            	break;
             default:
                 currentAction = button;
                 break;
@@ -413,10 +429,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void actionPerformed(ActionEvent e) {
 		int picNr = Integer.parseInt(e.getActionCommand());
 		MyImage image = basicDesign.getLibrary()[picNr];
-        contentPanel.addPictureToCurrentPage(image);
-        performedActions.add(new ActionAddPic(image, this));
-        basicDesign.getToolbar().setEnabledUndoButton(true);
-        contentPanel.repaint();
+        addPicture(image);
 	}
 	//END ActionListener
 
@@ -425,10 +438,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		contentPanel.repaint();
 	}
 	
-	public void addPictureToCurrentPage(MyImage image){
+	public void addPicture(MyImage image){
 		contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
         basicDesign.getToolbar().setEnabledUndoButton(true);
+        basicDesign.photoBar.removeButton(image);
+        basicDesign.repaint();
         contentPanel.repaint();
 	}
 	

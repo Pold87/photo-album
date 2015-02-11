@@ -17,7 +17,7 @@ public class BasicDesign extends JFrame {
     private JTabbedPane tabbedPane; // Contains library, tools, etc.
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
-    private PhotoBar photoBar;
+    public PhotoBar photoBar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private MyImage[] library;
     public OurController ourController;
@@ -31,8 +31,8 @@ public class BasicDesign extends JFrame {
 
 
     // TODO: See if there is a conflict between Controller classes
-    public Controller leapController = new Controller();
-    public VolkerLeapListener leapListener = new VolkerLeapListener();
+    public Controller leapController;
+    public VolkerLeapListener leapListener;
 
 
     public BasicDesign(String path) throws Exception {
@@ -94,12 +94,11 @@ public class BasicDesign extends JFrame {
 
 
 
-        this.contentPanel = new ContentPanel(ourController);
+        this.contentPanel = new ContentPanel(ourController, library);
         ourController.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
 
-        leapListener.setContentPanel(contentPanel);
 
 
         // Create MenuBar (File, View, etc.).
@@ -118,10 +117,15 @@ public class BasicDesign extends JFrame {
 
         /**************************/
         // Leap STUFF
-        leapListener.setScrHeight(scr_height);
-        leapListener.setScrWidth(scr_width);
-        leapListener.setOurController(this.ourController);
-        leapController.addListener(leapListener);
+        if(App.testMode != App.TestMode.TestMouse){
+        	leapController = new Controller();
+        	leapListener = new VolkerLeapListener();
+        	leapListener.setContentPanel(contentPanel);
+        	leapListener.setScrHeight(scr_height);
+        	leapListener.setScrWidth(scr_width);
+        	leapListener.setOurController(this.ourController);
+        	leapController.addListener(leapListener);
+        }
         /**************************/
 
         setLocationRelativeTo(null);

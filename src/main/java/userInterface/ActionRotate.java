@@ -10,8 +10,8 @@ public class ActionRotate implements Action {
 		this.image = image;
 		this.degrees = degrees;
 		this.ourController = ourController;
-
-		ourController.logger.logAction("Rotated picture " + image.getNum() + "  " + degrees + " degrees.");
+		long time = (System.currentTimeMillis() - App.startTime)/1000;
+		ourController.logger.logAction("Rotated picture " + image.getNum() + "  " + degrees + " degrees." + " Timestamp: " + time);
 	}
 
 

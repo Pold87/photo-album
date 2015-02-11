@@ -1,13 +1,15 @@
 package main.java.gesturerecognition;
 
-import com.leapmotion.leap.*;
+import main.java.userInterface.ContentPanel;
+import main.java.userInterface.OurController;
+import com.leapmotion.leap.CircleGesture;
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
-
-import main.java.userInterface.*;
-
-import java.awt.*;
-
-import static java.awt.Color.blue;
+import com.leapmotion.leap.Gesture;
+import com.leapmotion.leap.Hand;
+import com.leapmotion.leap.InteractionBox;
+import com.leapmotion.leap.Vector;
 
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	/** Members **/
@@ -38,7 +40,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 		System.out.println("Leap Motion Connected");
 		controller.enableGesture(Gesture.Type.TYPE_SWIPE);
 		controller.enableGesture(Gesture.Type.TYPE_SCREEN_TAP);
-		controller.config().setFloat("Gesture.Swipe.MinLength", 250.0f);
+//		controller.config().setFloat("Gesture.Swipe.MinLength", 250.0f);
 		controller.config().save();
 	}
 
@@ -117,14 +119,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			            //Handle unrecognized states
 			            break;
 				}
-				
 		    }
 			break;
 			case TYPE_SWIPE:
-
-				if (contentPanel.getSelectedPicture() != null) {
-					contentPanel.addPictureToCurrentPage(contentPanel.getSelectedPicture());
-				}
+				ourController.deleteSelectedPicture();
 				System.out.println("Swipe !!!");
 			break;
 			default:

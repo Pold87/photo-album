@@ -8,7 +8,8 @@ public class ActionDelete implements Action {
 	public ActionDelete(MyImage image, OurController ourController) {
 		this.image = image;
 		this.ourController = ourController;
-		ourController.logger.logAction("Delete picture " + image.getNum());
+		long time = (System.currentTimeMillis() - App.startTime)/1000;
+		ourController.logger.logAction("Delete picture " + image.getNum()+ " Timestamp: " + time);
 	}
 
 
@@ -20,7 +21,7 @@ public class ActionDelete implements Action {
 
 
 	public void undo() {
-		ourController.addPictureToCurrentPage(image);
+		ourController.addPicture(image);
 		ourController.removeLastActionFromList();
 		ourController.logger.logAction("Undo");
 	}
