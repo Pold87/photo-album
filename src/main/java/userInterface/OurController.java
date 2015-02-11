@@ -218,7 +218,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 			if (XPos < 0 || XPos > contentPanel.getWidth() || YPos < 0
 					|| YPos > contentPanel.getHeight())
-				contentPanel.deleteSelectedPicture();
 			break;
 		default:
 			System.out.println("Tool not found: " + toolModeIndex);
@@ -261,8 +260,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 				break;
 			case MOVE:
-				selectedImage.setX(selectedImage.getX() + deltaX);
-				selectedImage.setY(selectedImage.getY() + deltaY);
+				if (selectedImage.contains(new Point(XPos, YPos))) {
+					selectedImage.setX(selectedImage.getX() + deltaX);
+					selectedImage.setY(selectedImage.getY() + deltaY);
+				}
 				break;
 			case ROTATE:
 				// do nothing
