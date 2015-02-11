@@ -1,0 +1,5 @@
+Added picture 2
+Move picture 2 to 0 0
+Move picture 2 to 0 0
+Move picture 2 to 1153 326
+Move picture 2 to 1920 93

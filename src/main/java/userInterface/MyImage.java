@@ -16,6 +16,7 @@ public class MyImage {
     private BufferedImage img; // The actual picture
     private int x;
     private int y;
+
     private int width;
     private int height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
@@ -124,21 +125,23 @@ public class MyImage {
 
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
-    	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
-        g2d.drawImage(img, x, y, width, height, null);
-        g2d.drawString(Integer.toString(this.num), x, y - 5);
+        Graphics2D g2dCopy = (Graphics2D) g2d.create();
+        g2dCopy.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
+        g2dCopy.drawImage(img, x, y, width, height, null);
+        g2dCopy.drawString(Integer.toString(this.num), x, y - 5);
         
         if(selected){
                 //draw blue frame around image if it is now selected
             double thickness = 3;
             Stroke oldStroke = g2d.getStroke();
-            g2d.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2d.setPaint(Color.blue);
-            g2d.drawRect(x, y, width, height);
-            g2d.setStroke(oldStroke);
+            g2dCopy.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2dCopy.setPaint(Color.blue);
+            g2dCopy.drawRect(x, y, width, height);
+            g2dCopy.setStroke(oldStroke);
 
     	}
-    	g2d.setTransform(new AffineTransform());
+    	g2dCopy.setTransform(new AffineTransform());
+        g2dCopy.dispose();
     }
     
     public boolean contains(Point p){
@@ -150,11 +153,23 @@ public class MyImage {
     	return false;
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public int getWidth() {
         return width;
     }
 
     public int getHeight() {
         return height;
+    }
+
+    public void setImg(BufferedImage img) {
+        this.img = img;
     }
 }

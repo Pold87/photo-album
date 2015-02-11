@@ -9,12 +9,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import main.java.speechrecognition.Recorder;
 import main.java.speechrecognition.Wit;
+
+import javax.swing.*;
 
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
@@ -105,17 +106,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void deleteSelectedPicture(){
-		
-		MyImage image = contentPanel.getSelectedPicture();
-		if(image != null){
-			System.out.println("Deleting picture");
-			contentPanel.deleteSelectedPicture();
-			performedActions.add(new ActionDelete(image, this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.photoBar.addButton(image);
-			basicDesign.repaint();
-			contentPanel.repaint();
-		}
+
+        SwingUtilities.invokeLater(() -> {
+            MyImage image = contentPanel.getSelectedPicture();
+            System.out.println(image);
+            if(image != null){
+                System.out.println("Deleting picture");
+                contentPanel.deleteSelectedPicture();
+                performedActions.add(new ActionDelete(image, OurController.this));
+                basicDesign.getToolbar().setEnabledUndoButton(true);
+                basicDesign.photoBar.addButton(image);
+                basicDesign.repaint();
+                contentPanel.repaint();
+            }
+        });
+
+
 	}
 
 	private void darker(){
@@ -129,7 +135,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void movePicture(int x, int y) {
-		//Should probably communicate with the LEAP guys about this. 
 		MyImage image = contentPanel.getSelectedPicture();
 		if (image != null) {
 			int oldX = image.getX(), oldY = image.getY();
@@ -187,7 +192,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorX = XPos;
 		
 		//if (contentPanel.getSelectedPicture() == null) {
-			contentPanel.selectPictureAt(XPos, YPos);
+        // TODO
+			this.selectPictureAt(XPos, YPos);
 		//}
 		//else {
 		//	contentPanel.unselectPicture(p);
@@ -208,22 +214,30 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void cursorReleased(int XPos, int YPos) {
-		MyImage selectedImage = contentPanel.getSelectedPicture();
-		switch (toolModeIndex) {
-		case MOVE:
-		case ENLARGE:
-		case REDUCE:
-		case ROTATE:
-		case CUT:
-			performedActions.add(new ActionMove(selectedImage, oldXPos, oldYPos, XPos, YPos, this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			if (XPos < 0 || XPos > contentPanel.getWidth() || YPos < 0
-					|| YPos > contentPanel.getHeight())
-			break;
-		default:
-			System.out.println("Tool not found: " + toolModeIndex);
-			break;
-		}
+
+        int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
+        MyImage selectedImage = contentPanel.getSelectedPicture();
+        if(!(selectedImage == null)) {
+
+            switch (toolModeIndex) {
+                case MOVE:
+                    break;
+                case ENLARGE:
+                    break;
+                case REDUCE:
+                    break;
+                case ROTATE:
+                    break;
+                case CUT:
+                    System.out.println("Naufgecutted");
+                    this.cut(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
+                    contentPanel.repaint();
+                    break;
+                default:
+                    System.out.println("Tool not found: " + toolModeIndex);
+                    break;
+            }
+        }
 	}
 
 	public void cursorDragged(int XPos, int YPos) {
@@ -253,7 +267,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 					selectedImage.setY((int) (selectedImage.getY() - 4*normalizerY));
 					selectedImage.setX((int) (selectedImage.getX() + 4*normalizerX));
 					
-					selectedImage.resizeImg((int) (selectedImage.getWidth() - 8*normalizerX), (int) (selectedImage.getHeight() + 8*normalizerY));
+					selectedImage.resizeImg((int) (selectedImage.getWidth() - 8 * normalizerX), (int) (selectedImage.getHeight() + 8*normalizerY));
 				}
 				break;
 			case MOVE:
@@ -261,14 +275,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 // TODO: See if constraining the image is better
                 
 				if (selectedImage.contains(new Point(XPos, YPos))) {
-//					selectedImage.setX(selectedImage.getX() + deltaX);
-//					selectedImage.setY(selectedImage.getY() + deltaY);
+					selectedImage.setX(selectedImage.getX() + deltaX);
+					selectedImage.setY(selectedImage.getY() + deltaY);
 
-                    int xDelimited = selectedImage.getX() + deltaX;
-                    int yDelimited = selectedImage.getY() + deltaY;
+//                    int xDelimited = selectedImage.getX() + deltaX;
+//                    int yDelimited = selectedImage.getY() + deltaY;
 
-                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() - 200)));
-                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() - 200)));
+//                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
+//                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
 				}
                 
 				break;
@@ -398,13 +412,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	private void redo() {
-		Action action = undoneActions.remove(undoneActions.size() - 1);
-		action.redo();
-		basicDesign.getToolbar().setEnabledUndoButton(true);
-		if (undoneActions.isEmpty()) {
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-		}
-	}
+
+        int size = undoneActions.size();
+        if (size > 0) {
+            Action action = undoneActions.remove(size - 1);
+            action.redo();
+            basicDesign.getToolbar().setEnabledUndoButton(true);
+            if (undoneActions.isEmpty()) {
+                basicDesign.getToolbar().setEnabledRedoButton(false);
+            }
+        }
+    }
 
     public void toolbarButtonClicked(String button) {
         switch (button) {
@@ -437,16 +455,34 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		contentPanel.selectPicture(image);
 		contentPanel.repaint();
 	}
+
+    public void selectPictureAt(int x, int y){
+        contentPanel.selectPictureAt(x, y);
+
+    }
 	
 	public void addPicture(MyImage image){
-		contentPanel.addPictureToCurrentPage(image);
-        performedActions.add(new ActionAddPic(image, this));
-        basicDesign.getToolbar().setEnabledUndoButton(true);
-        basicDesign.photoBar.removeButton(image);
-        basicDesign.repaint();
-        contentPanel.repaint();
+        SwingUtilities.invokeLater(() -> {
+            contentPanel.addPictureToCurrentPage(image);
+            performedActions.add(new ActionAddPic(image, OurController.this));
+            basicDesign.getToolbar().setEnabledUndoButton(true);
+            basicDesign.photoBar.removeButton(image);
+            basicDesign.repaint();
+            contentPanel.repaint();
+        });
+
 	}
-	
+
+    public void cut(int x, int y) {
+
+        if (contentPanel.getLines().size() == 4) {
+            contentPanel.cut();
+            contentPanel.setLines(new ArrayList<>());
+        } else {
+            contentPanel.addLine(x, y);
+    }
+    }
+
 	/*
 	 * Kinda nasty hack. I use this to make sure undone actions don't go back in the performedActions list.
 	 */

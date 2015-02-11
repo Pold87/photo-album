@@ -1,0 +1,10 @@
+Added picture 2
+Move picture 2 to 495 574
+Move picture 2 to 696 487
+Rotated picture 2  12 degrees.
+Rotated picture 2  2 degrees.
+Rotated picture 2  300 degrees.
+Rotated picture 2  1 degrees.
+Rotated picture 2  14 degrees.
+Rotated picture 2  0 degrees.
+Move picture 2 to 70 158

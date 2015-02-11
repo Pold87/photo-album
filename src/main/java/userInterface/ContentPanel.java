@@ -11,6 +11,7 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ import main.java.userInterface.OurController.ToolMode;
 public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+
+    private ArrayList<Integer> lines = new ArrayList<>();
 
 	private OurController ourController;
 
@@ -55,7 +58,7 @@ public class ContentPanel extends JPanel {
 	// Leap Stuff
 	ToolMode toolModeIndex = ToolMode.MOVE;
 
-	// Leap cursor right
+    // Leap cursor right
 	private int leapRightX = 9999, leapRightY = 9999;
 	private float leapRightScreenDist = 1.0f;
 	private boolean leapRightClick = false;
@@ -64,6 +67,23 @@ public class ContentPanel extends JPanel {
 	private int leapLeftX = 9999, leapLeftY = 9999;
 	private float leapLeftScreenDist = 1.0f;
 	private boolean leapLeftClick = false;
+
+
+    public int getLeapRightX() {
+        return leapRightX;
+    }
+
+    public int getLeapRightY() {
+        return leapRightY;
+    }
+
+    public int getLeapLeftX() {
+        return leapLeftX;
+    }
+
+    public int getLeapLeftY() {
+        return leapLeftY;
+    }
 
 	public void setToolMode(ToolMode toolModeIndex) {
 		this.toolModeIndex = toolModeIndex;
@@ -109,6 +129,11 @@ public class ContentPanel extends JPanel {
 		this.leapLeftScreenDist = leapScreenDist;
 		repaint();
 	}
+
+    public ArrayList<Integer> getLines() {
+        return lines;
+    }
+
 
     public void paintComponent(Graphics g) {
 
@@ -159,8 +184,6 @@ public class ContentPanel extends JPanel {
 		g2d.fillOval(leapRightX - leapRightCursorSize / 2, leapRightY - leapRightCursorSize / 2,
 				leapRightCursorSize, leapRightCursorSize);
 
-
-		// Finger count indicator
 		g2d.setColor(Color.black);
 		g2d.setFont(font);
 
@@ -185,6 +208,10 @@ public class ContentPanel extends JPanel {
 				break;
 		}
 
+        font = new Font("Verdana", Font.PLAIN, 12);
+        g2d.setFont(font);
+        g2d.drawString("R", leapRightX - 4, leapRightY - 15);
+
         ////// Leap cursor left /////////
         g2d.setStroke(new BasicStroke(1)); // Thickness
         // Outline - border
@@ -200,6 +227,8 @@ public class ContentPanel extends JPanel {
                 leapLeftCursorSize, leapLeftCursorSize);
 
         // Finger count indicator
+
+        font = new Font("Verdana", Font.BOLD, 18);
         g2d.setColor(Color.darkGray);
         g2d.setFont(font);
 
@@ -225,9 +254,34 @@ public class ContentPanel extends JPanel {
 				break;
 		}
 
-		// Finger count indicator
-		g2d.setColor(Color.darkGray);
-		repaint();
+
+        font = new Font("Verdana", Font.PLAIN, 12);
+        g2d.setFont(font);
+        g2d.drawString("L", leapLeftX - 4, leapLeftY - 15);
+
+
+
+        // Draw lines for cutting
+        g2d.setStroke(new BasicStroke());
+
+        for (int i = 0; i < lines.size(); i++) {
+            if (i == 0 || i == 1) {
+                // Draw horizontal line
+                int x = lines.get(i);
+                g2d.drawLine(x, 0, x, this.scr_height);
+            }
+
+            if (i == 2 || i == 3) {
+                // Draw vertical line
+                int y = lines.get(i);
+                g2d.drawLine(0, y, this.scr_width, y);
+
+            }
+
+        }
+
+        repaint();
+
     }
 
     public MyImage getSelectedPicture(){
@@ -270,9 +324,8 @@ public class ContentPanel extends JPanel {
 		repaint();
     }
 
-    public MyImage selectPictureAt(int x, int y){
+    public void selectPictureAt(int x, int y){
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
-		selectedImage = null;
 		for (MyImage i : imageList) {
 			//Does this still work when the picture is rotated? Nope, fix pending.
 			Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
@@ -290,7 +343,6 @@ public class ContentPanel extends JPanel {
 		}
 		// Repaint everything in order to see changes
 		repaint();
-		return selectedImage;
     }
 
     public void addPictureToCurrentPage(MyImage image) {
@@ -344,18 +396,18 @@ public class ContentPanel extends JPanel {
 	}
 	
 	private void drawDashedBox(Graphics2D g2d, MyImage i){
-		Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
-		Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
-		if (sprite.intersects(leapPos)) {
-			Stroke oldStroke = g2d.getStroke();
-			g2d.setColor(Color.black);
-			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-			g2d.setStroke(dashed);
-            g2d.rotate(Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
-			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
-			g2d.setStroke(oldStroke);
-		}
-		g2d.rotate(- Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
+//		Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+//		Rectangle2D leapPos = new Rectangle2D.Double(leapRightX, leapRightY, 5, 5);
+//		if (sprite.intersects(leapPos)) {
+//			Stroke oldStroke = g2d.getStroke();
+//			g2d.setColor(Color.black);
+//			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+//			g2d.setStroke(dashed);
+//            g2d.rotate(Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
+//			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
+//			g2d.setStroke(oldStroke);
+//		}
+//		g2d.rotate(- Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
 	}
 	
 	//Edit this here if you want a different starting page for the test conditions.
@@ -373,4 +425,100 @@ public class ContentPanel extends JPanel {
 		selectedImage.setSelected(false);
 		selectedImage = null;
 	}
+
+
+    public void setLines(ArrayList<Integer> lines) {
+        this.lines = lines;
+    }
+
+    public void addLine(int x, int y) {
+
+        int size = this.lines.size();
+
+        // Reset lines
+        if (this.lines.size() == 4) {
+            this.lines = new ArrayList<>();
+        }
+
+
+        if (size == 0 || size == 1) {
+            this.lines.add(x);
+        } else {
+            this.lines.add(y);
+        }
+
+
+        this.repaint();
+    }
+
+    public void cut() {
+
+        if (this.getSelectedPicture() != null) {
+
+            int x1 = this.lines.get(0);
+            int x2 = this.lines.get(1);
+            int y1 = this.lines.get(2);
+            int y2 = this.lines.get(3);
+
+            int xLeft, xRight, yUp, yDown;
+
+            if (x1 < x2) {
+                xLeft = x1;
+                xRight = x2;
+            } else {
+                xLeft = x2;
+                xRight = x1;
+            }
+
+
+            if (y1 < y2) {
+                yUp = y1;
+                yDown = y2;
+            } else {
+                yUp = y2;
+                yDown = y1;
+            }
+
+
+            int picX = this.getSelectedPicture().getX();
+            int picY = this.getSelectedPicture().getY();
+
+            int rightOverlap, leftOverlap, upOverlap, downOverlap;
+
+            rightOverlap = Math.max(picX + this.getSelectedPicture().getWidth() - xRight,0);
+            leftOverlap = Math.max(xLeft - picX,0);
+
+            upOverlap = Math.max(yUp - picY,0);
+            downOverlap = Math.max(picY + this.getSelectedPicture().getHeight() - yDown,0);
+
+
+            int x = leftOverlap;
+            int y = upOverlap;
+            int w = xRight - xLeft;
+            int h = yDown - yUp;
+
+            System.out.println("x" + x);
+            System.out.println("y" + y);
+            System.out.println("w" + w);
+            System.out.println("h" + h);
+
+            System.out.println("Picture x is: " + this.getSelectedPicture().getX());
+            System.out.println("Picture y is: " + this.getSelectedPicture().getY());
+            System.out.println("Picture w is: " + this.getSelectedPicture().getImg().getWidth());
+            System.out.println("Picture h is: " + this.getSelectedPicture().getImg().getHeight());
+
+            for (int i : this.lines) {
+                System.out.println("Line is " + i);
+            }
+
+            BufferedImage subImage = this.getSelectedPicture().getImg().getSubimage(x, y, w, h);
+            this.getSelectedPicture().setImg(subImage);
+            this.getSelectedPicture().setWidth(w);
+            this.getSelectedPicture().setHeight(h);
+            this.getSelectedPicture().setX(this.getSelectedPicture().getX() + x);
+            this.getSelectedPicture().setY(this.getSelectedPicture().getY() + y);
+        }
+
+    }
+
 }

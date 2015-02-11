@@ -3,6 +3,8 @@ package main.java.userInterface;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
 
@@ -159,7 +161,9 @@ public class BasicDesign extends JFrame {
         fileMenu.add(exitItem);
 
         JMenu showMenu = new JMenu("View");
-        JMenuItem showFormItem = new JMenuItem("Debug Window");
+        JMenuItem showFormItem = new JCheckBoxMenuItem("Debug Window");
+
+        showFormItem.setSelected(true);
         showMenu.add(showFormItem);
 
         JMenu windowMenu = new JMenu("Window");
@@ -170,6 +174,13 @@ public class BasicDesign extends JFrame {
         menuBar.add(windowMenu);
 
         exitItem.addActionListener(actionEvent -> System.exit(0));
+
+        showFormItem.addActionListener(e -> {
+            JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
+            debugPanel.setVisible(menuItem.isSelected());
+        });
+
+
         return menuBar;
     }
 
