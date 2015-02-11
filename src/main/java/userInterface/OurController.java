@@ -218,7 +218,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 			if (XPos < 0 || XPos > contentPanel.getWidth() || YPos < 0
 					|| YPos > contentPanel.getHeight())
-				contentPanel.deleteSelectedPicture();
 			break;
 		default:
 			System.out.println("Tool not found: " + toolModeIndex);
