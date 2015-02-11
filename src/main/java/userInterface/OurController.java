@@ -181,7 +181,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		// Update mouse Coords
 		oldXPos = XPos;
 		oldYPos = YPos;
-		Point p = new Point(XPos, YPos);
+		//Point p = new Point(XPos, YPos);
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
