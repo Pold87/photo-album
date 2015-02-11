@@ -8,11 +8,14 @@ public class ActionAddPic implements Action {
 	public ActionAddPic(MyImage picture, OurController ourController) {
 		this.picture = picture;
 		this.ourController = ourController;
+		ourController.logger.logAction("Added picture " + picture.getNum());
+
 	}
 	
 
 	public void redo() {
 		ourController.addPictureToCurrentPage(picture);
+		ourController.logger.logAction("Redo");
 	}
 
 
@@ -20,6 +23,7 @@ public class ActionAddPic implements Action {
 		ourController.selectPicture(picture);
 		ourController.deleteSelectedPicture();
 		ourController.removeLastActionFromList();
+		ourController.logger.logAction("Undo");
 	}
 
 }

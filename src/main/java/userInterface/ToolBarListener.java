@@ -3,8 +3,6 @@ package main.java.userInterface;
 
 import main.java.speechrecognition.Wit;
 
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 
 /**
  * Created by pold on 12/11/14.

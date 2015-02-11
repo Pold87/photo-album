@@ -5,16 +5,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.net.URL;
 
-/**
- * Created by pold on 12/11/14.
- */
 public class MyImage {
 
     private BufferedImage img; // The actual picture
@@ -23,7 +19,7 @@ public class MyImage {
     private int width;
     private int height; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
-    private int rotationDegrees; // Degrees of rotation for image.
+    private double rotationDegrees; // Degrees of rotation for image.
     private boolean active; //indicates whether image is being displayed on contentPanel
     private boolean selected; //indicates whether image is selected in contentPanel
     
@@ -83,10 +79,6 @@ public class MyImage {
         return img;
     }
 
-    public void setImg(BufferedImage img) {
-        this.img = img;
-    }
-
     public int getX() {
         return x;
     }
@@ -107,12 +99,9 @@ public class MyImage {
         return num;
     }
 
-    public void setNum(int num) {
-        this.num = num;
-    }
-
-    public Dimension getPreferredSize() {
-        return new Dimension(img.getWidth(), img.getHeight());
+    public void resizeImg(int newW, int newH) {
+        width = newW;
+        height = newH;
     }
 
     //Resizes an image to have the given width and height
@@ -125,16 +114,20 @@ public class MyImage {
         return resizedImg;
     }
 
-    public void incrementRotation(int degree){
+    public void incrementRotation(double degree){
     	rotationDegrees += degree;   	
+    }
+
+    public double getRotationDegrees() {
+        return this.rotationDegrees;
     }
 
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
     	g2d.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
-        g2d.drawImage(img, x, y, null);
+        g2d.drawImage(img, x, y, width, height, null);
         g2d.drawString(Integer.toString(this.num), x, y - 5);
-
+        
         if(selected){
                 //draw blue frame around image if it is now selected
             double thickness = 3;
@@ -148,6 +141,15 @@ public class MyImage {
     	g2d.setTransform(new AffineTransform());
     }
     
+    public boolean contains(Point p){
+    	if (p.getX() >= x && p.getX() <= x+width) {
+    		if (p.getY() >= y && p.getY() <= y+height) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+
     public int getWidth() {
         return width;
     }

@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * Created by pold on 1/25/15.
  */
@@ -32,9 +33,10 @@ public class BackgroundBar extends JToolBar{
         Color[] colorArray = {
                   Color.WHITE
                 , Color.BLACK
-                , Color.RED
                 , Color.BLUE
                 , Color.CYAN
+                , Color.DARK_GRAY
+                , Color.RED
                 , Color.MAGENTA
                 , Color.PINK
                 , Color.GREEN
@@ -55,7 +57,6 @@ public class BackgroundBar extends JToolBar{
         colorMap.put(Color.YELLOW, "Yellow");
         colorMap.put(Color.GRAY, "Gray");
         colorMap.put(Color.ORANGE, "Orange");
-
 
         for (final Color c : colorArray) {
 

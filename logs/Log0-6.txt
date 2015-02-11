@@ -1,0 +1,17 @@
+Added picture 3
+Added picture 3
+Added picture 2
+Added picture 2
+Added picture 4
+Move picture 4 to 288 329
+Move picture 4 to 422 375
+Move picture 4 to 700 553
+Move picture 4 to 1054 558
+Move picture 4 to 980 484
+Move picture 4 to 223 739
+Move picture 4 to 439 535
+Rotated picture 4  33 degrees.
+Rotated picture 4  19 degrees.
+Rotated picture 4  0 degrees.
+Rotated picture 4  24 degrees.
+Move picture 4 to 595 -11

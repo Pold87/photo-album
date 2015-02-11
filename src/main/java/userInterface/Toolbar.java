@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -34,6 +33,7 @@ public class Toolbar extends JToolBar {
         // Create buttons and add listeners.
         selectButton = new JButton(new AbstractAction("select") {
             public void actionPerformed(ActionEvent actionEvent) {
+
                 try {
                     listener.toolbarButtonClicked("select");
                 } catch (Exception e) {
@@ -62,6 +62,7 @@ public class Toolbar extends JToolBar {
         moveButton = new JButton(new AbstractAction("move") {
 
             public void actionPerformed(ActionEvent actionEvent) {
+
                 try {
                     listener.toolbarButtonClicked("move");
                 } catch (Exception e) {
@@ -73,6 +74,7 @@ public class Toolbar extends JToolBar {
         rotateButton = new JButton(new AbstractAction("rotate") {
 
             public void actionPerformed(ActionEvent actionEvent) {
+
                 try {
                     listener.toolbarButtonClicked("rotate");
                 } catch (Exception e) {
@@ -84,6 +86,7 @@ public class Toolbar extends JToolBar {
         undoButton = new JButton(new AbstractAction("undo") {
 
             public void actionPerformed(ActionEvent actionEvent) {
+
                 try {
                     listener.toolbarButtonClicked("undo");
                 } catch (Exception e) {
@@ -95,6 +98,7 @@ public class Toolbar extends JToolBar {
         redoButton = new JButton(new AbstractAction("redo") {
 
             public void actionPerformed(ActionEvent actionEvent) {
+
                 try {
                     listener.toolbarButtonClicked("redo");
                 } catch (Exception e) {
@@ -112,7 +116,6 @@ public class Toolbar extends JToolBar {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
         });
 

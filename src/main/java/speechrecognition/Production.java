@@ -1,15 +1,19 @@
 package main.java.speechrecognition;
 
-import main.java.gesturerecognition.Main;
-
-//import javafx.scene.media.Media;
-//import javafx.scene.media.MediaPlayer;
-
-import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import javax.sound.sampled.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+//import javafx.scene.media.Media;
+//import javafx.scene.media.MediaPlayer;
+import java.io.DataInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created by pold on 2/8/15.

@@ -1,0 +1,22 @@
+Added picture 3
+Move picture 3 to 960 281
+Move picture 3 to 967 233
+Move picture 3 to 845 534
+Move picture 3 to 1008 417
+Move picture 3 to 898 422
+Move picture 3 to 920 364
+Rotated picture 3  7 degrees.
+Rotated picture 3  1 degrees.
+Rotated picture 3  0 degrees.
+Rotated picture 3  30 degrees.
+Rotated picture 3  0 degrees.
+Rotated picture 3  56 degrees.
+Rotated picture 3  -126 degrees.
+Rotated picture 3  0 degrees.
+Move picture 3 to 784 438
+Move picture 3 to 663 622
+Move picture 3 to 670 621
+Move picture 3 to 666 613
+Move picture 3 to 302 528
+Move picture 3 to 677 696
+Move picture 3 to 773 559

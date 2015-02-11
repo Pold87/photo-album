@@ -1,0 +1,12 @@
+Added picture 3
+Move picture 3 to 1336 454
+Move picture 3 to 1445 692
+Rotated picture 3  54 degrees.
+Rotated picture 3  -111 degrees.
+Rotated picture 3  -19 degrees.
+Rotated picture 3  -8 degrees.
+Rotated picture 3  -21 degrees.
+Move picture 3 to 920 713
+Move picture 3 to 914 624
+Move picture 3 to 793 166
+Move picture 3 to 448 -30
