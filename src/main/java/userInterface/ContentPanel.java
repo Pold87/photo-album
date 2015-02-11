@@ -322,12 +322,13 @@ public class ContentPanel extends JPanel {
 		repaint();
 	}
     
-    public MyImage deleteSelectedPicture(){
+    public void deleteSelectedPicture(){
     	selectedImage.setActive(false);
     	selectedImage.setSelected(false);
-    	imageList.remove(selectedImage);
+    	boolean removed = imageList.remove(selectedImage);
+    	System.out.println("pic removed is" + removed);
+    	selectedImage = null;
     	repaint();
-    	return selectedImage;
     }
 
     public void rotate(double degrees) {

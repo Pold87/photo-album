@@ -139,6 +139,7 @@ public class Toolbar extends JToolBar {
         rotateButton.setIcon(createIcon("/icons/Backup Green Button.png"));
         undoButton.setIcon(createIcon("/icons/Undo.png"));
         redoButton.setIcon(createIcon("/icons/Redo.png"));
+        deleteButton.setIcon(createIcon("/icons/Trash Full.png"));
 
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");

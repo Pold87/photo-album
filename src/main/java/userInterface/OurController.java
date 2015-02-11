@@ -104,8 +104,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void deleteSelectedPicture(){
+		
 		MyImage image = contentPanel.getSelectedPicture();
 		if(image != null){
+			System.out.println("Deleting picture");
+			contentPanel.deleteSelectedPicture();
 			performedActions.add(new ActionDelete(image, this));
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 			basicDesign.photoBar.addButton(image);
@@ -156,7 +159,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void addRotateAction(double degrees) {
 		if (contentPanel.getSelectedPicture() != null) {
 			//contentPanel.rotate(degrees);
-			System.out.println("actionrotate added");
 			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 		}
@@ -174,7 +176,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	/* MOUSE LISTENER */
 
 	public void cursorPressed(int XPos, int YPos) {
-		System.out.println("Cursor Pressed");
 		contentPanel.requestFocusInWindow();
 
 		// Update mouse Coords
@@ -206,7 +207,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void cursorReleased(int XPos, int YPos) {
-		System.out.println("Cursor Released");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		switch (toolModeIndex) {
 		case MOVE:
@@ -261,7 +261,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 				break;
 			case MOVE:
-				System.out.println("Move");	
 				selectedImage.setX(selectedImage.getX() + deltaX);
 				selectedImage.setY(selectedImage.getY() + deltaY);
 				break;
@@ -407,6 +406,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case "redo":
                 this.redo();
                 break;
+            case "delete":
+            	deleteSelectedPicture();
+            	break;
             default:
                 currentAction = button;
                 break;
@@ -429,7 +431,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void addPicture(MyImage image){
-		System.out.println("Adding picture!!!!!!!");
 		contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
         basicDesign.getToolbar().setEnabledUndoButton(true);
