@@ -164,6 +164,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
+		this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 	
@@ -300,8 +301,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		// Not using this.	
 	}
 
-	public void mousePressed(MouseEvent arg0) {
-		// Not using this.	
+	public void mousePressed(MouseEvent e) {
+		cursorPressed(e.getX(), e.getY());
 	}
 
 	public void mouseReleased(MouseEvent e) {

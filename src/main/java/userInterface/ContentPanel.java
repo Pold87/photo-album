@@ -35,7 +35,7 @@ public class ContentPanel extends JPanel {
 	private ArrayList<MyImage> imageList;
 	private MyImage selectedImage;
 
-    public ContentPanel(OurController ourController) throws IOException {
+    public ContentPanel(OurController ourController, MyImage[] library) throws IOException {
     	setPreferredSize(new Dimension(600, 600));
         imageList = new ArrayList<>();
         setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -43,6 +43,9 @@ public class ContentPanel extends JPanel {
         addMouseListener(ourController);
         addMouseMotionListener(ourController);
 		this.ourController = ourController;
+		if(App.testMode != App.TestMode.Train){
+			createPresetPage(library);
+		}
     }
 
     public ArrayList<MyImage> getImageList() { 
@@ -345,6 +348,17 @@ public class ContentPanel extends JPanel {
 			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
 			g2d.setStroke(oldStroke);
 		}
+	}
+	
+	//Edit this here if you want a different starting page for the test conditions.
+	private void createPresetPage(MyImage[] library){
+		setBackground(Color.cyan);
+		addPictureToCurrentPage(library[2]);
+		imageList.get(0).setX(800);
+		imageList.get(0).setY(100);
+		imageList.get(0).incrementRotation(45);
+		addPictureToCurrentPage(library[4]);
+		
 	}
 
 }

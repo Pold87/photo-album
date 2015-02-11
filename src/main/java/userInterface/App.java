@@ -13,6 +13,8 @@ public class App {
 	public enum TestMode{
 		Train, TestLeap, TestMouse;
 	}
+	
+	//It's kinda nasty that I made global variables of these, but it saves a lot of parameter passing.
 	public static TestMode testMode;
 	public static int participantNr;
 	
@@ -22,10 +24,7 @@ public class App {
      * @throws InvocationTargetException 
      */
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
-        ModeSelector ms = new ModeSelector();
-        
-
-        
+        new ModeSelector();        
     }
     
     public static void modeSelected(int partNr, TestMode testmode){
@@ -33,7 +32,6 @@ public class App {
             public void run() {
                 try {
                 	testMode = testmode;
-                	String s = testmode.toString();
                 	participantNr = partNr;
                     new BasicDesign("/pictures/");
                 } catch (Exception e) {
