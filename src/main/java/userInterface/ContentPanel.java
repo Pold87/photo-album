@@ -307,6 +307,7 @@ public class ContentPanel extends JPanel {
 			}
 
 			this.imageList.add(image);
+			
 		} else {
 			this.imageList.remove(image);
 		}
@@ -359,6 +360,18 @@ public class ContentPanel extends JPanel {
 		imageList.get(0).setY(100);
 		imageList.get(0).incrementRotation(45);
 		addPictureToCurrentPage(library[4]);
+		
+	}
+	
+	public void unselect(){
+		selectedImage = null;
+	}
+	
+	public void removeSelectedPicture(){
+		removePicture(selectedImage);
+	}
+	
+	public void removePicture(MyImage image){
 		
 	}
 
