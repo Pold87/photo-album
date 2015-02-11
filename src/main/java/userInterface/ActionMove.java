@@ -16,7 +16,8 @@ public class ActionMove implements Action {
 
         // Added by Volker because I got a NullPointerException
         if (target != null) {
-            ourController.logger.logAction("Move picture " + target.getNum() + " to " + newX + " " + newY);
+        	long time = (System.currentTimeMillis() - App.startTime)/1000;
+            ourController.logger.logAction("Move picture " + target.getNum() + " to " + newX + " " + newY+ " Timestamp: " + time);
         }
 	}
 

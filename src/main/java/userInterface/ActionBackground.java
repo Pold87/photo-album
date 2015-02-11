@@ -12,7 +12,8 @@ public class ActionBackground implements Action {
 		this.oldBackground = oldBackground;
 		this.newBackground = newBackground;
 		this.ourController = ourController;
-		ourController.logger.logAction("Background Changed to " + newBackground.toString());
+		long time = (System.currentTimeMillis() - App.startTime)/1000;
+		ourController.logger.logAction("Background Changed to " + newBackground.toString()+ " Timestamp: " + time);
 	}
 	
 	public void redo() {

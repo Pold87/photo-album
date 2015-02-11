@@ -8,7 +8,8 @@ public class ActionAddPic implements Action {
 	public ActionAddPic(MyImage picture, OurController ourController) {
 		this.picture = picture;
 		this.ourController = ourController;
-		ourController.logger.logAction("Added picture " + picture.getNum());
+		long time = (System.currentTimeMillis() - App.startTime)/1000;
+		ourController.logger.logAction("Added picture " + picture.getNum()+ " Timestamp: " + time);
 
 	}
 	

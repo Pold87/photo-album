@@ -17,6 +17,7 @@ public class App {
 	//It's kinda nasty that I made global variables of these, but it saves a lot of parameter passing.
 	public static TestMode testMode;
 	public static int participantNr;
+	public static long startTime;
 	
     /**
      * Launch the application.
@@ -31,6 +32,7 @@ public class App {
     	EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
+                	startTime = System.currentTimeMillis();
                 	testMode = testmode;
                 	participantNr = partNr;
                     new BasicDesign("/pictures/");
