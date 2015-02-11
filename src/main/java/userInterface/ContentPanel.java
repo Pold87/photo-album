@@ -315,6 +315,7 @@ public class ContentPanel extends JPanel {
 			}
 
 			this.imageList.add(image);
+			
 		} else {
 			this.imageList.remove(image);
 		}
@@ -356,6 +357,7 @@ public class ContentPanel extends JPanel {
 			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
 			g2d.setStroke(oldStroke);
 		}
+		g2d.rotate(- Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
 	}
 	
 	//Edit this here if you want a different starting page for the test conditions.
@@ -366,6 +368,18 @@ public class ContentPanel extends JPanel {
 		imageList.get(0).setY(100);
 		imageList.get(0).incrementRotation(45);
 		addPictureToCurrentPage(library[4]);
+		
+	}
+	
+	public void unselect(){
+		selectedImage = null;
+	}
+	
+	public void removeSelectedPicture(){
+		removePicture(selectedImage);
+	}
+	
+	public void removePicture(MyImage image){
 		
 	}
 
