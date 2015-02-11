@@ -19,7 +19,7 @@ import main.java.speechrecognition.Wit;
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 
-	public Logger logger  = new Logger(0);
+	public Logger logger;
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos;
@@ -40,6 +40,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void initialize(ContentPanel cp, BasicDesign bd){
 		contentPanel = cp;
 		basicDesign = bd;
+		logger  = new Logger();
 	}
 
 	public void setToolMode(OurController.ToolMode toolMode) {

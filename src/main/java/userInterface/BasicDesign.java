@@ -30,8 +30,8 @@ public class BasicDesign extends JFrame {
 
 
     // TODO: See if there is a conflict between Controller classes
-    public Controller leapController = new Controller();
-    public VolkerLeapListener leapListener = new VolkerLeapListener();
+    public Controller leapController;
+    public VolkerLeapListener leapListener;
 
 
     public BasicDesign(String path) throws Exception {
@@ -98,7 +98,6 @@ public class BasicDesign extends JFrame {
         this.debugPanel = new DebugPanel();
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
 
-        leapListener.setContentPanel(contentPanel);
 
 
         // Create MenuBar (File, View, etc.).
@@ -117,10 +116,15 @@ public class BasicDesign extends JFrame {
 
         /**************************/
         // Leap STUFF
-        leapListener.setScrHeight(scr_height);
-        leapListener.setScrWidth(scr_width);
-        leapListener.setOurController(this.ourController);
-        leapController.addListener(leapListener);
+        if(App.testMode != App.TestMode.TestMouse){
+        	Controller leapController = new Controller();
+        	VolkerLeapListener leapListener = new VolkerLeapListener();
+        	leapListener.setContentPanel(contentPanel);
+        	leapListener.setScrHeight(scr_height);
+        	leapListener.setScrWidth(scr_width);
+        	leapListener.setOurController(this.ourController);
+        	leapController.addListener(leapListener);
+        }
         /**************************/
 
         setLocationRelativeTo(null);
