@@ -372,15 +372,7 @@ public class ContentPanel extends JPanel {
 	}
 	
 	public void unselect(){
+		selectedImage.setSelected(false);
 		selectedImage = null;
 	}
-	
-	public void removeSelectedPicture(){
-		removePicture(selectedImage);
-	}
-	
-	public void removePicture(MyImage image){
-		
-	}
-
 }

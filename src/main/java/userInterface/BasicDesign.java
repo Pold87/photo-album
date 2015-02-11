@@ -17,7 +17,7 @@ public class BasicDesign extends JFrame {
     private JTabbedPane tabbedPane; // Contains library, tools, etc.
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
-    private PhotoBar photoBar;
+    public PhotoBar photoBar;
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private MyImage[] library;
     public OurController ourController;

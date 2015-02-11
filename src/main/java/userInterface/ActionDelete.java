@@ -20,7 +20,7 @@ public class ActionDelete implements Action {
 
 
 	public void undo() {
-		ourController.addPictureToCurrentPage(image);
+		ourController.addPicture(image);
 		ourController.removeLastActionFromList();
 		ourController.logger.logAction("Undo");
 	}

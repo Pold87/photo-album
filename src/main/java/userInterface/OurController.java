@@ -1,6 +1,5 @@
 package main.java.userInterface;
 
-import java.awt.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,18 +96,20 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		contentPanel.selectPicture(nr);
 	}
 	
-	public void addPictureFromLibrary(int nr) {
+	public void addPictureByNumber(int nr) {
+		System.out.println("Adding picture from this other method");
 		MyImage image = basicDesign.getLibrary()[nr];
-        contentPanel.addPictureToCurrentPage(image);
-        performedActions.add(new ActionAddPic(image, this));
-		contentPanel.repaint();
+        addPicture(image);
 	}
 	
 	public void deleteSelectedPicture(){
-		MyImage image = contentPanel.deleteSelectedPicture();
-		performedActions.add(new ActionDelete(image, this));
-		basicDesign.getToolbar().setEnabledUndoButton(true);
-		contentPanel.repaint();
+		MyImage image = contentPanel.getSelectedPicture();
+		if(image != null){
+			performedActions.add(new ActionDelete(image, this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+			basicDesign.photoBar.addButton(image);
+			contentPanel.repaint();
+		}
 	}
 
 	private void darker(){
@@ -329,7 +330,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
 
-				picturesToAdd.forEach(this :: addPictureFromLibrary); // Could be a Java 1.8 feature
+				picturesToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
 				picturesToAdd.forEach(this :: selectPicture);
 				break;
 			case "rotate":
@@ -416,10 +417,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void actionPerformed(ActionEvent e) {
 		int picNr = Integer.parseInt(e.getActionCommand());
 		MyImage image = basicDesign.getLibrary()[picNr];
-        contentPanel.addPictureToCurrentPage(image);
-        performedActions.add(new ActionAddPic(image, this));
-        basicDesign.getToolbar().setEnabledUndoButton(true);
-        contentPanel.repaint();
+        addPicture(image);
 	}
 	//END ActionListener
 
@@ -428,10 +426,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		contentPanel.repaint();
 	}
 	
-	public void addPictureToCurrentPage(MyImage image){
+	public void addPicture(MyImage image){
+		System.out.println("Adding picture!!!!!!!");
 		contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
         basicDesign.getToolbar().setEnabledUndoButton(true);
+        basicDesign.photoBar.removeButton(image);
         contentPanel.repaint();
 	}
 	

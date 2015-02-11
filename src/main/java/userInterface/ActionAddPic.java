@@ -14,7 +14,7 @@ public class ActionAddPic implements Action {
 	
 
 	public void redo() {
-		ourController.addPictureToCurrentPage(picture);
+		ourController.addPicture(picture);
 		ourController.logger.logAction("Redo");
 	}
 

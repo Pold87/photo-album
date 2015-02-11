@@ -19,6 +19,7 @@ public class Toolbar extends JToolBar {
     private JButton undoButton;
     private JButton redoButton;
     private JButton simpleSpeechButton;
+    private JButton deleteButton;
     private ToolBarListener listener;
     private OurController controller;
 
@@ -118,6 +119,18 @@ public class Toolbar extends JToolBar {
                 }
             }
         });
+        
+        deleteButton = new JButton(new AbstractAction("delete") {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                try {
+                    listener.toolbarButtonClicked("delete");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         // Set Icons for buttons.
         selectButton.setIcon(createIcon("/icons/Write Document.png"));
@@ -134,6 +147,7 @@ public class Toolbar extends JToolBar {
         rotateButton.setToolTipText("Rotate selected pictures");
         undoButton.setToolTipText("Undo the last action");
         redoButton.setToolTipText("Redo the last undone action");
+        deleteButton.setToolTipText("Delete the selectedPicture");
 
         // Add buttons to toolbar.
         add(selectButton);
@@ -143,6 +157,7 @@ public class Toolbar extends JToolBar {
         add(undoButton);
         add(redoButton);
         add(simpleSpeechButton);
+        add(deleteButton);
 
         undoButton.setEnabled(false);
         redoButton.setEnabled(false);
