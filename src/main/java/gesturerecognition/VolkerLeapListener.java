@@ -132,86 +132,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 				break;
 			}
 		}
-		
-		// Nr of extended fingers on left hand
-
-
-		// TODO that's dirty (include left as well)
-		/*Hand hand = frame.hand(0);
-
-		if (hand.isRight()) {
-
-			int rightHandFingerCount = 0;
-			for (int i = 0; i < hand.fingers().count(); i++) {
-				if (hand.fingers().get(i).isExtended())
-					rightHandFingerCount += 1;
-			}
-
-			// Hand (finger) position
-			InteractionBox iBox = frame.interactionBox();
-			Vector normalizedPos = iBox.normalizePoint(hand.fingers().frontmost()
-					.stabilizedTipPosition());
-
-
-			// Distance to screen ( rounded to 2 decimals)
-			Finger frontMostFinger = hand.fingers().frontmost();
-			float rightHandDistanceToScreen = (float) Math
-					.round(frontMostFinger.touchDistance() * 100) / 100;
-
-			// To click or not to click
-			boolean rightHandClick = rightHandDistanceToScreen < clickThresholdRight;
-
-
-			for (Gesture gesture : frame.gestures()) {
-				switch (gesture.type()) {
-					case TYPE_CIRCLE:
-						switch (gesture.state()) {
-							case STATE_START:
-								//Handle starting gestures
-								break;
-//							case STATE_UPDATE:
-//								//Handle continuing gestures
-//								// Determine direction
-//								CircleGesture circle = new CircleGesture(gesture);
-//								boolean clockwise;
-//								if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI / 2) {
-//									clockwise = true;
-//								} else {
-//									clockwise = false;
-//								}
-//								this.ourController.rotate(5);
-//								break;
-							case STATE_STOP:
-								//Handle ending gestures
-								break;
-							default:
-								//Handle unrecognized states
-								break;
-						}
-						break;
-					case TYPE_SCREEN_TAP:
-						// Hand (finger) position
-
-						int rightHandXPos = (int) (normalizedPos.getX() * scrWidth) - 250;
-						int rightHandYPos = (int) (scrHeight - normalizedPos.getY()
-								* scrHeight) - 30;
-
-						System.out.println(rightHandXPos + ", " + rightHandYPos);
-//						System.out.println(contentPanel.getSelectedPicture().getX() + ", " + contentPanel.getSelectedPicture().getY());
-
-						System.out.println("Key TAP!!!");
-
-
-						// Update drawpanel
-						contentPanel.setLeapRightX(rightHandXPos);
-						contentPanel.setLeapRightY(rightHandYPos);
-						contentPanel.selectPictureAtLeap();
-						contentPanel.repaint();
-					default:
-						break;
-				}
-			}
-		}*/
 	}
 
 	private void updateRightHand(Frame frame, Hand hand) {
@@ -241,9 +161,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 			// Cursor Pressed
 			if (rightHandClick && !prevRightClick) {
-				//contentPanel.selectPictureAtLeap(rightHandXPos, rightHandYPos);
 				ourController.cursorPressed(rightHandXPos, rightHandYPos);
-				//System.out.println("Leap " + rightHandXPos + ", " + rightHandYPos);
 				prevRightClick = true;
 			}
 
@@ -281,11 +199,12 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			}
 			
 			// Update drawpanel
-			contentPanel.setLeapRightX(rightHandXPos);
-			contentPanel.setLeapRightY(rightHandYPos);
+
+
+			contentPanel.setLeapRightX(Math.max(0,Math.min(rightHandXPos, this.scrWidth - 200)));
+			contentPanel.setLeapRightY(Math.max(0, Math.min(rightHandYPos, this.scrHeight - 200)));
 			contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
 			contentPanel.setLeapRightClick(rightHandClick);
-			contentPanel.setLeapRightFingers(rightHandFingerCount);
 	}
 
 	private void updateLeftHand(Frame frame, Hand hand) throws Exception {
@@ -298,15 +217,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 					leftHandFingerCount += 1;
 			}
 
-			////////////////////////////////// Previous (palmposition) //////////////////////////////
-			/*
-			// Left hand finger coordinates
-
-			InteractionBox iBox = frame.interactionBox();
-			Vector normalizedPos = iBox.normalizePoint(hand
-				.stabilizedPalmPosition());
-			*/
-			////////////////////////////////// Now (fingertipposition) //////////////////////////////
 			InteractionBox iBox = frame.interactionBox();
 			Vector normalizedPos = iBox.normalizePoint(hand.fingers().frontmost()
 					.stabilizedTipPosition());
@@ -321,8 +231,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 			// To click or not to click
 			boolean leftHandClick = leftHandDistanceToScreen < clickThresholdLeft;
-			//boolean leftHandClick = leftHandDistanceToScreen < clickThresholdLeft
-			//	&& leftHandFingerCount > 0 && leftHandFingerCount <= 2;
 
 			// Cursor Pressed
 			if (leftHandClick && !prevRightClick) {
@@ -369,7 +277,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapLeftY(leftHandYPos);
 			contentPanel.setLeapLeftScreenDist(leftHandDistanceToScreen);
 			contentPanel.setLeapLeftClick(leftHandClick);
-			contentPanel.setLeapLeftFingers(leftHandFingerCount);
 		}
 	}
 

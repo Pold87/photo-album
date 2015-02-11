@@ -25,6 +25,7 @@ public class BasicDesign extends JFrame {
     // Leap stuff
 
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
     private int scr_width = screenSize.width;
     private int scr_height = screenSize.height;
 
@@ -127,6 +128,15 @@ public class BasicDesign extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
+
+    public int getScr_height() {
+        return scr_height;
+    }
+
+    public int getScr_width() {
+        return scr_width;
+    }
+
 
     public MyImage [] getLibrary(){
     	return library;

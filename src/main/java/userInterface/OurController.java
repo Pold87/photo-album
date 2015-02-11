@@ -33,7 +33,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
-	public OurController() throws URISyntaxException {
+	public OurController()  {
 		super();
     }
 	
@@ -75,6 +75,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
+    // TODO
 //	public void recognizeSimpleSpeech() {
 
 //		SpeechResult utterance = this.speechCommands.recognizeCommand();
@@ -169,7 +170,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	/* MOUSE LISTENER */
 
 	public void cursorPressed(int XPos, int YPos) {
-		System.out.println("Cursor Pressed");
 		contentPanel.requestFocusInWindow();
 		MyImage selectedImage;
 		// Update mouse Coords
@@ -185,7 +185,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             if (aShapesList.contains(new Point(XPos, YPos))) {
                 selectedImage = aShapesList;
                 contentPanel.selectPicture(selectedImage);
-                System.out.println("New active shape: " + selectedImage);
             }
         }
 		
@@ -204,7 +203,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void cursorReleased(int XPos, int YPos) {
-		System.out.println("Cursor Released");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		switch (toolModeIndex) {
 		case MOVE:
@@ -231,9 +229,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
 			case ENLARGE:
-				System.out.println("Enlarge");
-
-                // Specify maximum height
+                // Specify maximum height of image
                 if (selectedImage.getHeight() < 650) {
                     normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
                     normalizerY = -((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
@@ -245,8 +241,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 }
 				break;
 			case REDUCE:
-				System.out.println("Reduce");
-				
 				normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
 				normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
 
@@ -259,15 +253,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 				break;
 			case MOVE:
-				System.out.println("Move");	
-				selectedImage.setX(selectedImage.getX() + deltaX);
-				selectedImage.setY(selectedImage.getY() + deltaY);
+
+                int xDelimited = selectedImage.getX() + deltaX;
+                int yDelimited = selectedImage.getY() + deltaY;
+
+				selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() - 200)));
+				selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() - 200)));
 				break;
 			case ROTATE:
 				// do nothing
 				break;
 			default:
-				System.out.println("No Tool selected");
 				break;
 			}
 	

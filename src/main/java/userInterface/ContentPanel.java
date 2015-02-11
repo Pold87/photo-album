@@ -117,6 +117,7 @@ public class ContentPanel extends JPanel {
 
         Iterator<MyImage> iter = imageList.iterator();
         // Changed to iterator as I got a ConcurrentModificationException (Volker)
+        // TODO: Still not working
         while (iter.hasNext()) {
             MyImage i = iter.next();
 
