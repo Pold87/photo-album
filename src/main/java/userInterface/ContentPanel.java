@@ -348,7 +348,7 @@ public class ContentPanel extends JPanel {
 			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
 			g2d.setStroke(oldStroke);
 		}
-		g2d.rotate(- (Math.toRadians(i.getRotationDegrees())), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
+		g2d.rotate(- Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
 	}
 	
 	//Edit this here if you want a different starting page for the test conditions.
