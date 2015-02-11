@@ -230,11 +230,7 @@ public class ContentPanel extends JPanel {
     }
 
     public MyImage getSelectedPicture(){
-    	for(MyImage i: imageList){
-    		if(i.isSelected())
-    			return i;
-    	}
-    	return null;
+    	return selectedImage;
     }
 
     public void unselectPicture(Point p) {
