@@ -173,7 +173,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorPressed(int XPos, int YPos) {
 		System.out.println("Cursor Pressed");
 		contentPanel.requestFocusInWindow();
-		MyImage selectedImage;
+
 		// Update mouse Coords
 		oldXPos = XPos;
 		oldYPos = YPos;
@@ -181,15 +181,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
-		ArrayList<MyImage> shapesList = contentPanel.getImageList();
-		// Select active shape or image
-        for (MyImage aShapesList : shapesList) {
-            if (aShapesList.contains(new Point(XPos, YPos))) {
-                selectedImage = aShapesList;
-                contentPanel.selectPicture(selectedImage);
-                System.out.println("New active shape: " + selectedImage);
-            }
-        }
+		contentPanel.selectPictureAt(XPos, YPos);
 		
 		switch (toolModeIndex) {
 		case MOVE:
