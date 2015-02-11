@@ -260,9 +260,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 				break;
 			case MOVE:
-				System.out.println("Move");	
-				selectedImage.setX(selectedImage.getX() + deltaX);
-				selectedImage.setY(selectedImage.getY() + deltaY);
+				if (selectedImage.contains(new Point(XPos, YPos))) {
+					System.out.println("Move");	
+					selectedImage.setX(selectedImage.getX() + deltaX);
+					selectedImage.setY(selectedImage.getY() + deltaY);
+				}
 				break;
 			case ROTATE:
 				// do nothing

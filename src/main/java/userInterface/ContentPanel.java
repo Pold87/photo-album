@@ -238,7 +238,7 @@ public class ContentPanel extends JPanel {
     }
 
     public void unselectPicture(Point p) {
-    	if (!selectedImage.contains(p)) {
+    	if (!selectedImage.contains(p) && toolModeIndex == OurController.ToolMode.MOVE) {
     		selectedImage.setSelected(false);
     		imageList.remove(selectedImage);
     		imageList.add(selectedImage);
