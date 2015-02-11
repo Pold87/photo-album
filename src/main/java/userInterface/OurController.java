@@ -1,6 +1,7 @@
 package main.java.userInterface;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -108,6 +109,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			performedActions.add(new ActionDelete(image, this));
 			basicDesign.getToolbar().setEnabledUndoButton(true);
 			basicDesign.photoBar.addButton(image);
+			basicDesign.repaint();
 			contentPanel.repaint();
 		}
 	}
@@ -432,6 +434,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         performedActions.add(new ActionAddPic(image, this));
         basicDesign.getToolbar().setEnabledUndoButton(true);
         basicDesign.photoBar.removeButton(image);
+        basicDesign.repaint();
         contentPanel.repaint();
 	}
 	
