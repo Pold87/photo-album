@@ -185,12 +185,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
-		if (contentPanel.getSelectedPicture() == null) {
+		//if (contentPanel.getSelectedPicture() == null) {
 			contentPanel.selectPictureAt(XPos, YPos);
-		}
-		else {
-			contentPanel.unselectPicture(p);
-		}
+		//}
+		//else {
+		//	contentPanel.unselectPicture(p);
+		//}
 		
 		switch (toolModeIndex) {
 		case MOVE:
