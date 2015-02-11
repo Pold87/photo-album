@@ -285,7 +285,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapRightY(rightHandYPos);
 			contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
 			contentPanel.setLeapRightClick(rightHandClick);
-			contentPanel.setLeapRightFingers(rightHandFingerCount);
 	}
 
 	private void updateLeftHand(Frame frame, Hand hand) throws Exception {
@@ -369,7 +368,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 			contentPanel.setLeapLeftY(leftHandYPos);
 			contentPanel.setLeapLeftScreenDist(leftHandDistanceToScreen);
 			contentPanel.setLeapLeftClick(leftHandClick);
-			contentPanel.setLeapLeftFingers(leftHandFingerCount);
 		}
 	}
 
