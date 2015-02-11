@@ -121,9 +121,8 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 		    }
 			break;
 			case TYPE_SWIPE:
-
 				if (contentPanel.getSelectedPicture() != null) {
-					contentPanel.addPictureToCurrentPage(contentPanel.getSelectedPicture());
+					ourController.deleteSelectedPicture();
 				}
 				System.out.println("Swipe !!!");
 			break;
