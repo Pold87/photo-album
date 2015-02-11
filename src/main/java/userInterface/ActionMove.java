@@ -13,7 +13,11 @@ public class ActionMove implements Action {
 		this.newX = newX;
 		this.newY = newY;
 		this.ourController = ourController;
-		ourController.logger.logAction("Move picture " + target.getNum() + " to " + newX + " " + newY);
+
+        // Added by Volker because I got a NullPointerException
+        if (target != null) {
+            ourController.logger.logAction("Move picture " + target.getNum() + " to " + newX + " " + newY);
+        }
 	}
 
 	public void redo() {

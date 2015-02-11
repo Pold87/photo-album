@@ -11,12 +11,12 @@ public class Logger {
 	public Logger(int participantNumber){
 		try {
 			int x = 1;
-			File file = new File("Log" + participantNumber + ".txt");		
+			File file = new File("logs/Log" + participantNumber + ".txt");
 			while(file.exists()){
 				x++;
-				file = new File("Log" + participantNumber + "-" + x + ".txt");
+				file = new File("logs/Log" + participantNumber + "-" + x + ".txt");
 		}
-		file.createNewFile();
+
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		writer = new BufferedWriter (fw);
 		} catch (IOException e) {

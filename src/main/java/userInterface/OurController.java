@@ -7,31 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-
-import main.java.gesturerecognition.DrawingPanel.ToolMode;
-import main.java.speechrecognition.Recorder;
-import main.java.speechrecognition.Wit;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-
-import edu.cmu.sphinx.api.LiveSpeechRecognizer;
-import edu.cmu.sphinx.api.SpeechResult;
-import main.java.speechrecognition.Production;
-import main.java.speechrecognition.Recorder;
-import main.java.speechrecognition.SpeechCommands;
-import main.java.speechrecognition.Wit;
-
-import javax.swing.*;
-
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -41,13 +19,12 @@ import main.java.speechrecognition.Wit;
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
 
-	public Logger logger = new Logger(0);
+	public Logger logger  = new Logger(0);
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
-    //private Map<Integer, Color> colors = new HashMap<Integer, Color>(); // Used in the WitResponseRecognized. Who made this and what is it for?
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos;
 	private String currentAction = "select";
-    private ArrayList<Action> performedActions = new ArrayList<Action>(), undoneActions = new ArrayList<Action>(); // I'm not completely satisfied with the location of these variables, but is saves a load of extra code.
+    private ArrayList<Action> performedActions = new ArrayList<>(), undoneActions = new ArrayList<>();
     private MyImage draggingPicture = null;
 
 	// Tool Mode
@@ -56,9 +33,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
-	public OurController(){
+	public OurController() throws URISyntaxException {
 		super();
-	}
+    }
 	
 	public void initialize(ContentPanel cp, BasicDesign bd){
 		contentPanel = cp;
@@ -98,7 +75,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
-	public void recognizeSimpleSpeech() {
+//	public void recognizeSimpleSpeech() {
 
 //		SpeechResult utterance = this.speechCommands.recognizeCommand();
 //		System.out.println(utterance.getHypothesis());
@@ -106,7 +83,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		System.out.println(utterance.getNbest(3));
 //		System.out.println(utterance.getLattice());
 //		System.out.println(utterance.getWords());
-	}
+//	}
 	
 	public void toggleSpeechProcessing() {
 
@@ -123,17 +100,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		MyImage image = basicDesign.getLibrary()[nr];
         contentPanel.addPictureToCurrentPage(image);
         performedActions.add(new ActionAddPic(image, this));
-		contentPanel.repaint();
-	}
-
-	public void selectPicture(int x, int y) {
-		contentPanel.selectPictureAt(x, y);
-	}
-
-	public void deletePicture(int nr) {
-		MyImage image = contentPanel.deletePictureFromCurrentPage(nr);
-		performedActions.add(new ActionDelete(image, this));
-		basicDesign.getToolbar().setEnabledUndoButton(true);
 		contentPanel.repaint();
 	}
 	
@@ -195,58 +161,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
 
 
-
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
-		cursorDragged(mouseEvent.getX(), mouseEvent.getY());//fingerDragged(mouseEvent.getX(), mouseEvent.getY());
+		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
-	
-	//public void fingerMoved(int x, int y){
-	//	contentPanel.setLeapRightX(x);
-	//	contentPanel.setLeapRightY(y);
-	//}
-
-	public void fingerMoved(int x, int y){
-		contentPanel.setLeapRightX(x);
-		contentPanel.setLeapRightY(y);
-	}
-	
-	//Currently not used, but we're going to.
-	public void fingerPressed(int XPos, int YPos) {
-		contentPanel.requestFocusInWindow();
-
-		// Update Finger Coords
-		contentPanel.setLeapRightX(XPos);
-		contentPanel.setLeapRightY(YPos);
-		contentPanel.selectPictureAt(XPos, YPos);
-	}
-	
-	public void fingerReleased(int XPos, int YPos) {
-		switch (toolModeIndex) {
-			case MOVE:
-			case ENLARGE:
-			case REDUCE:
-			case ROTATE:
-			case CUT:
-				if(draggingPicture != null){
-					performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
-					draggingPicture = null;
-					previousCursorX = -1;
-					previousCursorY = -1;
-				}
-				break;
-			default:
-				System.out.println("Tool not found: " + toolModeIndex);
-		}
-	}
-	
 	
 	/* MOUSE LISTENER */
 
 	public void cursorPressed(int XPos, int YPos) {
 		System.out.println("Cursor Pressed");
 		contentPanel.requestFocusInWindow();
-		MyImage selectedImage = contentPanel.getSelectedPicture();
+		MyImage selectedImage;
 		// Update mouse Coords
 		oldXPos = XPos;
 		oldYPos = YPos;
@@ -256,13 +181,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		
 		ArrayList<MyImage> shapesList = contentPanel.getImageList();
 		// Select active shape or image
-		for (int i = 0; i < shapesList.size(); i++) {
-			if (shapesList.get(i).contains(new Point(XPos, YPos))) {//.intersects(XPos, YPos, 5, 5)) {
-				selectedImage = shapesList.get(i);
-				contentPanel.selectPicture(selectedImage);
-				System.out.println("New active shape: " + selectedImage);
-			}
-		}
+        for (MyImage aShapesList : shapesList) {
+            if (aShapesList.contains(new Point(XPos, YPos))) {
+                selectedImage = aShapesList;
+                contentPanel.selectPicture(selectedImage);
+                System.out.println("New active shape: " + selectedImage);
+            }
+        }
 		
 		switch (toolModeIndex) {
 		case MOVE:
@@ -301,30 +226,32 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void cursorDragged(int XPos, int YPos) {
 		int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
-		//double deltaY, deltaX;
 		double normalizerX, normalizerY;
-		BufferedImage temp;
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
 			case ENLARGE:
 				System.out.println("Enlarge");
 
-				normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-				normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-				
-				selectedImage.setX((int) (selectedImage.getX() - normalizerX));
-				selectedImage.setY((int) (selectedImage.getY() + normalizerY));
-				
-				selectedImage.resizeImg((int) (selectedImage.getWidth() + 6*normalizerX), (int) (selectedImage.getHeight() - 6*normalizerY));
+                // Specify maximum height
+                if (selectedImage.getHeight() < 650) {
+                    normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
+                    normalizerY = -((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
+
+                    selectedImage.setX((int) (selectedImage.getX() - normalizerX));
+                    selectedImage.setY((int) (selectedImage.getY() + normalizerY));
+
+                    selectedImage.resizeImg((int) (selectedImage.getWidth() + 6 * normalizerX), (int) (selectedImage.getHeight() - 6 * normalizerY));
+                }
 				break;
 			case REDUCE:
 				System.out.println("Reduce");
 				
 				normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
 				normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-				
-				if(selectedImage.getHeight() > 10 && selectedImage.getWidth() > 10) {
+
+                // Specify minimum height
+				if(selectedImage.getHeight() > 120) {
 					selectedImage.setY((int) (selectedImage.getY() - 4*normalizerY));
 					selectedImage.setX((int) (selectedImage.getX() + 4*normalizerX));
 					
@@ -333,8 +260,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				break;
 			case MOVE:
 				System.out.println("Move");	
-				selectedImage.setX((int) (selectedImage.getX() + deltaX));
-				selectedImage.setY((int) (selectedImage.getY() + deltaY));
+				selectedImage.setX(selectedImage.getX() + deltaX);
+				selectedImage.setY(selectedImage.getY() + deltaY);
 				break;
 			case ROTATE:
 				// do nothing
@@ -349,36 +276,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			previousCursorX = XPos;
 			contentPanel.repaint();
 		}
-	}
-	
-	public void fingerDragged(int x, int y) {
-		draggingPicture = contentPanel.getSelectedPicture();
-		
-		if(draggingPicture != null)
-        // Set mouse position, if there is no old Mouse position.
-        if (previousCursorX == -1) {
-            previousCursorX = x;
-            previousCursorY = y;
-            oldXPos = draggingPicture.getX();
-            oldYPos = draggingPicture.getY();
-        } else {
-            // Get current mouse position
-        	
-            // Get difference between old mouse position and current position
-            Integer diffX = x - previousCursorX;
-            Integer diffY = y - previousCursorY;
-
-            // Update position for every image in the image list.
-            draggingPicture.setX(draggingPicture.getX() + diffX);
-            draggingPicture.setY(draggingPicture.getY() + diffY);
-
-            // Set old mouse position to current position.
-            previousCursorX = x;
-            previousCursorY = y;
-        }
-
-        // Repaint everything in order to see changes.
-        contentPanel.repaint();
 	}
 
 	public void mouseMoved(MouseEvent arg0) {
@@ -423,7 +320,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	/**
 	 * This function determines what action should be taken after a response from wit.ai is received.
-	 * @param response
 	 */
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
 		String intent = response.getIntent();
@@ -502,16 +398,19 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void toolbarButtonClicked(String button) {
-		if (button == "undo") {
-			this.undo();
-		} else if (button == "redo") {
-			this.redo();
-		} else {
-			currentAction = button;
-		}
+        switch (button) {
+            case "undo":
+                this.undo();
+                break;
+            case "redo":
+                this.redo();
+                break;
+            default:
+                currentAction = button;
+                break;
+        }
 	}
     //END ToolbarListener
-
     
     //START ActionListener
     //Used Only by the PhotoBar
@@ -543,53 +442,5 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void removeLastActionFromList(){
 		performedActions.remove(performedActions.size()-1);
 	}
-
-	public ContentPanel getContentPanel() {
-		return contentPanel;
-	}
-
-
-	// from
-	// http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
-	public int calcLevenshteinDistance (String s0, String s1) {
-		int len0 = s0.length() + 1;
-		int len1 = s1.length() + 1;
-
-		// the array of distances
-		int[] cost = new int[len0];
-		int[] newcost = new int[len0];
-
-		// initial cost of skipping prefix in String s0
-		for (int i = 0; i < len0; i++) cost[i] = i;
-
-		// dynamicaly computing the array of distances
-
-		// transformation cost for each letter in s1
-		for (int j = 1; j < len1; j++) {
-			// initial cost of skipping prefix in String s1
-			newcost[0] = j;
-
-			// transformation cost for each letter in s0
-			for(int i = 1; i < len0; i++) {
-				// matching current letters in both strings
-				int match = (s0.charAt(i - 1) == s1.charAt(j - 1)) ? 0 : 1;
-
-				// computing cost for each transformation
-				int cost_replace = cost[i - 1] + match;
-				int cost_insert  = cost[i] + 1;
-				int cost_delete  = newcost[i - 1] + 1;
-
-				// keep minimum cost
-				newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
-			}
-
-			// swap cost/newcost arrays
-			int[] swap = cost; cost = newcost; newcost = swap;
-		}
-
-		// the distance is the cost for transforming all letters in both strings
-		return cost[len0 - 1];
-	}
-
 
 }

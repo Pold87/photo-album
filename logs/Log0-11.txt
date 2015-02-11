@@ -1,0 +1,4 @@
+Added picture 3
+Rotated picture 3  51 degrees.
+Rotated picture 3  0 degrees.
+Move picture 3 to 859 229

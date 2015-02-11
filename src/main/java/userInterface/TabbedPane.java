@@ -2,18 +2,11 @@ package main.java.userInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 
-/**
- * Created by pold on 12/10/14.
- */
-public class TabbedPane extends JTabbedPane{
-	private static final long serialVersionUID = 1L;
-	String[] images;
-    String path;
+public class TabbedPane extends JTabbedPane {
+    private static final long serialVersionUID = 1L;
 
-    public TabbedPane(PhotoBar photoBar, BackgroundBar backgroundBar) throws Exception{
+    public TabbedPane(PhotoBar photoBar, BackgroundBar backgroundBar) throws Exception {
 
         super(JTabbedPane.LEFT);
 
@@ -29,26 +22,6 @@ public class TabbedPane extends JTabbedPane{
         JScrollPane scrollPane_2 = new JScrollPane(backgroundBar);
         addTab(null, textIcon2, scrollPane_2);
 
-//        VTextIcon textIcon3 = new VTextIcon(this, "Frames");
-//        JScrollPane scrollPane_3 = new JScrollPane();
-//        addTab(null, textIcon3, scrollPane_3);
     }
-
-    //Tabbed Pane that holds library
-//    GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
-//    gbc_tabbedPane.fill = GridBagConstraints.BOTH;
-//    gbc_tabbedPane.insets = new Insets(0, 0, 0, 5);
-//    gbc_tabbedPane.gridx = 0;
-//    gbc_tabbedPane.gridy = 0;
-//    panel.add(tabbedPane, gbc_tabbedPane);
-//    tabbedPane.addComponentListener(this);
-
-
-
-
-    public void addPanel() {
-
-    }
-
 
 }

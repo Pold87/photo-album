@@ -5,16 +5,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.net.URL;
 
-/**
- * Created by pold on 12/11/14.
- */
 public class MyImage {
 
     private BufferedImage img; // The actual picture
@@ -83,59 +79,6 @@ public class MyImage {
         return img;
     }
 
-    public void setImg(BufferedImage img) {
-        this.img = img;
-    }   
-    
-    
-//    public void getScaledInstance(int targetWidth, int targetHeight, /*Object hint,*/ boolean higherQuality) {
-//		int type = (img.getTransparency() == Transparency.OPAQUE) ?
-//		BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-//		
-//		System.out.println("getScaledInstance: " + targetWidth + ", " + targetHeight);
-//		System.out.println("Previous: " + img.getWidth() + ", " + img.getHeight());
-//		
-//		BufferedImage ret = img;
-//		int w, h;
-//		if (higherQuality) {
-//			// Use multi-step technique: start with original size, then
-//			// scale down in multiple passes with drawImage()
-//			// until the target size is reached
-//			w = img.getWidth();
-//			h = img.getHeight();
-//		} else {
-//			// Use one-step technique: scale directly from original
-//			// size to target size with a single drawImage() call
-//			w = targetWidth;
-//			h = targetHeight;
-//		}
-//		System.out.println("test..");
-//		do {
-//			if (higherQuality && w > targetWidth) {
-//				w /= 2;
-//				if (w < targetWidth) {
-//					w = targetWidth;
-//				}
-//			}
-//			
-//			if (higherQuality && h > targetHeight) {
-//				h /= 2;
-//				if (h < targetHeight) {
-//					h = targetHeight;
-//				}
-//			}
-//			System.out.println("test2..");
-//			BufferedImage tmp = new BufferedImage(w, h, type);
-//			Graphics2D g2 = tmp.createGraphics();
-//			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, null);
-//			g2.drawImage(ret, 0, 0, w, h, null);
-//			g2.dispose();
-//			ret = tmp;
-//			
-//		} while (w != targetWidth || h != targetHeight);
-//		img = ret;
-//	}
-    
     public int getX() {
         return x;
     }
@@ -156,65 +99,9 @@ public class MyImage {
         return num;
     }
 
-    public void setNum(int num) {
-        this.num = num;
-    }
-
-    public Dimension getPreferredSize() {
-        return new Dimension(img.getWidth(), img.getHeight());
-    }
-
     public void resizeImg(int newW, int newH) {
         width = newW;
         height = newH;
-    }
-
-    public void getScaledInstance(int targetWidth, int targetHeight, /*Object hint,*/ boolean higherQuality) {
-        int type = (img.getTransparency() == Transparency.OPAQUE) ?
-                BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-
-        System.out.println("getScaledInstance: " + targetWidth + ", " + targetHeight);
-        System.out.println("Previous: " + img.getWidth() + ", " + img.getHeight());
-
-        BufferedImage ret = img;
-        int w, h;
-        if (higherQuality) {
-            // Use multi-step technique: start with original size, then
-            // scale down in multiple passes with drawImage()
-            // until the target size is reached
-            w = img.getWidth();
-            h = img.getHeight();
-        } else {
-            // Use one-step technique: scale directly from original
-            // size to target size with a single drawImage() call
-            w = targetWidth;
-            h = targetHeight;
-        }
-        System.out.println("test..");
-        do {
-            if (higherQuality && w > targetWidth) {
-                w /= 2;
-                if (w < targetWidth) {
-                    w = targetWidth;
-                }
-            }
-
-            if (higherQuality && h > targetHeight) {
-                h /= 2;
-                if (h < targetHeight) {
-                    h = targetHeight;
-                }
-            }
-            System.out.println("test2..");
-            BufferedImage tmp = new BufferedImage(w, h, type);
-            Graphics2D g2 = tmp.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, null);
-            g2.drawImage(ret, 0, 0, w, h, null);
-            g2.dispose();
-            ret = tmp;
-
-        } while (w != targetWidth || h != targetHeight);
-        img = ret;
     }
 
     //Resizes an image to have the given width and height
@@ -230,12 +117,10 @@ public class MyImage {
     public void incrementRotation(double degree){
     	rotationDegrees += degree;   	
     }
-    
-    //Is this a necessary method?
-    public void setRotation(int degree){
-    	rotationDegrees = degree;
-    }
 
+    public double getRotationDegrees() {
+        return this.rotationDegrees;
+    }
 
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
@@ -257,7 +142,6 @@ public class MyImage {
     }
     
     public boolean contains(Point p){
-    	//System.out.println("Contains? p.getX = " + p.getX() + ", x = " + x + ", p.getY = " + p.getY() + ", y = " + y);
     	if (p.getX() >= x && p.getX() <= x+width) {
     		if (p.getY() >= y && p.getY() <= y+height) {
     			return true;

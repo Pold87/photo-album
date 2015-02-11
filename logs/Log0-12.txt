@@ -1,0 +1,9 @@
+Added picture 1
+Move picture 1 to 581 504
+Rotated picture 1  74 degrees.
+Rotated picture 1  -141 degrees.
+Rotated picture 1  0 degrees.
+Rotated picture 1  13 degrees.
+Rotated picture 1  0 degrees.
+Rotated picture 1  48 degrees.
+Rotated picture 1  1 degrees.

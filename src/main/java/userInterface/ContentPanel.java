@@ -11,36 +11,18 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.AffineTransformOp;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import main.java.gesturerecognition.Imagedata;
 import main.java.userInterface.OurController.ToolMode;
 
-/**
- * Created by pold on 12/10/14.
- */
 public class ContentPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 
 	private OurController ourController;
-
-	private boolean keyTapped = false;
-
-	public boolean isKeyTapped() {
-		return keyTapped;
-	}
-
-	public void setKeyTapped(boolean keyTapped) {
-		this.keyTapped = keyTapped;
-	}
 
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int scr_width = screenSize.width;
@@ -55,7 +37,7 @@ public class ContentPanel extends JPanel {
 
     public ContentPanel(OurController ourController) throws IOException {
     	setPreferredSize(new Dimension(600, 600));
-        imageList = new ArrayList<MyImage>();
+        imageList = new ArrayList<>();
         setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(Color.white);
         addMouseListener(ourController);
@@ -70,42 +52,19 @@ public class ContentPanel extends JPanel {
 	// Leap Stuff
 	ToolMode toolModeIndex = ToolMode.MOVE;
 
-	// Shape Mode
-	public enum ShapeMode {
-		IMAGE
-	}
-
-	private ShapeMode shapeModeIndex = ShapeMode.IMAGE;
-
-
 	// Leap cursor right
 	private int leapRightX = 9999, leapRightY = 9999;
 	private float leapRightScreenDist = 1.0f;
 	private boolean leapRightClick = false;
-	private int leapRightFingers = 0;
 
 	// Leap cursor left
 	private int leapLeftX = 9999, leapLeftY = 9999;
 	private float leapLeftScreenDist = 1.0f;
 	private boolean leapLeftClick = false;
-	private int leapLeftFingers = 0;
-
-	// Transform for rotation
-	AffineTransformOp op;
 
 	public void setToolMode(ToolMode toolModeIndex) {
 		this.toolModeIndex = toolModeIndex;
 		ourController.setToolMode(toolModeIndex);
-	}
-	
-	public void setShapeMode(ShapeMode shapeMode) {
-		this.shapeModeIndex = shapeMode;
-	}
-
-
-	public void setLeapRightFingers(int leapFingers) {
-		this.leapRightFingers = leapFingers;
-		repaint();
 	}
 
 	public void setLeapRightClick(boolean leapClick) {
@@ -125,11 +84,6 @@ public class ContentPanel extends JPanel {
 
 	public void setLeapRightScreenDist(float leapScreenDist) {
 		this.leapRightScreenDist = leapScreenDist;
-		repaint();
-	}
-
-	public void setLeapLeftFingers(int leapFingers) {
-		this.leapLeftFingers = leapFingers;
 		repaint();
 	}
 
@@ -160,54 +114,30 @@ public class ContentPanel extends JPanel {
         super.paintComponent(g2d);
 
         // Draw each image in the image list (if it's active)
-        for (MyImage i : imageList) {
-			if (i.isActive()) {
-				i.paint(g2d);
-				drawDashedBox(g2d, i);
-			}
-		}
+
+        Iterator<MyImage> iter = imageList.iterator();
+        // Changed to iterator as I got a ConcurrentModificationException (Volker)
+        while (iter.hasNext()) {
+            MyImage i = iter.next();
+
+            if (i.isActive()) {
+                i.paint(g2d);
+                drawDashedBox(g2d, i);
+            }
+        }
 
 		// Show progress for speech
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
 		if (this.speechProcessing) {
-//			ClassLoader cldr = this.getClass().getClassLoader();
-//			java.net.URL imageURL   = cldr.getResource("resources/icons/ajax-loader.gif");
-//			ImageIcon imageIcon = new ImageIcon(imageURL);
-//			JLabel iconLabel = new JLabel();
-//			iconLabel.setIcon(imageIcon);
-//			imageIcon.setImageObserver(iconLabel);
-//
-//			JLabel label = new JLabel("Listening...");
-//			this.add(iconLabel);
-//			this.add(label);
 
-
-			//g2d.fillRect(300, 300, 100, 100);
-			//g2d.fillRect(370, 300, 100, 100);
+			g2d.fillRect(300, 300, 100, 100);
+			g2d.fillRect(370, 300, 100, 100);
 		}
 
 		// Finger count indicator
 		g2d.setColor(Color.black);
 		Font font = new Font("Verdana", Font.BOLD, 18);
-		g2d.setFont(font);
-
-		////// Leap cursor left /////////
-		g2d.setStroke(new BasicStroke(1)); // Thickness
-		// Outline - border
-		g2d.setColor(Color.darkGray);
-		int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
-
-		g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-				leapLeftCursorSize, leapLeftCursorSize);
-		// Filling
-		g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
-				255, 0, 0, 50));
-		g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-				leapLeftCursorSize, leapLeftCursorSize);
-
-		// Finger count indicator
-		g2d.setColor(Color.darkGray);
 		g2d.setFont(font);
 
 		//////// Leap cursor right ////////
@@ -250,10 +180,27 @@ public class ContentPanel extends JPanel {
 			default:
 				break;
 		}
-		//g2d.drawString(String.valueOf(this.leapRightFingers), leapRightX - 6, leapRightY + 6);
+
+        ////// Leap cursor left /////////
+        g2d.setStroke(new BasicStroke(1)); // Thickness
+        // Outline - border
+        g2d.setColor(Color.darkGray);
+        int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
+
+        g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+                leapLeftCursorSize, leapLeftCursorSize);
+        // Filling
+        g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
+                255, 0, 0, 50));
+        g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+                leapLeftCursorSize, leapLeftCursorSize);
+
+        // Finger count indicator
+        g2d.setColor(Color.darkGray);
+        g2d.setFont(font);
 
 
-		// Show which action
+        // Show which action
 		switch (toolModeIndex) {
 			case MOVE:
 				g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
@@ -273,14 +220,6 @@ public class ContentPanel extends JPanel {
 			default:
 				break;
 		}
-
-		// Outline
-		g2d.setStroke(new BasicStroke(1));
-		g2d.setColor(Color.black);
-		g2d.drawRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
-		g2d.setColor(Color.white);
-		g2d.drawLine(1, 0, 298, 0);
-
 
 		// Finger count indicator
 		g2d.setColor(Color.darkGray);
@@ -346,36 +285,13 @@ public class ContentPanel extends JPanel {
 		return selectedImage;
     }
 
-    //TODO This method should be removed and the method above should be called.
-    //But we still need to make sure that the X and Y positions of the LEAP and the interface match.
-	public MyImage selectPictureAtLeap(){
-		// Draw each image in the image list (if it's active)
-		for (MyImage i : imageList) {
-			if (i.isActive()) {
-
-				Rectangle2D sprite = new Rectangle2D.Double(i.getX(), i.getY(), i.getWidth(), i.getHeight());
-				Rectangle2D leapPos = new Rectangle2D.Double(leapRightX - 200, leapRightY - 200, 200, 200);
-
-				if (this.getSelectedPicture() == null) {
-					this.ourController.selectPicture(i);
-				} else {
-
-					this.getSelectedPicture().setSelected(!this.getSelectedPicture().isSelected());
-				}
-			}
-		}
-		// Repaint everything in order to see changes
-		repaint();
-		return selectedImage;
-	}
-
     public void addPictureToCurrentPage(MyImage image) {
 		image.setActive(!image.isActive());
 		if (image.isActive()) {
 
 			// TODO this is for the position !!!
 
-			if (leapRightX < 0 ||leapRightX > scr_width ) {
+			if (leapRightX < 0 || leapRightX > scr_width ) {
 				image.setX(20);
 			}
 
@@ -387,26 +303,12 @@ public class ContentPanel extends JPanel {
 				image.setY(leapRightY);
 			}
 
-
 			this.imageList.add(image);
 		} else {
 			this.imageList.remove(image);
 		}
 		repaint();
 	}
-
-	/**
-     * Also needs an edit when we have multiple pages.
-     * @param nr
-     * @return The deleted Image, can be useful. 
-     */
-    public MyImage deletePictureFromCurrentPage(int nr){
-    	MyImage image = imageList.remove(nr);
-    	image.setActive(false);
-    	image.setSelected(false);
-    	repaint();
-    	return image;
-    }
     
     public MyImage deleteSelectedPicture(){
     	selectedImage.setActive(false);
@@ -414,11 +316,6 @@ public class ContentPanel extends JPanel {
     	imageList.remove(selectedImage);
     	repaint();
     	return selectedImage;
-    }
-    
-    public void rotate(){
-    	selectedImage.incrementRotation(45);
-    	repaint();
     }
 
     public void rotate(double degrees) {
@@ -444,6 +341,7 @@ public class ContentPanel extends JPanel {
 			g2d.setColor(Color.black);
 			Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 			g2d.setStroke(dashed);
+            g2d.rotate(Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() +(i.getHeight() / 2));
 			g2d.drawRect(i.getX() - 10, i.getY() - 10, i.getWidth() + 20, i.getHeight() + 20);
 			g2d.setStroke(oldStroke);
 		}
