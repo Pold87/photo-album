@@ -117,8 +117,8 @@ public class BasicDesign extends JFrame {
         /**************************/
         // Leap STUFF
         if(App.testMode != App.TestMode.TestMouse){
-        	Controller leapController = new Controller();
-        	VolkerLeapListener leapListener = new VolkerLeapListener();
+        	leapController = new Controller();
+        	leapListener = new VolkerLeapListener();
         	leapListener.setContentPanel(contentPanel);
         	leapListener.setScrHeight(scr_height);
         	leapListener.setScrWidth(scr_width);
