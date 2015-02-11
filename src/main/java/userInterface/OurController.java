@@ -187,19 +187,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		else {
 			contentPanel.unselectPicture(p);
 		}
-		//ArrayList<MyImage> shapesList = contentPanel.getImageList();
-		// Select active shape or image
-/*        for (MyImage aShapesList : shapesList) {
-            if (aShapesList.contains(new Point(XPos, YPos))) {
-                selectedImage = aShapesList;
-                contentPanel.selectPicture(selectedImage);
-                System.out.println("New active shape: " + selectedImage);
-            }
-        }*/
-=======
-		
-		contentPanel.selectPictureAt(XPos, YPos);
->>>>>>> origin/master
 		
 		switch (toolModeIndex) {
 		case MOVE:
