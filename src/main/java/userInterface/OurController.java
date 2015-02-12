@@ -23,10 +23,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public Logger logger;
 	private ContentPanel contentPanel;
 	private BasicDesign basicDesign;
-	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos;
+	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos, oldWidth, oldHeight;
 	private String currentAction = "select";
     private ArrayList<Action> performedActions = new ArrayList<>(), undoneActions = new ArrayList<>();
-    private MyImage draggingPicture = null;
 
 	// Tool Mode
 	public enum ToolMode {
@@ -184,16 +183,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorPressed(int XPos, int YPos) {
 		contentPanel.requestFocusInWindow();
 
-		// Update mouse Coords
-		oldXPos = XPos;
-		oldYPos = YPos;
 		//Point p = new Point(XPos, YPos);
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
 		//if (contentPanel.getSelectedPicture() == null) {
         // TODO
-			this.selectPictureAt(XPos, YPos);
+		this.selectPictureAt(XPos, YPos);
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		
+		// Update mouse Coords
+		oldXPos = selectedImage.getX();
+		oldYPos = selectedImage.getY();
+		oldWidth = selectedImage.getWidth();
+		oldHeight = selectedImage.getHeight();
+		
 		//}
 		//else {
 		//	contentPanel.unselectPicture(p);
@@ -214,17 +218,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void cursorReleased(int XPos, int YPos) {
-
-        int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
+        //int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
         MyImage selectedImage = contentPanel.getSelectedPicture();
         if(!(selectedImage == null)) {
 
             switch (toolModeIndex) {
                 case MOVE:
+                	performedActions.add(new ActionMove(selectedImage, oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), this));
+        			previousCursorX = -1;
+        			previousCursorY = -1;
                     break;
                 case ENLARGE:
+                	performedActions.add(new ActionResize(selectedImage, "Enlarged", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
                     break;
                 case REDUCE:
+                	performedActions.add(new ActionResize(selectedImage, "Reduced", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
                     break;
                 case ROTATE:
                     break;
@@ -327,12 +335,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		if(draggingPicture != null){
-			performedActions.add(new ActionMove(draggingPicture, oldXPos, oldYPos, draggingPicture.getX(), draggingPicture.getY(), this));			
-			draggingPicture = null;
-			previousCursorX = -1;
-			previousCursorY = -1;
-		}
+		cursorReleased(e.getX(), e.getY());
 	}
 	//END MouseListeners
 	
@@ -458,7 +461,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void selectPictureAt(int x, int y){
         contentPanel.selectPictureAt(x, y);
-
     }
 	
 	public void addPicture(MyImage image){
@@ -487,7 +489,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	 * Kinda nasty hack. I use this to make sure undone actions don't go back in the performedActions list.
 	 */
 	public void removeLastActionFromList(){
-		performedActions.remove(performedActions.size()-1);
+		if (!performedActions.isEmpty()) {
+			performedActions.remove(performedActions.size()-1);
+		}
 	}
 
 }
