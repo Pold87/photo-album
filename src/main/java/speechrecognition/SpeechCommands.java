@@ -65,4 +65,12 @@ public class SpeechCommands {
 
 	}
 
+    public static void main(String[] args) throws IOException {
+
+        SpeechCommands sc = new SpeechCommands();
+
+        sc.recognizeCommand();
+
+    }
+
 }

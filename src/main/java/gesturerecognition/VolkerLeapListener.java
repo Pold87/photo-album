@@ -24,6 +24,9 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	boolean prevRightClick = false;
 	OurController ourController;
 
+    int timeNotMovedLeft = 0;
+    int timeNotMovedRight = 0;
+
 	public void setScrWidth(int scrWidth) {
 		this.scrWidth = scrWidth;
 	}
@@ -67,9 +70,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 		// Update Hand
 		for (Hand h : frame.hands()) {
-			if (h.isLeft()) {
 				try {
                     if (h.isLeft()) {
+
+                        this.timeNotMovedLeft = 0;
 
                         /** UPDATE LEFT HAND **/
 
@@ -144,13 +148,16 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                     }
 
 
+                    this.timeNotMovedRight += 1;
+
 					contentPanel.setLeapRightClick(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
 
 			if (h.isRight()) {
+
+                this.timeNotMovedRight = 0;
 
              /** UPDATE RIGHT HAND **/
 
@@ -231,13 +238,21 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                 contentPanel.setLeapRightClick(rightHandClick);
 
 
+                this.timeNotMovedLeft += 1;
+
+
 				contentPanel.setLeapLeftClick(false);
 			}
 		}
 		if (frame.hands().isEmpty()) {
 			contentPanel.setLeapRightClick(false);
 			contentPanel.setLeapLeftClick(false);
-		}
+
+
+            this.timeNotMovedLeft += 1;
+            this.timeNotMovedRight += 1;
+
+        }
 
         /** UPDATE GESTURES **/
 
@@ -300,6 +315,22 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	public void setContentPanel(ContentPanel contentPanel) {
 		this.contentPanel = contentPanel;
 	}
+
+    public int getTimeNotMovedLeft() {
+        return timeNotMovedLeft;
+    }
+
+    public void setTimeNotMovedLeft(int timeNotMovedLeft) {
+        this.timeNotMovedLeft = timeNotMovedLeft;
+    }
+
+    public int getTimeNotMovedRight() {
+        return timeNotMovedRight;
+    }
+
+    public void setTimeNotMovedRight(int timeNotMovedRight) {
+        this.timeNotMovedRight = timeNotMovedRight;
+    }
 
 
 }

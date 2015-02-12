@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import main.java.gesturerecognition.VolkerLeapListener;
 import main.java.userInterface.OurController.ToolMode;
 
 public class ContentPanel extends JPanel {

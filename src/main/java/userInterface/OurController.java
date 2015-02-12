@@ -187,8 +187,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
-		//if (contentPanel.getSelectedPicture() == null) {
-        // TODO
+		if (contentPanel.getSelectedPicture() != null) {
 		this.selectPictureAt(XPos, YPos);
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		
@@ -198,7 +197,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		oldWidth = selectedImage.getWidth();
 		oldHeight = selectedImage.getHeight();
 		
-		//}
+		}
 		//else {
 		//	contentPanel.unselectPicture(p);
 		//}
@@ -237,7 +236,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 case ROTATE:
                     break;
                 case CUT:
-                    System.out.println("Naufgecutted");
                     this.cut(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
                     contentPanel.repaint();
                     break;
@@ -478,8 +476,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     public void cut(int x, int y) {
 
         if (contentPanel.getLines().size() == 4) {
-            contentPanel.cut();
-            contentPanel.setLines(new ArrayList<>());
+            SwingUtilities.invokeLater(() -> {
+                performedActions.add(new ActionCut(contentPanel.getSelectedPicture(), OurController.this));
+                contentPanel.cut();
+                contentPanel.setLines(new ArrayList<>());
+                basicDesign.getToolbar().setEnabledUndoButton(true);
+            });
+
         } else {
             contentPanel.addLine(x, y);
     }

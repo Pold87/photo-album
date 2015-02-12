@@ -1,0 +1,18 @@
+Added picture 3 Timestamp: 4
+Move picture 3 to 32 86 Timestamp: 10
+Enlarged picture 3 Timestamp: 18
+Undo
+Move picture 3 to 32 86 Timestamp: 40
+Move picture 3 to 32 86 Timestamp: 40
+Move picture 3 to 32 86 Timestamp: 41
+Move picture 3 to 32 86 Timestamp: 43
+Move picture 3 to 895 308 Timestamp: 146
+Move picture 3 to 959 315 Timestamp: 440
+Move picture 3 to 962 317 Timestamp: 440
+Rotated picture 3  0 degrees. Timestamp: 442
+Rotated picture 3  80 degrees. Timestamp: 444
+Rotated picture 3  0 degrees. Timestamp: 444
+Rotated picture 3  0 degrees. Timestamp: 444
+Rotated picture 3  -133 degrees. Timestamp: 446
+Move picture 3 to 1094 424 Timestamp: 446
+Move picture 3 to 99 105 Timestamp: 448

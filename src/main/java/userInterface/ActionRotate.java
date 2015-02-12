@@ -14,7 +14,6 @@ public class ActionRotate implements Action {
 		ourController.logger.logAction("Rotated picture " + image.getNum() + "  " + degrees + " degrees." + " Timestamp: " + time);
 	}
 
-
 	public void redo() {
 		ourController.selectPicture(image);
 		ourController.rotate(degrees);
