@@ -1,0 +1,5 @@
+Added picture 2 Timestamp: 3
+Rotated picture 2  -1800 degrees. Timestamp: 86
+Rotated picture 2  -2 degrees. Timestamp: 86
+Rotated picture 2  0 degrees. Timestamp: 86
+Rotated picture 2  0 degrees. Timestamp: 86

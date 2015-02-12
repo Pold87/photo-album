@@ -1,0 +1,4 @@
+Added picture 2 Timestamp: 4
+Rotated picture 2  4 degrees. Timestamp: 79
+Rotated picture 2  7 degrees. Timestamp: 79
+Rotated picture 2  -13 degrees. Timestamp: 80

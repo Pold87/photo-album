@@ -1,0 +1,21 @@
+Added picture 2 Timestamp: 3
+Delete picture 2 Timestamp: 10
+Added picture 2 Timestamp: 13
+Added picture 4 Timestamp: 17
+Rotated picture 4  88 degrees. Timestamp: 24
+Rotated picture 4  0 degrees. Timestamp: 24
+Rotated picture 4  62 degrees. Timestamp: 24
+Rotated picture 4  0 degrees. Timestamp: 24
+Rotated picture 4  0 degrees. Timestamp: 24
+Rotated picture 4  -130 degrees. Timestamp: 26
+Rotated picture 4  -124 degrees. Timestamp: 27
+Rotated picture 4  -1 degrees. Timestamp: 27
+Rotated picture 4  0 degrees. Timestamp: 27
+Rotated picture 4  95 degrees. Timestamp: 28
+Rotated picture 4  0 degrees. Timestamp: 28
+Rotated picture 4  0 degrees. Timestamp: 28
+Rotated picture 4  1 degrees. Timestamp: 76
+Rotated picture 4  70 degrees. Timestamp: 78
+Rotated picture 4  0 degrees. Timestamp: 78
+Rotated picture 4  1 degrees. Timestamp: 78
+Rotated picture 4  -114 degrees. Timestamp: 80
