@@ -11,6 +11,8 @@ import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.InteractionBox;
 import com.leapmotion.leap.Vector;
 
+import java.util.Timer;
+
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
 	/** Members **/
@@ -23,6 +25,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	float clickThresholdLeft = 0.0f;
 	boolean prevRightClick = false;
 	OurController ourController;
+
+
+//    Timer
+
 
     int timeNotMovedLeft = 0;
     int timeNotMovedRight = 0;
