@@ -1,0 +1,7 @@
+Added picture 1 Timestamp: 43
+Move picture 1 to 640 40 Timestamp: 79
+Move picture 1 to 716 242 Timestamp: 83
+Move picture 1 to 96 178 Timestamp: 84
+Move picture 1 to 560 64 Timestamp: 86
+Move picture 1 to 168 152 Timestamp: 211
+Move picture 1 to 168 152 Timestamp: 220

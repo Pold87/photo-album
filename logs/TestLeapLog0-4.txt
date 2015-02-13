@@ -1,0 +1,81 @@
+Move picture 4 to -28 26 Timestamp: 18
+Move picture 4 to 240 159 Timestamp: 20
+Move picture 2 to 263 70 Timestamp: 23
+Move picture 2 to 315 98 Timestamp: 24
+Move picture 2 to 405 143 Timestamp: 31
+Move picture 2 to 409 118 Timestamp: 35
+Move picture 2 to 741 141 Timestamp: 39
+Move picture 4 to 208 162 Timestamp: 50
+Reduced picture 4 Timestamp: 52
+Move picture 4 to 327 203 Timestamp: 54
+Reduced picture 4 Timestamp: 55
+Move picture 4 to 454 266 Timestamp: 58
+Reduced picture 4 Timestamp: 60
+Reduced picture 4 Timestamp: 60
+Reduced picture 4 Timestamp: 61
+Move picture 4 to 409 250 Timestamp: 62
+Rotated picture 4  -8 degrees. Timestamp: 85
+Rotated picture 4  -9 degrees. Timestamp: 88
+Cut picture 4 Timestamp: 91
+Move picture 4 to 95 76 Timestamp: 97
+Move picture 2 to 334 121 Timestamp: 102
+Rotated picture 2  -6 degrees. Timestamp: 112
+Rotated picture 2  5 degrees. Timestamp: 120
+Enlarged picture 2 Timestamp: 125
+Reduced picture 2 Timestamp: 127
+Rotated picture 2  -7 degrees. Timestamp: 130
+Rotated picture 2  -12 degrees. Timestamp: 131
+Rotated picture 2  -7 degrees. Timestamp: 132
+Rotated picture 2  -9 degrees. Timestamp: 132
+Rotated picture 2  -25 degrees. Timestamp: 133
+Rotated picture 2  0 degrees. Timestamp: 133
+Rotated picture 2  -8 degrees. Timestamp: 133
+Rotated picture 2  -25 degrees. Timestamp: 134
+Rotated picture 2  -2 degrees. Timestamp: 134
+Rotated picture 2  -1 degrees. Timestamp: 135
+Move picture 2 to 353 136 Timestamp: 136
+Reduced picture 2 Timestamp: 139
+Rotated picture 2  -67 degrees. Timestamp: 142
+Rotated picture 2  -62 degrees. Timestamp: 143
+Rotated picture 2  -9 degrees. Timestamp: 143
+Rotated picture 2  -45 degrees. Timestamp: 144
+Rotated picture 2  -1 degrees. Timestamp: 144
+Rotated picture 2  0 degrees. Timestamp: 144
+Rotated picture 2  -19 degrees. Timestamp: 144
+Rotated picture 2  -2 degrees. Timestamp: 144
+Rotated picture 2  -1 degrees. Timestamp: 144
+Rotated picture 2  -29 degrees. Timestamp: 145
+Rotated picture 2  -1 degrees. Timestamp: 145
+Rotated picture 2  0 degrees. Timestamp: 145
+Rotated picture 2  -77 degrees. Timestamp: 147
+Rotated picture 2  0 degrees. Timestamp: 147
+Rotated picture 2  32 degrees. Timestamp: 148
+Rotated picture 2  2 degrees. Timestamp: 148
+Rotated picture 2  28 degrees. Timestamp: 150
+Reduced picture 2 Timestamp: 154
+Reduced picture 2 Timestamp: 156
+Added picture 1 Timestamp: 197
+Move picture 1 to 6 432 Timestamp: 203
+Move picture 1 to 181 90 Timestamp: 207
+Move picture 1 to 589 54 Timestamp: 211
+Move picture 2 to 279 177 Timestamp: 216
+Move picture 2 to 758 95 Timestamp: 221
+Move picture 1 to 243 102 Timestamp: 224
+Reduced picture 1 Timestamp: 226
+Enlarged picture 1 Timestamp: 230
+Move picture 1 to 170 35 Timestamp: 233
+Move picture 1 to 69 108 Timestamp: 246
+Move picture 1 to 88 75 Timestamp: 251
+Added picture 2 Timestamp: 254
+Added picture 0 Timestamp: 259
+Move picture 0 to 639 171 Timestamp: 263
+Move picture 0 to 645 100 Timestamp: 265
+Added picture 5 Timestamp: 270
+Move picture 5 to 450 31 Timestamp: 273
+Added picture 4 Timestamp: 281
+Move picture 5 to 450 31 Timestamp: 291
+Added picture 3 Timestamp: 297
+Move picture 5 to 482 47 Timestamp: 304
+Move picture 3 to 83 640 Timestamp: 309
+Move picture 1 to 89 80 Timestamp: 318
+Delete picture 1 Timestamp: 319
