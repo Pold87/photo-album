@@ -68,7 +68,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     // Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, ROTATE, CUT,  SPEECH
+		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT,  SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
@@ -268,7 +268,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
 		System.out.println("mousedragged");
-		this.toolModeIndex = ToolMode.MOVE;
+		//this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 	
@@ -298,8 +298,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	
 		switch (toolModeIndex) {
 		case MOVE:
-		case ENLARGE:
-		case REDUCE:
+		case RESIZE:
 		case CUT:		
 		case ROTATE:
 			contentPanel.repaint();
@@ -336,23 +335,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 	basicDesign.getToolbar().setEnabledUndoButton(true);
         			basicDesign.getToolbar().setEnabledRedoButton(false);
                     basicDesign.repaint();
-                    contentPanel.repaint();
         			previousCursorX = -1;
         			previousCursorY = -1;
                     break;
-                case ENLARGE:
-                	undoManager.addEdit(new ActionResize(selectedImage, "Enlarged", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
+                case RESIZE:
+                	undoManager.addEdit(new ActionResize(selectedImage, "Resized", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
                    	basicDesign.getToolbar().setEnabledUndoButton(true);
             		basicDesign.getToolbar().setEnabledRedoButton(false);
                     basicDesign.repaint();
-                    contentPanel.repaint();
-                	break;
-                case REDUCE:
-                	undoManager.addEdit(new ActionResize(selectedImage, "Reduced", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
-                	basicDesign.getToolbar().setEnabledUndoButton(true);
-            		basicDesign.getToolbar().setEnabledRedoButton(false);
-                    basicDesign.repaint();
-                    contentPanel.repaint();
                 	break;
                 case ROTATE:
                     break;
@@ -361,7 +351,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     basicDesign.getToolbar().setEnabledUndoButton(true);
             		basicDesign.getToolbar().setEnabledRedoButton(false);
                     basicDesign.repaint();
-                    contentPanel.repaint();
                     break;
                 case SPEECH:
                     break;
@@ -378,30 +367,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
-			case ENLARGE:
-				// Specify maximum height of image
-                if (selectedImage.getHeight() < 650) {
-                    normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-                    normalizerY = -((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-
-                    selectedImage.setX((int) (selectedImage.getX() - normalizerX));
-                    selectedImage.setY((int) (selectedImage.getY() + normalizerY));
-
-                    selectedImage.resizeImg((int) (selectedImage.getWidth() + 6 * normalizerX), (int) (selectedImage.getHeight() - 6 * normalizerY));
-                }
-				break;
-			case REDUCE:
-				normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-				normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-
-                // Specify minimum height
-				if(selectedImage.getHeight() > 120) {
-					selectedImage.setY((int) (selectedImage.getY() - 4*normalizerY));
-					selectedImage.setX((int) (selectedImage.getX() + 4*normalizerX));
-					
-					selectedImage.resizeImg((int) (selectedImage.getWidth() - 8 * normalizerX), (int) (selectedImage.getHeight() + 8*normalizerY));
-				}
-				break;
 			case MOVE:
                 
                 // TODO: See if constraining the image is better
@@ -471,19 +436,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void mousePressed(MouseEvent e) {
 		System.out.println("mouse pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
-		if (currentAction == "resize") {
-			if (SwingUtilities.isLeftMouseButton(e)) {
-				currentAction = "enlarge";
-				toolModeIndex = ToolMode.ENLARGE;
-				((MyTimerTask) task).addVariables(selectedImage, "enlarge");
-				timer.scheduleAtFixedRate(task, 0, 25);
-			}
-			else if (SwingUtilities.isRightMouseButton(e)) {
-				currentAction = "reduce";
-				toolModeIndex = ToolMode.REDUCE;
-				((MyTimerTask) task).addVariables(selectedImage, "reduce");
-				timer.scheduleAtFixedRate(task, 0, 25);
-			}
+		if (currentAction == "resize" && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
+		{
+			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
+			((MyTimerTask) task).addVariables(selectedImage, mode);
+			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {
 			cursorPressed(e.getX(), e.getY());
