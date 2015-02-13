@@ -55,9 +55,10 @@ public class PhotoBar extends JToolBar {
             for(int i = 0; i < nrOfImages; i++){
                 if(photos[i].equals(image)){
                     PhotoBar.this.remove(allButtons[i]);
-
                 }
             }
+            this.revalidate();
+            this.repaint();
         });
     }
     
@@ -69,6 +70,8 @@ public class PhotoBar extends JToolBar {
                     PhotoBar.this.add(allButtons[i]);
                 }
             }
+            this.revalidate();
+            this.repaint();
         });
 
     }

@@ -641,15 +641,15 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     }
     
 	public void addPicture(MyImage image){
-
         SwingUtilities.invokeLater(() -> {
-			contentPanel.addPictureToCurrentPage(image);
-			undoManager.addEdit(new ActionAddPic(image, OurController.this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-			removeButtonFromLibrary(image);
-			selectPicture(image);
-		});
+            contentPanel.addPictureToCurrentPage(image);
+            undoManager.addEdit(new ActionAddPic(image, OurController.this));
+            basicDesign.getToolbar().setEnabledUndoButton(true);
+    		basicDesign.getToolbar().setEnabledRedoButton(false);
+            removeButtonFromLibrary(image);
+            selectPicture(image);
+        });
+
 
 	}
 
