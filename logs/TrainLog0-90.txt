@@ -1,8 +1,0 @@
-Added picture 2 Timestamp: 3
-Move picture 2 to 239 221 Timestamp: 4
-Move picture 2 to 239 221 Timestamp: 6
-Move picture 2 to 239 221 Timestamp: 7
-Enlarged picture 2 Timestamp: 9
-Delete picture 2 Timestamp: 9
-Undo
-Added picture 2 Timestamp: 18

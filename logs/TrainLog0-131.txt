@@ -1,6 +1,0 @@
-Added picture 2 Timestamp: 9
-Move picture 2 to 285 187 Timestamp: 10
-Move picture 2 to 285 187 Timestamp: 14
-Move picture 2 to 307 198 Timestamp: 30
-Move picture 2 to 890 320 Timestamp: 36
-Reduced picture 2 Timestamp: 53

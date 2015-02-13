@@ -1,6 +1,0 @@
-Added picture 3 Timestamp: 4
-Rotated picture 3  -15 degrees. Timestamp: 8
-Rotated picture 3  20 degrees. Timestamp: 13
-Rotated picture 3  0 degrees. Timestamp: 13
-Delete picture 3 Timestamp: 16
-Added picture 2 Timestamp: 23
