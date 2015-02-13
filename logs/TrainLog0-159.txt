@@ -1,0 +1,8 @@
+Added picture 1 Timestamp: 22
+Move picture 1 to 682 35 Timestamp: 26
+Rotated picture 1  -107 degrees. Timestamp: 29
+Rotated picture 1  0 degrees. Timestamp: 29
+Rotated picture 1  0 degrees. Timestamp: 29
+Rotated picture 1  0 degrees. Timestamp: 29
+Rotated picture 1  131 degrees. Timestamp: 31
+Move picture 1 to 682 26 Timestamp: 34
