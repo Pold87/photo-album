@@ -104,7 +104,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			this.contentPanel.setSpeechRecording(false);
 			wit_runnable = null;
 
-			if (this.thread_wit == null ) {
+			if (this.thread_wit == null) {
 				try {
 					wit_runnable = new Wit(this.normalRecord, "wav");
 				} catch (Exception e) {
@@ -115,7 +115,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				thread_wit.start();
 				contentPanel.setSpeechProcessing(true);
 			}
-        });
+		});
     }
 
 	
@@ -505,8 +505,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case "select":
 				ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
 //				ArrayList<Integer> pictureNumbers = response.extractNumbers();
-				System.out.println(pictureNumbers.toString());
-				pictureNumbers.forEach(this :: selectPicture);
+
+				for (int pic : pictureNumbers) {
+					for (MyImage img : basicDesign.getLibrary()) {
+						if (img.getNum() == pic) {
+							this.addPicture(img);
+						} else {
+							this.selectPicture(img);
+						}
+					}
+				}
+
 				break;
 			case "background":
 				Color color = response.getBackgroundColor();
@@ -604,14 +613,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     
 	public void addPicture(MyImage image){
         SwingUtilities.invokeLater(() -> {
-            contentPanel.addPictureToCurrentPage(image);
-            undoManager.addEdit(new ActionAddPic(image, OurController.this));
-            basicDesign.getToolbar().setEnabledUndoButton(true);
-    		basicDesign.getToolbar().setEnabledRedoButton(false);
-            removeButtonFromLibrary(image);
-            selectPicture(image);
-            contentPanel.repaint();
-        });
+			contentPanel.addPictureToCurrentPage(image);
+			undoManager.addEdit(new ActionAddPic(image, OurController.this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+			basicDesign.getToolbar().setEnabledRedoButton(false);
+			removeButtonFromLibrary(image);
+			selectPicture(image);
+			contentPanel.repaint();
+		});
 
 	}
 
