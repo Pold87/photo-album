@@ -610,7 +610,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     		basicDesign.getToolbar().setEnabledRedoButton(false);
             removeButtonFromLibrary(image);
             selectPicture(image);
-            contentPanel.repaint();
+            //contentPanel.repaint();
         });
 
 	}
