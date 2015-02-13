@@ -3,12 +3,10 @@
 /**
  * JSGF Grammar
  */
-import COM.Sun.speech.apps.numbers.digits
 grammar photoalbum;
 
 //Actions
-<select_action> = select | choose | pick | activate | use | change selection;
-
+public <select_action> = select | choose | pick | activate | use | change selection;
 <move_action> = move | shift | relocate | change position;
 <rotate_action> = rotate | turn | spin | change orientation | tilt;
 <enlarge_action> = (enlarge | increase size | expand | magnify | ((larger | bigger | magnified | expanded | increased) [size])) {enlarge};
@@ -46,7 +44,7 @@ grammar photoalbum;
 <move_command> = (<move_action> <pics_ref> | <pics_ref> <move_action>) {move};
 <rotate_command> = (<rotate_action> <pics_ref> | <pics_ref> <rotate_action>) {rotate}; // figure out how to add degree numbers
 <resize_command> = ([make | change to] (<enlarge_action> | <smaller_action>) <pics_ref> | <pics_ref> [make | change to] (<enlarge_action> | <smaller_action>)) {resize};
-<unredo_command> = ([this | what I just did | that | [last | previous] (action| event | step  | <action>)](<undo_action> | <redo_action>) [this | what I just did | that | [last | previous] (action| event | step  | <action>)]) {unredo};
+<unredo_command> = ([this | what I just did | that | [last | previous] (action| event | step  | <actions>)](<undo_action> | <redo_action>) [this | what I just did | that | [last | previous] (action| event | step  | <actions>)]) {unredo};
 public <commands> = [<startPolite>] (<select_command> | <move_command> | <rotate_command> | <resize_command> | <unredo_command>) [<endPolite>];
 
 

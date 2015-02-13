@@ -22,7 +22,7 @@ import edu.cmu.sphinx.api.SpeechResult;
 
 public class SpeechCommands {
 
-	public static final String ACOUSTIC_MODEL = "resource:/voxforge";
+	public static final String ACOUSTIC_MODEL = "resource:/voxforge/acousticmodel/";
 	public static final String DICTIONARY_PATH = "resource:/voxforge/cmudict.0.6d";
 	public static final String GRAMMAR_PATH = "resource:/voxforge";
 	public static final String GRAMMAR_NAME = "commands";
@@ -37,7 +37,7 @@ public class SpeechCommands {
 		this.configuration.setAcousticModelPath(ACOUSTIC_MODEL);
 
 		// This is the in-built acoustic model
-		// configuration.setAcousticModelPath("resource:/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz");
+//		configuration.setAcousticModelPath("resource:/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz");
 
 		// Set dictionary path
 		this.configuration.setDictionaryPath(DICTIONARY_PATH);
@@ -46,6 +46,7 @@ public class SpeechCommands {
 		this.configuration.setUseGrammar(true);
 		this.configuration.setGrammarName(GRAMMAR_NAME);
 		this.configuration.setGrammarPath(GRAMMAR_PATH);
+
 
 		// Create new LiveSpeechRecognizer (for commands)
 		this.commandRecognizer = new LiveSpeechRecognizer(this.configuration);
@@ -59,7 +60,7 @@ public class SpeechCommands {
 		SpeechResult utterance = this.commandRecognizer.getResult();
 		this.commandRecognizer.stopRecognition();
 
-		System.out.println(utterance.getNbest(3));
+		System.out.println(utterance.getHypothesis());
 
 		return utterance;
 
@@ -67,9 +68,9 @@ public class SpeechCommands {
 
     public static void main(String[] args) throws IOException {
 
-        SpeechCommands sc = new SpeechCommands();
+            SpeechCommands sc = new SpeechCommands();
 
-        sc.recognizeCommand();
+            sc.recognizeCommand();
 
     }
 
