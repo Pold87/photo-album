@@ -372,14 +372,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 // TODO: See if constraining the image is better
                 
 				if (selectedImage.contains(new Point(XPos, YPos))) {
-					selectedImage.setX(selectedImage.getX() + deltaX);
-					selectedImage.setY(selectedImage.getY() + deltaY);
+//					selectedImage.setX(selectedImage.getX() + deltaX);
+//					selectedImage.setY(selectedImage.getY() + deltaY);
 
-//                    int xDelimited = selectedImage.getX() + deltaX;
-//                    int yDelimited = selectedImage.getY() + deltaY;
+                    int xDelimited = selectedImage.getX() + deltaX;
+                    int yDelimited = selectedImage.getY() + deltaY;
 
-//                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
-//                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
+                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
 				}
                 
 				break;
@@ -580,7 +580,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void selectPicture(MyImage image){
 		contentPanel.selectPicture(image);
-		contentPanel.repaint();
+		basicDesign.repaint();
 	}
 
     public void selectPictureAt(int x, int y){
