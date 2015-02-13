@@ -568,7 +568,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void cut(int x, int y) {
-
+    	
         if (contentPanel.getLines().size() == 4) {
             SwingUtilities.invokeLater(() -> {
                 performedActions.add(new ActionCut(contentPanel.getSelectedPicture(), OurController.this));
