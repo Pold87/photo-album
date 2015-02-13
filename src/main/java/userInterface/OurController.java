@@ -14,12 +14,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import main.java.speechrecognition.Recorder;
+import main.java.speechrecognition.ThreadCompleteListener;
 import main.java.speechrecognition.Wit;
 
 import javax.swing.*;
 
 
-public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener {
+public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener, ThreadCompleteListener {
 
 	public Logger logger;
 	private ContentPanel contentPanel;
@@ -32,8 +33,30 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private File normalRecord;
     private Thread thread = null;
     private Recorder runnable = null;
+    private Wit wit_runnable;
 
-	// Tool Mode
+    @Override
+    public void notifyOfThreadComplete(Wit wit) {
+
+        System.out.println("Notified");
+
+        recognizedText(wit.getWitRawJSONString());
+
+        try {
+            recognizedWitResponse(wit);
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        recognizedText(wit.getWitRawJSONString());
+
+        if (runnable != null) {
+            runnable.finish();
+            runnable.terminate();
+        }
+    }
+
+    // Tool Mode
 	public enum ToolMode {
 		MOVE, ENLARGE, REDUCE, ROTATE, CUT,  SPEECH
 	}
@@ -57,63 +80,35 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 
     public void startSpeech() throws URISyntaxException {
+
         toggleSpeechProcessing();
 
         runnable = new Recorder(this.normalRecord);
         thread = new Thread(runnable);
+
         thread.start();
     }
 
 
     public void stopSpeech() {
-        System.out.println("Finished speech 1");
-        System.out.println("Soweit bin ich 2");
 
+        SwingUtilities.invokeLater(() -> {
 
-        if (thread != null) {
-            System.out.println("Bin in 0");
-            runnable.terminate();
-            System.out.println("Bin in -1");
-//            thread.join();
-            System.out.println("Bin in -2");
-        }
+            System.out.println("Finished speech 1");
+            System.out.println("Soweit bin ich 2");
 
-        runnable.finish();
-
-        System.out.println("Soweit bin ich 3");
-        Wit wit_runnable = null;
-        try {
-            wit_runnable = new Wit(this.normalRecord, "wav");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Thread thread_wit = new Thread(wit_runnable);
-        thread_wit.start();
-        try {
-            thread_wit.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        // Send recognized
-        System.out.println("Soweit bin ich 4");
-
-        if (wit_runnable.getWitRawJSONString() != null) {
-            recognizedText(wit_runnable.getWitRawJSONString());
-            System.out.println("Soweit bin ich 5");
-        }
-
-        try {
-            if (wit_runnable.getWitRawJSONString() != null) {
-                recognizedWitResponse(wit_runnable);
+            wit_runnable = null;
+            try {
+                wit_runnable = new Wit(this.normalRecord, "wav");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            Thread thread_wit = new Thread(wit_runnable);
+            wit_runnable.addListener(this);
+            thread_wit.start();
+        });
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Soweit bin ich 6");
         toggleSpeechProcessing();
-        System.out.println("Soweit bin ich 7");
     }
 
 	
@@ -566,6 +561,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             basicDesign.getToolbar().setEnabledUndoButton(true);
             basicDesign.photoBar.removeButton(image);
             basicDesign.repaint();
+            selectPicture(image);
             contentPanel.repaint();
         });
 

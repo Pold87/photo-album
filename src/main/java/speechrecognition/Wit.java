@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,7 +28,7 @@ import javax.json.JsonReader;
 import javax.swing.*;
 
 
-public class Wit implements Runnable{
+public class Wit implements Runnable {
 
     private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
 //    private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4dasdUIL7RZWH3P4";
@@ -34,11 +36,28 @@ public class Wit implements Runnable{
     private File audioFileWav;
     private String fileType;
 
+    private final Set<ThreadCompleteListener> listeners
+            = new CopyOnWriteArraySet<ThreadCompleteListener>();
+
     public Wit(File audioFileWav, String fileType) throws Exception {
 
         this.audioFileWav = audioFileWav;
         this.fileType = fileType;
     }
+
+
+    public final void addListener(final ThreadCompleteListener listener) {
+        listeners.add(listener);
+    }
+    public final void removeListener(final ThreadCompleteListener listener) {
+        listeners.remove(listener);
+    }
+    private final void notifyListeners() {
+        for (ThreadCompleteListener listener : listeners) {
+            listener.notifyOfThreadComplete(this);
+        }
+    }
+
 
     public String getWitRawJSONString() {
         return witRawJSONString;
@@ -126,7 +145,6 @@ public class Wit implements Runnable{
         System.out.println("HEyho speech");
 
 
-        SwingUtilities.invokeLater(() -> {
             HttpResponse speechResponse = null;
             try {
                 speechResponse = client.execute(post);
@@ -151,10 +169,6 @@ public class Wit implements Runnable{
             this.witRawJSONString = speechResponseString;
 
             System.out.println("HEyho dodoaasdttatat");
-        });
-
-
-
 
     }
 
@@ -230,10 +244,10 @@ public class Wit implements Runnable{
     public void run() {
         try {
             this.askWit();
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        } finally {
+            notifyListeners();
         }
     }
 }
