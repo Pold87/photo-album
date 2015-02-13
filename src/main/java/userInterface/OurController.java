@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
@@ -36,6 +38,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	private Thread thread_wit = null;
 	private Recorder runnable = null;
     private Wit wit_runnable;
+    private Timer timer = new Timer();
+    private TimerTask task = new MyTimerTask();
 
     @Override
     public void notifyOfThreadComplete(Wit wit) {
@@ -70,6 +74,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     
 	public OurController()  {
 		super();
+	    ((MyTimerTask) task).add(this);
 		undoManager = new UndoManager();
     }
 	
@@ -262,6 +267,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
+		System.out.println("mousedragged");
 		this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
@@ -289,7 +295,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		//else {
 		//	contentPanel.unselectPicture(p);
 		//}
-		
+	
 		switch (toolModeIndex) {
 		case MOVE:
 		case ENLARGE:
@@ -373,7 +379,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
 			case ENLARGE:
-                // Specify maximum height of image
+				// Specify maximum height of image
                 if (selectedImage.getHeight() < 650) {
                     normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
                     normalizerY = -((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
@@ -425,7 +431,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				System.out.println("No Tool selected");
 				break;
 			}
-	
+			
 			// Update mouse Coords
 			previousCursorY = YPos;
 			previousCursorX = XPos;
@@ -463,10 +469,33 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
-		cursorPressed(e.getX(), e.getY());
+		System.out.println("mouse pressed");
+		MyImage selectedImage = contentPanel.getSelectedPicture();
+		if (currentAction == "resize") {
+			if (SwingUtilities.isLeftMouseButton(e)) {
+				currentAction = "enlarge";
+				toolModeIndex = ToolMode.ENLARGE;
+				((MyTimerTask) task).addVariables(selectedImage, "enlarge");
+				timer.scheduleAtFixedRate(task, 0, 25);
+			}
+			else if (SwingUtilities.isRightMouseButton(e)) {
+				currentAction = "reduce";
+				toolModeIndex = ToolMode.REDUCE;
+				((MyTimerTask) task).addVariables(selectedImage, "reduce");
+				timer.scheduleAtFixedRate(task, 0, 25);
+			}
+		}
+		else {
+			cursorPressed(e.getX(), e.getY());
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		if (((MyTimerTask) task).isRunning()) {
+			task.cancel();
+			timer = new Timer();
+		    task = new MyTimerTask();
+		}
 		cursorReleased(e.getX(), e.getY());
 	}
 	//END MouseListeners

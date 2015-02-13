@@ -17,6 +17,7 @@ public class Toolbar extends JToolBar {
     private JButton rotateButton;
     private JButton undoButton;
     private JButton redoButton;
+    private JButton resizeButton;
     private JButton simpleSpeechButton;
     private JButton deleteButton;
     private JButton cutButton;
@@ -32,6 +33,15 @@ public class Toolbar extends JToolBar {
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Create buttons and add listeners.
+        resizeButton = new JButton(new AbstractAction("resize") {
+        	public void actionPerformed(ActionEvent actionEvent) {
+        		try {
+        			listener.toolbarButtonClicked("resize");
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+        	}
+        });
         selectButton = new JButton(new AbstractAction("select") {
             public void actionPerformed(ActionEvent actionEvent) {
 
@@ -142,6 +152,7 @@ public class Toolbar extends JToolBar {
         redoButton.setIcon(createIcon("/icons/Redo.png"));
         deleteButton.setIcon(createIcon("/icons/Trash Full.png"));
         cutButton.setIcon(createIcon("/icons/cut.png"));
+        resizeButton.setIcon(createIcon("/icons/resize.png"));
 
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");
@@ -151,6 +162,7 @@ public class Toolbar extends JToolBar {
         redoButton.setToolTipText("Redo the last undone action");
         deleteButton.setToolTipText("Delete the selected picture");
         cutButton.setToolTipText("Choose lines and cut pictures");
+        resizeButton.setToolTipText("Resize the selected picture");
 
         // Add buttons to toolbar.
         add(selectButton);
@@ -161,6 +173,7 @@ public class Toolbar extends JToolBar {
 //        add(simpleSpeechButton);
         add(deleteButton);
         add(cutButton);
+        add(resizeButton);
 
         undoButton.setEnabled(false);
         redoButton.setEnabled(false);
