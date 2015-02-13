@@ -32,13 +32,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private URL url;
     private File normalRecord;
     private Thread thread = null;
-    private Recorder runnable = null;
+	private Thread thread_wit = null;
+	private Recorder runnable = null;
     private Wit wit_runnable;
 
     @Override
     public void notifyOfThreadComplete(Wit wit) {
 
-        System.out.println("Notified");
+		this.contentPanel.setSpeechProcessing(false);
 
         recognizedText(wit.getWitRawJSONString());
 
@@ -49,6 +50,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         }
 
         recognizedText(wit.getWitRawJSONString());
+
+
+		this.thread_wit = null;
+		this.thread = null;
 
         if (runnable != null) {
             runnable.finish();
@@ -81,7 +86,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void startSpeech() throws URISyntaxException {
 
-        toggleSpeechProcessing();
+        this.contentPanel.setSpeechRecording(true);
 
         runnable = new Recorder(this.normalRecord);
         thread = new Thread(runnable);
@@ -94,28 +99,28 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
         SwingUtilities.invokeLater(() -> {
 
-            System.out.println("Finished speech 1");
-            System.out.println("Soweit bin ich 2");
+			this.contentPanel.setSpeechRecording(false);
+			wit_runnable = null;
 
-            wit_runnable = null;
-            try {
-                wit_runnable = new Wit(this.normalRecord, "wav");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Thread thread_wit = new Thread(wit_runnable);
-            wit_runnable.addListener(this);
-            thread_wit.start();
+			if (this.thread_wit == null ) {
+				try {
+					wit_runnable = new Wit(this.normalRecord, "wav");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				this.thread_wit = new Thread(wit_runnable);
+				wit_runnable.addListener(this);
+				thread_wit.start();
+				contentPanel.setSpeechProcessing(true);
+			}
         });
-
-        toggleSpeechProcessing();
     }
 
 	
 	public void recognizeSpeech() throws Exception {
 		// Url for recording speech input
 
-        toggleSpeechProcessing();
+        toggleSpeechRecording();
 
 		// Record wav with external program
 		//Record.recordExtern(normalRecord);
@@ -153,6 +158,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		System.out.println(utterance.getWords());
 //	}
 	
+	public void toggleSpeechRecording() {
+
+		this.contentPanel.setSpeechRecording(!this.contentPanel.isSpeechRecording());
+		contentPanel.repaint();
+	}
+
 	public void toggleSpeechProcessing() {
 
 		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
@@ -165,8 +176,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void addPictureByNumber(int nr) {
-		MyImage image = basicDesign.getLibrary()[nr];
-        addPicture(image);
+		if (nr < basicDesign.getLibrary().length) {
+			MyImage image = basicDesign.getLibrary()[nr];
+			addPicture(image);
+		}
 	}
 	
 	public void deleteSelectedPicture(){
@@ -178,6 +191,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 performedActions.add(new ActionDelete(image, OurController.this));
                 basicDesign.getToolbar().setEnabledUndoButton(true);
                 basicDesign.photoBar.addButton(image);
+				basicDesign.photoBar.repaint();
                 basicDesign.repaint();
                 contentPanel.repaint();
             }
@@ -275,8 +289,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			break;
         case SPEECH:
             try {
-                this.startSpeech();
-            } catch (URISyntaxException e) {
+				if (!contentPanel.isSpeechProcessing()) {
+					this.startSpeech();
+				}
+			} catch (URISyntaxException e) {
                 e.printStackTrace();
             }
             break;
@@ -291,7 +307,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         MyImage selectedImage = contentPanel.getSelectedPicture();
 
         // Stop voice recording
-        if (this.thread != null) {
+        if (this.contentPanel.isSpeechRecording()) {
             this.stopSpeech();
         }
 
@@ -451,6 +467,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				break;
 			case "rotate":
 				ArrayList<Integer> rotations = response.extractNumbersShifted();
+//				ArrayList<Integer> rotations = response.extractNumbers();
 				if (rotations.isEmpty()) {
 					this.rotate(90); // Rotate 90 degrees if nothing else is said.
 				} else {
@@ -461,6 +478,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				break;
 			case "select":
 				ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
+//				ArrayList<Integer> pictureNumbers = response.extractNumbers();
 				System.out.println(pictureNumbers.toString());
 				pictureNumbers.forEach(this :: selectPicture);
 				break;

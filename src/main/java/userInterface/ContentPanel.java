@@ -31,7 +31,10 @@ public class ContentPanel extends JPanel {
 	private int scr_width = screenSize.width;
 	private int scr_height = screenSize.height;
 
-	// Speech Processing sign
+	// Speech Recording sign
+	boolean speechRecording = false;
+
+	// Speech processing sign
 	boolean speechProcessing = false;
 
 	//Needs edit when we make multiple pages
@@ -68,6 +71,14 @@ public class ContentPanel extends JPanel {
 	private float leapLeftScreenDist = 1.0f;
 	private boolean leapLeftClick = false;
 
+
+	public boolean isSpeechProcessing() {
+		return speechProcessing;
+	}
+
+	public void setSpeechProcessing(boolean speechProcessing) {
+		this.speechProcessing = speechProcessing;
+	}
 
     public int getLeapRightX() {
         return leapRightX;
@@ -158,11 +169,27 @@ public class ContentPanel extends JPanel {
 		// Show progress for speech
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
+		if (this.speechRecording) {
+
+			g2d.setColor(Color.RED);
+			g2d.fillOval(30, 30, 50, 50);
+
+			Font font = new Font("Verdana", Font.BOLD, 30);
+			g2d.setFont(font);
+
+			g2d.drawString("REC", 95, 65);
+
+		}
+
 		if (this.speechProcessing) {
 
-			g2d.fillRect(300, 300, 100, 100);
-			g2d.fillRect(370, 300, 100, 100);
+			g2d.setColor(Color.BLACK);
+			Font font = new Font("Verdana", Font.BOLD, 30);
+			g2d.setFont(font);
+			g2d.drawString("Processing...", 800, 65);
 		}
+
+
 
 		// Finger count indicator
 		g2d.setColor(Color.black);
@@ -386,12 +413,12 @@ public class ContentPanel extends JPanel {
 		repaint();
 	}
 
-	public boolean isSpeechProcessing() {
-		return speechProcessing;
+	public boolean isSpeechRecording() {
+		return speechRecording;
 	}
 
-	public void setSpeechProcessing(boolean speechProcessing) {
-		this.speechProcessing = speechProcessing;
+	public void setSpeechRecording(boolean speechRecording) {
+		this.speechRecording = speechRecording;
 	}
 	
 	private void drawDashedBox(Graphics2D g2d, MyImage i){
