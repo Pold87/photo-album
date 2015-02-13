@@ -20,6 +20,7 @@ public class PhotoBar extends JToolBar {
         setBackground(Color.white);
         this.imageNames = images;
         nrOfImages = this.imageNames.length;
+        this.setFloatable(false);
     }
 
     //Why is the loading done here? 
