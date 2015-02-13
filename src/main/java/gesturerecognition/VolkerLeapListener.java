@@ -123,21 +123,21 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         // Shape Mode
                         switch (leftHandFingerCount) {
                             case 0: // REDUCE
-                                contentPanel.setToolMode(OurController.ToolMode.REDUCE);
+//                                contentPanel.setToolMode(OurController.ToolMode.REDUCE);
                                 break;
                             case 1: // MOVE
-                                contentPanel.setToolMode(OurController.ToolMode.MOVE);
+//                                contentPanel.setToolMode(OurController.ToolMode.MOVE);
                                 break;
                             case 2:
                                 break;
                             case 3: // ROTATE
-                                contentPanel.setToolMode(OurController.ToolMode.ROTATE);
+//                                contentPanel.setToolMode(OurController.ToolMode.ROTATE);
                                 break;
                             case 4:
                                 contentPanel.setToolMode(OurController.ToolMode.SPEECH);
                                 break;
                             case 5: // ENLARGE
-                                contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
+//                                contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
                                 break;
                             default:
                                 System.out.println("Hoeveel vingers heb je eigenlijk?");
