@@ -1,9 +1,0 @@
-Added picture 3
-Move picture 3 to 586 609
-Move picture 3 to 1079 523
-Move picture 3 to 330 181
-Rotated picture 3  156 degrees.
-Rotated picture 3  40 degrees.
-Rotated picture 3  2 degrees.
-Rotated picture 3  1 degrees.
-Move picture 3 to 1299 565
