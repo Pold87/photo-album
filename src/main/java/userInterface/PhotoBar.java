@@ -51,19 +51,27 @@ public class PhotoBar extends JToolBar {
     
     public void removeButton(MyImage image){
     	System.out.println("removing");
-    	for(int i = 0; i < nrOfImages; i++){
-    		if(photos[i].equals(image)){
-    			this.remove(allButtons[i]);
-    			System.out.println("Actually removed the button");
-    		}
-    	}
+
+        SwingUtilities.invokeLater(() -> {
+            for(int i = 0; i < nrOfImages; i++){
+                if(photos[i].equals(image)){
+                    PhotoBar.this.remove(allButtons[i]);
+                    System.out.println("Actually removed the button");
+                }
+            }
+        });
+
     }
     
     public void addButton(MyImage image){
-    	for(int i = 0; i < nrOfImages; i++){
-    		if(photos[i].equals(image)){
-    			this.add(allButtons[i]);
-    		}
-    	}
+
+        SwingUtilities.invokeLater(() -> {
+            for(int i = 0; i < nrOfImages; i++){
+                if(photos[i].equals(image)){
+                    PhotoBar.this.add(allButtons[i]);
+                }
+            }
+        });
+
     }
 }
