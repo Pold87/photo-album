@@ -505,44 +505,94 @@ public class ContentPanel extends JPanel {
                 yDown = y1;
             }
 
-
-            int picX = this.getSelectedPicture().getX();
-            int picY = this.getSelectedPicture().getY();
-
-            int rightOverlap, leftOverlap, upOverlap, downOverlap;
-
-            rightOverlap = Math.max(picX + this.getSelectedPicture().getWidth() - xRight,0);
-            leftOverlap = Math.max(xLeft - picX,0);
-
-            upOverlap = Math.max(yUp - picY,0);
-            downOverlap = Math.max(picY + this.getSelectedPicture().getHeight() - yDown,0);
-
-
-            int x = leftOverlap;
-            int y = upOverlap;
-            int w = xRight - xLeft;
-            int h = yDown - yUp;
-
-            System.out.println("x" + x);
-            System.out.println("y" + y);
-            System.out.println("w" + w);
-            System.out.println("h" + h);
-
-            System.out.println("Picture x is: " + this.getSelectedPicture().getX());
-            System.out.println("Picture y is: " + this.getSelectedPicture().getY());
-            System.out.println("Picture w is: " + this.getSelectedPicture().getImg().getWidth());
-            System.out.println("Picture h is: " + this.getSelectedPicture().getImg().getHeight());
-
-            for (int i : this.lines) {
-                System.out.println("Line is " + i);
+            MyImage picture = this.getSelectedPicture();
+            int picX = picture.getX();
+            int picY = picture.getY();
+            boolean isOn = (xLeft > picX && xLeft < picX + picture.getWidth()) && (xRight > picX && xRight < picX + picture.getWidth()) && (yUp > picY && yUp < picY + picture.getHeight()) && (yDown > picY && yDown < picY + picture.getHeight());
+            if (isOn) {
+            
+	            int rightOverlap, leftOverlap, upOverlap, downOverlap;
+	
+	            rightOverlap = Math.max(picX + this.getSelectedPicture().getWidth() - xRight,0);
+	            leftOverlap = Math.max(xLeft - picX,0);
+	
+	            upOverlap = Math.max(yUp - picY,0);
+	            downOverlap = Math.max(picY + this.getSelectedPicture().getHeight() - yDown,0);
+	
+	            int x;
+	            int y;
+	            int w;
+	            int h;
+	            
+	            boolean left = xLeft > picX && xLeft < picX + picture.getWidth();
+	            boolean up = yUp > picY && yUp < picY + picture.getHeight();
+	            boolean width = xRight > picX && xRight < picX + picture.getWidth();
+	            boolean height = yDown > picY && yDown < picY + picture.getHeight();
+	            System.out.println("Left: " + left + ", up: " + up + ", width: " + width + ", height: " + height);
+	            if (left && up || left && height) {
+	            	x = leftOverlap;
+	            	System.out.println("leftIn");
+	            }
+	            else {
+	            	x = picX;
+	            	System.out.println("leftOut");
+	            }
+	            if (up && left || up && width) {
+	            	y = upOverlap;
+	            	System.out.println("upIn");
+	            }
+	            else {
+	            	y = picY;
+	            	System.out.println("upOut");
+	            }
+	            if (width && up || up && left) {
+	            	w = xRight - xLeft;
+	            	System.out.println("widthIn");
+	            }
+	            else {
+	            	w = picture.getWidth();
+	            	System.out.println("widthOut");
+	            }
+	            if (height && left || height && width) {
+	            	h = yDown - yUp;
+	            	System.out.println("heightIn");
+	            }
+	            else {
+	            	h = picture.getHeight();
+	            	System.out.println("heightOut");
+	            }
+	
+	            System.out.println("x" + x);
+	            System.out.println("y" + y);
+	            System.out.println("w" + w);
+	            System.out.println("h" + h);
+	
+	            System.out.println("Picture x is: " + this.getSelectedPicture().getX());
+	            System.out.println("Picture y is: " + this.getSelectedPicture().getY());
+	            System.out.println("Picture w is: " + this.getSelectedPicture().getImg().getWidth());
+	            System.out.println("Picture h is: " + this.getSelectedPicture().getImg().getHeight());
+	
+	            for (int i : this.lines) {
+	                System.out.println("Line is " + i);
+	            }
+	            BufferedImage subImage;
+	            if (height && left && width && up) {
+	            	subImage = this.getSelectedPicture().getImg().getSubimage(x, y, w, h);
+	            }
+	            else
+	            	subImage = this.getSelectedPicture().getImg();
+	            this.getSelectedPicture().setImg(subImage);
+	            this.getSelectedPicture().setWidth(w);
+	            this.getSelectedPicture().setHeight(h);
+	            if (height && left && width && up) {
+		            this.getSelectedPicture().setX(this.getSelectedPicture().getX() + x);
+		            this.getSelectedPicture().setY(this.getSelectedPicture().getY() + y);
+	            }
+	            else {
+	            	this.getSelectedPicture().setX(this.getSelectedPicture().getX());
+		            this.getSelectedPicture().setY(this.getSelectedPicture().getY());
+	            }
             }
-
-            BufferedImage subImage = this.getSelectedPicture().getImg().getSubimage(x, y, w, h);
-            this.getSelectedPicture().setImg(subImage);
-            this.getSelectedPicture().setWidth(w);
-            this.getSelectedPicture().setHeight(h);
-            this.getSelectedPicture().setX(this.getSelectedPicture().getX() + x);
-            this.getSelectedPicture().setY(this.getSelectedPicture().getY() + y);
         }
 
     }
