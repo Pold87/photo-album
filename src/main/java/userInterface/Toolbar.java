@@ -14,12 +14,12 @@ public class Toolbar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 	private JButton selectButton;
     private JButton speechButton;
-    private JButton moveButton;
     private JButton rotateButton;
     private JButton undoButton;
     private JButton redoButton;
     private JButton simpleSpeechButton;
     private JButton deleteButton;
+    private JButton cutButton;
     private ToolBarListener listener;
     private OurController controller;
 
@@ -58,17 +58,6 @@ public class Toolbar extends JToolBar {
 
                 speechThread.start();
 
-            }
-        });
-        moveButton = new JButton(new AbstractAction("move") {
-
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                try {
-                    listener.toolbarButtonClicked("move");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         });
 
@@ -132,33 +121,46 @@ public class Toolbar extends JToolBar {
             }
         });
 
+        cutButton = new JButton(new AbstractAction("cut") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    listener.toolbarButtonClicked("cut");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+
         // Set Icons for buttons.
         selectButton.setIcon(createIcon("/icons/Write Document.png"));
         speechButton.setIcon(createIcon("/icons/Discussion.png"));
-        moveButton.setIcon(createIcon("/icons/Import Picture Document.png"));
         rotateButton.setIcon(createIcon("/icons/Backup Green Button.png"));
         undoButton.setIcon(createIcon("/icons/Undo.png"));
         redoButton.setIcon(createIcon("/icons/Redo.png"));
         deleteButton.setIcon(createIcon("/icons/Trash Full.png"));
+        cutButton.setIcon(createIcon("/icons/cut.png"));
 
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");
         speechButton.setToolTipText("Start and stop speech recognition");
-        moveButton.setToolTipText("Start moving selected pictures");
         rotateButton.setToolTipText("Rotate selected pictures");
         undoButton.setToolTipText("Undo the last action");
         redoButton.setToolTipText("Redo the last undone action");
-        deleteButton.setToolTipText("Delete the selectedPicture");
+        deleteButton.setToolTipText("Delete the selected picture");
+        cutButton.setToolTipText("Choose lines and cut pictures");
 
         // Add buttons to toolbar.
         add(selectButton);
         add(speechButton);
-        add(moveButton);
         add(rotateButton);
         add(undoButton);
         add(redoButton);
-        add(simpleSpeechButton);
+//        add(simpleSpeechButton);
         add(deleteButton);
+        add(cutButton);
 
         undoButton.setEnabled(false);
         redoButton.setEnabled(false);

@@ -1,0 +1,4 @@
+Added picture 0 Timestamp: 9
+Move picture 0 to 624 299 Timestamp: 11
+Move picture 0 to 624 299 Timestamp: 12
+Cut picture 0 Timestamp: 12

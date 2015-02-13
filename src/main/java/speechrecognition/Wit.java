@@ -1,11 +1,10 @@
 package main.java.speechrecognition;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
@@ -24,70 +23,21 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.swing.*;
 
 
-public class Wit {
+public class Wit implements Runnable{
 
     private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4UIL7RZWH3P4";
-    private static final long RECORD_TIME = 4000;
+//    private static final String TOKEN = "TD4IHRD3ANAK2YEMCJVN4dasdUIL7RZWH3P4";
     private String witRawJSONString;
+    private File audioFileWav;
+    private String fileType;
 
     public Wit(File audioFileWav, String fileType) throws Exception {
 
-        final Recorder recorder = new Recorder(audioFileWav);
-
-        // creates a new thread that waits for a specified
-        // of time before stopping
-        Thread stopper = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(RECORD_TIME);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                // Currently, an external recorder is used, therefore, the next line would throw an error
-//                recorder.finish();
-            }
-        });
-
-        stopper.start();
-
-//		Record.recordExtern(audioFileWav);
-
-        // Speech recognition
-        HttpClient client = HttpClients.createDefault();
-
-        // URL for speech recognition
-        URI urlSpeech = new URIBuilder("https://api.wit.ai/speech?v=20141201")
-                .build();
-        HttpPost post = new HttpPost(urlSpeech);
-
-        InputStreamEntity reqEntity = new InputStreamEntity(
-                new FileInputStream(audioFileWav), -1,
-                ContentType.APPLICATION_OCTET_STREAM);
-        reqEntity.setChunked(true);
-
-        post.setHeader("Authorization", "Bearer " + TOKEN);
-        post.setHeader("Content-Type", "audio/" + fileType);
-        post.setEntity(reqEntity);
-
-        System.out.println("filetype: " + fileType);
-        long a = System.currentTimeMillis();
-
-//        Process p1 = new ProcessBuilder("xflux","-g", "0", "-l", "0").start();
-
-        // Get the data from wit.AI
-        HttpResponse speechResponse = client.execute(post);
-
-        long b = System.currentTimeMillis();
-
-        System.out.println(b - a);
-
-        // Extract String from HttpResponse.
-        String speechResponseString = new BasicResponseHandler()
-                .handleResponse(speechResponse);
-
-        this.witRawJSONString = speechResponseString;
+        this.audioFileWav = audioFileWav;
+        this.fileType = fileType;
     }
 
     public String getWitRawJSONString() {
@@ -139,6 +89,73 @@ public class Wit {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private void askWit() throws IOException, URISyntaxException {
+        System.out.println("HEyho");
+
+        // Speech recognition
+        HttpClient client = HttpClients.createDefault();
+
+        // URL for speech recognition
+        URI urlSpeech = new URIBuilder("https://api.wit.ai/speech?v=20141201")
+                .build();
+        HttpPost post = new HttpPost(urlSpeech);
+
+        System.out.println("HEyho aaaah");
+
+        InputStreamEntity reqEntity = new InputStreamEntity(
+                new FileInputStream(audioFileWav), -1,
+                ContentType.APPLICATION_OCTET_STREAM);
+        reqEntity.setChunked(true);
+
+        System.out.println("HEyho dodo");
+
+        post.setHeader("Authorization", "Bearer " + TOKEN);
+        post.setHeader("Content-Type", "audio/" + fileType);
+        post.setEntity(reqEntity);
+
+        System.out.println("filetype: " + fileType);
+        long a = System.currentTimeMillis();
+
+//        Process p1 = new ProcessBuilder("xflux","-g", "0", "-l", "0").start();
+
+        // Get the data from wit.AI
+
+
+        System.out.println("HEyho speech");
+
+
+        SwingUtilities.invokeLater(() -> {
+            HttpResponse speechResponse = null;
+            try {
+                speechResponse = client.execute(post);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("HEyho speech 2");
+
+            long b = System.currentTimeMillis();
+
+            System.out.println(b - a);
+
+            // Extract String from HttpResponse.
+            String speechResponseString = null;
+            try {
+                speechResponseString = new BasicResponseHandler()
+                        .handleResponse(speechResponse);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            this.witRawJSONString = speechResponseString;
+
+            System.out.println("HEyho dodoaasdttatat");
+        });
+
+
+
+
     }
 
 
@@ -207,5 +224,16 @@ public class Wit {
         }
 
         return color;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.askWit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

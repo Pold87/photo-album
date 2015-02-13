@@ -1,0 +1,2 @@
+Added picture 1 Timestamp: 5
+Move picture 1 to 452 204 Timestamp: 6

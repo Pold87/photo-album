@@ -9,7 +9,7 @@ public class ActionCut implements Action{
         this.picture = picture;
         this.ourController = ourController;
         long time = (System.currentTimeMillis() - App.startTime)/1000;
-        ourController.logger.logAction("Cut picture " + picture.getNum()+ " Timestamp: " + time);
+        ourController.logger.logAction("Cut picture " + picture.getNum()+ "," + time);
     }
 
     public void redo() {
@@ -19,7 +19,7 @@ public class ActionCut implements Action{
 
 
     public void undo() {
-        System.out.println("undo rotate");
+        System.out.println("undo cut");
         ourController.selectPicture(picture);
         ourController.removeLastActionFromList();
         ourController.logger.logAction("Undo");

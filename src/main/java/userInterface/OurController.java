@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -27,9 +28,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	private String currentAction = "select";
     private ArrayList<Action> performedActions = new ArrayList<>(), undoneActions = new ArrayList<>();
 
+    private URL url;
+    private File normalRecord;
+    private Thread thread = null;
+    private Recorder runnable = null;
+
 	// Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, ROTATE, CUT
+		MOVE, ENLARGE, REDUCE, ROTATE, CUT,  SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
@@ -37,20 +43,84 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		super();
     }
 	
-	public void initialize(ContentPanel cp, BasicDesign bd){
+	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException {
 		contentPanel = cp;
 		basicDesign = bd;
 		logger  = new Logger();
-	}
+        this.url = getClass().getResource("/recording.wav");
+        this.normalRecord =  new File(this.url.toURI());
+    }
 
 	public void setToolMode(OurController.ToolMode toolMode) {
 		this.toolModeIndex = toolMode;
 	}
+
+
+    public void startSpeech() throws URISyntaxException {
+        toggleSpeechProcessing();
+
+        runnable = new Recorder(this.normalRecord);
+        thread = new Thread(runnable);
+        thread.start();
+    }
+
+
+    public void stopSpeech() {
+        System.out.println("Finished speech 1");
+        System.out.println("Soweit bin ich 2");
+
+
+        if (thread != null) {
+            System.out.println("Bin in 0");
+            runnable.terminate();
+            System.out.println("Bin in -1");
+//            thread.join();
+            System.out.println("Bin in -2");
+        }
+
+        runnable.finish();
+
+        System.out.println("Soweit bin ich 3");
+        Wit wit_runnable = null;
+        try {
+            wit_runnable = new Wit(this.normalRecord, "wav");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Thread thread_wit = new Thread(wit_runnable);
+        thread_wit.start();
+        try {
+            thread_wit.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Send recognized
+        System.out.println("Soweit bin ich 4");
+
+        if (wit_runnable.getWitRawJSONString() != null) {
+            recognizedText(wit_runnable.getWitRawJSONString());
+            System.out.println("Soweit bin ich 5");
+        }
+
+        try {
+            if (wit_runnable.getWitRawJSONString() != null) {
+                recognizedWitResponse(wit_runnable);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Soweit bin ich 6");
+        toggleSpeechProcessing();
+        System.out.println("Soweit bin ich 7");
+    }
+
 	
 	public void recognizeSpeech() throws Exception {
 		// Url for recording speech input
 
-		toggleSpeechProcessing();
+        toggleSpeechProcessing();
 
 		// Record wav with external program
 		//Record.recordExtern(normalRecord);
@@ -58,9 +128,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		URL url = getClass().getResource("/recording.wav");
 		File normalRecord = new File(url.toURI());
 		Recorder recorder = new Recorder(normalRecord);
-
 		Thread runnable = new Thread(recorder);
 
+
+        // TODO: runnable start and stop should be invoked by cursor pressed and released
 		runnable.start();
 
 		Thread.sleep(5000);
@@ -210,7 +281,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		case ROTATE:
 			contentPanel.repaint();
 			break;
-		default:
+        case SPEECH:
+            try {
+                this.startSpeech();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            break;
+            default:
 			break;
 
 		}
@@ -219,6 +297,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorReleased(int XPos, int YPos) {
         //int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
         MyImage selectedImage = contentPanel.getSelectedPicture();
+
+        // Stop voice recording
+        if (this.thread != null) {
+            this.stopSpeech();
+        }
+
         if(!(selectedImage == null)) {
 
             switch (toolModeIndex) {
@@ -238,6 +322,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 case CUT:
                     this.cut(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
                     contentPanel.repaint();
+                    break;
+                case SPEECH:
                     break;
                 default:
                     System.out.println("Tool not found: " + toolModeIndex);
@@ -295,6 +381,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case ROTATE:
 				// do nothing
 				break;
+            case CUT:
+                 // do nothing
+                break;
+            case SPEECH:
+                // do nothing
+                break;
 			default:
 				System.out.println("No Tool selected");
 				break;
@@ -312,11 +404,19 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-		if(currentAction.equals("select")|| currentAction.equals("move")){ //Why do we have a separate move button anyway?
-			contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
-		}else if(currentAction.equals("rotate")){
-			rotate(45);
-		}
+        switch (currentAction) {
+            case "select":
+                contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
+                break;
+            case "rotate":
+                rotate(45);
+                break;
+            case "cut":
+                this.cut(mouseEvent.getX(), mouseEvent.getY());
+                break;
+            default:
+                break;
+        }
 
 	}
 

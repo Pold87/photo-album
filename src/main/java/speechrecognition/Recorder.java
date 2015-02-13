@@ -18,10 +18,13 @@ import java.io.*;
  */
 public class Recorder implements Runnable{
 
+
+    volatile boolean finished = false;
 	static final long RECORD_TIME = 6000; // Record duration, in milliseconds
 	File wavFile; // Path of the wav file
 	AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE; // Format of audio file
 	TargetDataLine line; // The line from which audio data is captured
+    private volatile boolean running = true;
 
 	public Recorder(File wavFile) {
 		this.wavFile = wavFile;
@@ -41,10 +44,20 @@ public class Recorder implements Runnable{
         return format;
     }
 
+    public void terminate() {
+        running = false;
+    }
+
+    public void run() {
+        while (running) {
+            this.start_rec();
+        }
+    }
+
 	/**
-	 * Captures the sound and record into a WAV file
+     * Captures the sound and record into a WAV file
 	 */
-	public void start() {
+	public void start_rec() {
 		try {
 			AudioFormat format = getAudioFormat();
 			DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -80,11 +93,12 @@ public class Recorder implements Runnable{
 	 * Closes the target data line to finish capturing and recording
 	 */
 	public void finish() {
-		System.out.println("Started to finish");
-		this.line.stop();
-		this.line.close();
-		System.out.println("Finished");
-	}
+        this.finished = true;
+        System.out.println("Started to finish");
+        this.line.stop();
+        this.line.close();
+        System.out.println("Finished");
+    }
 
 	public static void recordExtern(File file) throws IOException, InterruptedException {
 
@@ -92,8 +106,4 @@ public class Recorder implements Runnable{
 		p.waitFor();
 	}
 
-	@Override
-	public void run() {
-		this.start();
-	}
 }
