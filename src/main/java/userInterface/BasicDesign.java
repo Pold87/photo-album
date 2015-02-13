@@ -1,16 +1,25 @@
 package main.java.userInterface;
 
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.net.URL;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
+import main.java.gesturerecognition.VolkerLeapListener;
 
 import com.leapmotion.leap.Controller;
-import main.java.gesturerecognition.VolkerLeapListener;
 
 public class BasicDesign extends JFrame {
 

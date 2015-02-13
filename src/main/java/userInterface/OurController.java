@@ -170,7 +170,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void addPictureByNumber(int nr) {
-		System.out.println("Adding picture from this other method");
 		MyImage image = basicDesign.getLibrary()[nr];
         addPicture(image);
 	}
@@ -179,9 +178,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
         SwingUtilities.invokeLater(() -> {
             MyImage image = contentPanel.getSelectedPicture();
-            System.out.println(image);
             if(image != null){
-                System.out.println("Deleting picture");
                 contentPanel.deleteSelectedPicture();
                 performedActions.add(new ActionDelete(image, OurController.this));
                 basicDesign.getToolbar().setEnabledUndoButton(true);
@@ -522,6 +519,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             if (undoneActions.isEmpty()) {
                 basicDesign.getToolbar().setEnabledRedoButton(false);
             }
+            basicDesign.repaint();
         }
     }
 

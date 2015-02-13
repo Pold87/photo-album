@@ -8,17 +8,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Stroke;
 import java.awt.Toolkit;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import main.java.gesturerecognition.VolkerLeapListener;
 import main.java.userInterface.OurController.ToolMode;
 
 public class ContentPanel extends JPanel {
@@ -377,7 +375,6 @@ public class ContentPanel extends JPanel {
     	selectedImage.setActive(false);
     	selectedImage.setSelected(false);
     	boolean removed = imageList.remove(selectedImage);
-    	System.out.println("pic removed is" + removed);
     	selectedImage = null;
     	repaint();
     }
