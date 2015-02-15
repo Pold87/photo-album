@@ -1,6 +1,5 @@
 package main.java.userInterface;
 
-import java.awt.*;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -31,7 +30,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public ContentPanel contentPanel;
 	private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos, oldWidth, oldHeight;
-	private String currentAction = "select";
     private URL url;
     private File normalRecord;
     private Thread thread = null;
@@ -262,12 +260,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		}
 	}
 	//END CommandInterface
-//			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
 
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
-		System.out.println("mousedragged");
 		//this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
@@ -277,7 +273,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorPressed(int XPos, int YPos) {
 		contentPanel.requestFocusInWindow();
 
-		//Point p = new Point(XPos, YPos);
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
@@ -363,7 +358,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void cursorDragged(int XPos, int YPos) {
 		int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
-		double normalizerX, normalizerY;
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
@@ -409,14 +403,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-        switch (currentAction) {
-            case "select":
+        switch (toolModeIndex) {
+            case MOVE:
                 contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
                 break;
-            case "rotate":
+            case ROTATE:
                 rotate(45);
                 break;
-            case "cut":
+            case CUT:
                 this.cut(mouseEvent.getX(), mouseEvent.getY());
                 break;
             default:
@@ -434,9 +428,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
-		System.out.println("mouse pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
-		if (currentAction == "resize" && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
+		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
 			((MyTimerTask) task).addVariables(selectedImage, mode);
@@ -562,9 +555,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case "delete":
             	deleteSelectedPicture();
             	break;
+            case "select":
+            case "move":
+            	toolModeIndex = ToolMode.MOVE;
+            	break;
+            case "cut":
+            	toolModeIndex = ToolMode.CUT;
+            	break;
+            case "resize":
+            	toolModeIndex = ToolMode.RESIZE;
+            	break;
+            case "rotate":
+            	rotate(45);
             default:
-                currentAction = button;
-                break;
+            	System.out.println("Default toolbar button clicked??");
+				break;
         }
 	}
     //END ToolbarListener

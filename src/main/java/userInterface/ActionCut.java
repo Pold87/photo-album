@@ -1,81 +1,22 @@
 package main.java.userInterface;
 
-import javax.swing.undo.UndoableEdit;
+public class ActionCut extends Action{
 
-public class ActionCut implements UndoableEdit{
-
-    private MyImage picture;
-    private OurController ourController;
-
-    public ActionCut(MyImage picture, OurController ourController) {
-        this.picture = picture;
-        this.ourController = ourController;
-        long time = (System.currentTimeMillis() - App.startTime)/1000;
-        ourController.logger.logAction("Cut picture " + picture.getNum()+ "," + time);
+    public ActionCut(MyImage image, OurController ourController) {
+		super(image, "Cut", ourController, 0, 0, 0, 0);
     }
 
     //TODO this still needs to be implemented
     public void redo() {
-        ourController.selectPicture(picture);
+    	super.redo();
+        ourController.selectPicture(image);
         ourController.logger.logAction("Redo");
     }
 
     //TODO this still needs to be implemented
     public void undo() {
-        System.out.println("undo cut");
-        ourController.selectPicture(picture);
+    	super.undo();
+		ourController.selectPicture(image);
         ourController.logger.logAction("Undo");
     }
-
-	@Override
-	public boolean addEdit(UndoableEdit arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean canRedo() {
-		return true;
-	}
-
-	@Override
-	public boolean canUndo() {
-		return true;
-	}
-
-	@Override
-	public void die() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public String getPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getRedoPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getUndoPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isSignificant() {
-		return true;
-	}
-
-	@Override
-	public boolean replaceEdit(UndoableEdit arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
 }
