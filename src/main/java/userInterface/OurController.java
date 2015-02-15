@@ -379,7 +379,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     int yDelimited = selectedImage.getY() + deltaY;
 
                     selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
-                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() + selectedImage.getHeight())));
 				}
                 
 				break;
