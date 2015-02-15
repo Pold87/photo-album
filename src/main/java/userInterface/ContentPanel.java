@@ -374,24 +374,12 @@ public class ContentPanel extends JPanel {
 
     public void addPictureToCurrentPage(MyImage image) {
 		image.setActive(!image.isActive());
-		if (image.isActive()) {
-
-			// TODO this is for the position !!!
-
-			if (leapRightX < 0 || leapRightX > scr_width ) {
-				image.setX(20);
-			}
-
-			else if (leapRightY < 0 || leapRightY > scr_height) {
-				image.setY(20);
-
-			} else {
+		if (image.isActive()){
+			if (leapRightX > 0 && leapRightX < scr_width && leapRightY > 0 && leapRightY < scr_height){
 				image.setX(leapRightX);
 				image.setY(leapRightY);
 			}
-
 			this.imageList.add(image);
-			
 		} else {
 			this.imageList.remove(image);
 		}
@@ -401,7 +389,7 @@ public class ContentPanel extends JPanel {
     public void deleteSelectedPicture(){
     	selectedImage.setActive(false);
     	selectedImage.setSelected(false);
-    	boolean removed = imageList.remove(selectedImage);
+    	imageList.remove(selectedImage);
     	selectedImage = null;
     	repaint();
     }

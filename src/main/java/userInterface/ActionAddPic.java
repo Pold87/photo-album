@@ -19,6 +19,7 @@ public class ActionAddPic extends Action {
 		super.undo();
 		ourController.selectPicture(image);
 		ourController.contentPanel.deleteSelectedPicture();
+		ourController.addButtonToLibrary(image);
 	}
 
 
