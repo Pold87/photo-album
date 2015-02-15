@@ -265,15 +265,15 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorX = XPos;
 		
 		if (contentPanel.getSelectedPicture() != null) {
-		this.selectPictureAt(XPos, YPos);
-		MyImage selectedImage = contentPanel.getSelectedPicture();
-		
-		// Update mouse Coords
-		oldXPos = selectedImage.getX();
-		oldYPos = selectedImage.getY();
-		oldWidth = selectedImage.getWidth();
-		oldHeight = selectedImage.getHeight();
-		
+			this.selectPictureAt(XPos, YPos);
+			MyImage selectedImage = contentPanel.getSelectedPicture();
+
+			// Update mouse Coords
+			oldXPos = selectedImage.getX();
+			oldYPos = selectedImage.getY();
+			oldWidth = selectedImage.getWidth();
+			oldHeight = selectedImage.getHeight();
+
 		}
 		//else {
 		//	contentPanel.unselectPicture(p);
@@ -324,7 +324,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 case ROTATE:
                     break;
                 case CUT:
-                    this.cut(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
+                    this.cut(XPos, YPos);
                     break;
                 case SPEECH:
                     break;
@@ -391,7 +391,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 rotate(45);
                 break;
             case CUT:
-                this.cut(mouseEvent.getX(), mouseEvent.getY());
                 break;
             default:
                 break;
@@ -591,17 +590,18 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void cut(int x, int y) {
-    	if (contentPanel.getLines().size() == 4) {
-    		SwingUtilities.invokeLater(() -> {
-    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this));
+    	SwingUtilities.invokeLater(() -> {
+    		if (contentPanel.getLines().size() == 4) {  
+    			MyImage image = contentPanel.getSelectedPicture();
+    			int oldX = image.getX(), oldY = image.getY();
     			contentPanel.cut();
+    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this, oldX, oldY));
     			contentPanel.setLines(new ArrayList<>());
     			checkUndoRedoButtons();
                 contentPanel.repaint();
-    		});
-
-    	} else {
-    		contentPanel.addLine(x, y);
-    	}
+    		} else {
+    			contentPanel.addLine(x, y);
+    		}
+    	});
     }
 }

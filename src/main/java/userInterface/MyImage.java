@@ -13,12 +13,12 @@ import java.net.URL;
 
 public class MyImage {
 
-    private BufferedImage img; // The actual picture
+    private BufferedImage img, originalImage; // The actual picture
     private int x;
     private int y;
 
-    private int width;
-    private int height; // 2D-coordinates
+    private int width, originalWidth;
+    private int height, originalHeight; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
     private double rotationDegrees; // Degrees of rotation for image.
     private boolean active; //indicates whether image is being displayed on contentPanel
@@ -38,6 +38,9 @@ public class MyImage {
         setDisplaySize();
         width = img.getWidth();
         height = img.getHeight();   
+        originalWidth = img.getWidth();
+        originalHeight = img.getHeight(); 
+        originalImage = img;
     }
     
     public boolean isActive() {
@@ -171,5 +174,11 @@ public class MyImage {
 
     public void setImg(BufferedImage img) {
         this.img = img;
+    }
+    
+    public void resetToOriginalImage(){
+    	img = originalImage;
+    	height = originalHeight;
+    	width = originalWidth;
     }
 }
