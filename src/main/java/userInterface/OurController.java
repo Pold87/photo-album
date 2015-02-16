@@ -25,6 +25,7 @@ import main.java.speechrecognition.Wit;
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener, ThreadCompleteListener {
 
+	private RotationThread rotateThread;
 	private UndoManager undoManager;
 	public Logger logger;
 	public ContentPanel contentPanel;
@@ -74,6 +75,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		super();
 	    ((MyTimerTask) task).add(this);
 		undoManager = new UndoManager();
+		rotateThread = new RotationThread(this);
     }
 	
 	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException {
@@ -152,7 +154,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
-    // TODO
 //	public void recognizeSimpleSpeech() {
 
 //		SpeechResult utterance = this.speechCommands.recognizeCommand();
@@ -282,9 +283,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		switch (toolModeIndex) {
 		case MOVE:
 		case RESIZE:
-		case CUT:		
+		case CUT:
+			break;
 		case ROTATE:
-			contentPanel.repaint();
+			Thread thread = new Thread(rotateThread);
+			thread.start();
 			break;
         case SPEECH:
             try {
@@ -322,6 +325,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 	undoManager.addEdit(new ActionResize(selectedImage, "Resized", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
                 	break;
                 case ROTATE:
+                	rotateThread.keepGoing = false;
                     break;
                 case CUT:
                     this.cut(XPos, YPos);
@@ -388,7 +392,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
                 break;
             case ROTATE:
-                rotate(45);
                 break;
             case CUT:
                 break;
@@ -407,6 +410,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
+		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
 		{
@@ -537,7 +541,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             	toolModeIndex = ToolMode.RESIZE;
             	break;
             case "rotate":
-            	rotate(45);
+            	toolModeIndex = ToolMode.ROTATE;
+            	break;
             default:
             	System.out.println("Default toolbar button clicked??");
 				break;
