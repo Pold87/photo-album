@@ -68,18 +68,23 @@ public class Recorder implements Runnable{
             Thread.sleep(10);
 
             this.line = (TargetDataLine) AudioSystem.getLine(info);
-            this.line.open(format);
-            this.line.start(); // start capturing
 
-            System.out.println("Start capturing...");
 
-            AudioInputStream ais = new AudioInputStream(this.line);
+            if (!this.line.isOpen()) {
 
-            System.out.println("Start recording...");
+                this.line.open(format);
+                this.line.start(); // start capturing
 
-            // start recording
-            System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
-            AudioSystem.write(ais, fileType, wavFile);
+                System.out.println("Start capturing...");
+
+                AudioInputStream ais = new AudioInputStream(this.line);
+
+                System.out.println("Start recording...");
+
+                // start recording
+                System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
+                AudioSystem.write(ais, fileType, wavFile);
+            }
 
         } catch (LineUnavailableException ex) {
 			ex.printStackTrace();
@@ -88,6 +93,7 @@ public class Recorder implements Runnable{
 		} catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 
 

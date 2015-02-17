@@ -5,7 +5,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -24,7 +23,7 @@ public class MyImage {
     private double rotationDegrees; // Degrees of rotation for image.
     private boolean active; //indicates whether image is being displayed on contentPanel
     private boolean selected; //indicates whether image is selected in contentPanel
-    
+
     public MyImage(String path, int x, int y, int num) throws IOException {
         // Create URL for image (to handle OS difficulties)
         URL url = getClass().getResource(path);
@@ -38,12 +37,12 @@ public class MyImage {
         this.rotationDegrees=0;
         setDisplaySize();
         width = img.getWidth();
-        height = img.getHeight();   
+        height = img.getHeight();
         originalWidth = img.getWidth();
-        originalHeight = img.getHeight(); 
+        originalHeight = img.getHeight();
         originalImage = img;
     }
-    
+
     public boolean isActive() {
         return active;
     }
@@ -53,7 +52,7 @@ public class MyImage {
         this.active = active;
     }
     public void setSelected(boolean selected) {
-    	this.selected = selected; 
+        this.selected = selected;
     }
 
     private void setDisplaySize() {
@@ -105,21 +104,8 @@ public class MyImage {
     }
 
     public void resizeImg(int newW, int newH) {
-        BufferedImage before =  this.img;
-
-        int oldW = before.getWidth();
-        int oldH = before.getHeight();
-
         width = newW;
         height = newH;
-
-        BufferedImage after = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        AffineTransform at = new AffineTransform();
-        at.scale(newW / oldW, newH / oldH);
-        AffineTransformOp scaleOp =
-                new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-        after = scaleOp.filter(before, after);
-        this.img = after;
     }
 
     //Resizes an image to have the given width and height
@@ -130,14 +116,10 @@ public class MyImage {
         g2.drawImage(this.img, 0, 0, w, h, null);
         g2.dispose();
         return resizedImg;
-
-
-
-
     }
 
     public void incrementRotation(double degree){
-    	rotationDegrees += degree;   	
+        rotationDegrees += degree;
     }
 
     public double getRotationDegrees() {
@@ -150,9 +132,9 @@ public class MyImage {
         g2dCopy.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
         g2dCopy.drawImage(img, x, y, width, height, null);
         g2dCopy.drawString(Integer.toString(this.num), x, y - 5);
-        
+
         if(selected){
-                //draw blue frame around image if it is now selected
+            //draw blue frame around image if it is now selected
             double thickness = 3;
             Stroke oldStroke = g2d.getStroke();
             g2dCopy.setStroke(new BasicStroke((float) thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -160,18 +142,18 @@ public class MyImage {
             g2dCopy.drawRect(x, y, width, height);
             g2dCopy.setStroke(oldStroke);
 
-    	}
-    	g2dCopy.setTransform(new AffineTransform());
+        }
+        g2dCopy.setTransform(new AffineTransform());
         g2dCopy.dispose();
     }
-    
+
     public boolean contains(Point p){
-    	if (p.getX() >= x && p.getX() <= x+width) {
-    		if (p.getY() >= y && p.getY() <= y+height) {
-    			return true;
-    		}
-    	}
-    	return false;
+        if (p.getX() >= x && p.getX() <= x+width) {
+            if (p.getY() >= y && p.getY() <= y+height) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setWidth(int width) {
@@ -193,10 +175,10 @@ public class MyImage {
     public void setImg(BufferedImage img) {
         this.img = img;
     }
-    
+
     public void resetToOriginalImage(){
-    	img = originalImage;
-    	height = originalHeight;
-    	width = originalWidth;
+        img = originalImage;
+        height = originalHeight;
+        width = originalWidth;
     }
 }
