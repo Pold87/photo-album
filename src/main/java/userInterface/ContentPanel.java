@@ -8,7 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -354,9 +356,8 @@ public class ContentPanel extends JPanel {
     public void selectPictureAt(int x, int y){
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
 		for (MyImage i : imageList) {
-			//Does this still work when the picture is rotated? Nope, fix pending.
-			Rectangle pictureArea = new Rectangle(i.getX(), i.getY(), i.getImg().getWidth(), i.getImg().getHeight());
-			if (pictureArea.contains(new Point(x, y))) {
+			if (i.contains(new Point(x, y))) {
+				System.out.println("Contains point. Aww yeah!!");
 				selectedImage = i;
 			}
 		}
@@ -394,16 +395,16 @@ public class ContentPanel extends JPanel {
     	repaint();
     }
 
-	public void deletePicture(MyImage img) {
+    public void deletePicture(MyImage img) {
 
-			if (this.imageList.contains(img)) {
-				img.setActive(false);
-				img.setSelected(false);
-				boolean removed = imageList.remove(img);
-			}
+    	if (this.imageList.contains(img)) {
+    		img.setActive(false);
+    		img.setSelected(false);
+    		imageList.remove(img);
+    	}
 
-		repaint();
-		}
+    	repaint();
+    }
 
     public void rotate(double degrees) {
 		if (this.selectedImage != null) {
