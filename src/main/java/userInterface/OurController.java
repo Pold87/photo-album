@@ -438,6 +438,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {
+			if(SwingUtilities.isLeftMouseButton(e)){
+				rotateThread.setClockwise(true);
+			}else{
+				rotateThread.setClockwise(false);
+			}
+		
 			cursorPressed(e.getX(), e.getY());
 		}
 	}

@@ -6,11 +6,15 @@ package main.java.userInterface;
  * @author Dennis
  */
 public class RotationThread implements Runnable {
-	public boolean keepGoing;
+	public boolean keepGoing, clockwise = true;
 	private OurController controller;
 	
 	public RotationThread(OurController controller){
 		this.controller = controller;
+	}
+	
+	public void setClockwise(boolean clockwise){
+		this.clockwise = clockwise;
 	}
 	
 	@Override
@@ -18,7 +22,10 @@ public class RotationThread implements Runnable {
 		synchronized(this){
 		keepGoing = true;
 		while(keepGoing){
-			controller.rotate(1);
+			if(clockwise)
+				controller.rotate(1);
+			else
+				controller.rotate(-1);
 			try {
 				this.wait(10);
 			} catch (InterruptedException e) {
