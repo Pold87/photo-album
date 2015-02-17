@@ -5,46 +5,31 @@
  */
 grammar photoalbum;
 
-//Actions
-public <select_action> = select | choose | pick | activate | use | change selection;
-<move_action> = move | shift | relocate | change position;
-<rotate_action> = rotate | turn | spin | change orientation | tilt;
-<enlarge_action> = (enlarge | increase size | expand | magnify | ((larger | bigger | magnified | expanded | increased) [size])) {enlarge};
-<smaller_action> = (decrease size | reduce size | shrink | ((smaller | reduced | decreased | shrunk) [size])) {smaller};
-<undo_action> = undo | go back;
-<redo_action> = redo | do (that | it | this) again;
-<actions> = <select_action> | <move_action> | <rotate_action> | <enlarge_action> | <smaller_action> | <undo_action> | <redo_action>;
-
 //Objects
-<pics> = ([the | a | of] (image | picture | form | selection | it | ((this | that) [one]))) {image};
-<bg_color> = ([the | of] (background | wallpaper | background color | wallpaper color)) {background};
+<pics> = (([the | a | of] (image | picture | form | selection | it)) | ((this | that) [one]));
+<bg_color> = [the | of] (background | wallpaper | background color | wallpaper color);
+<colors> = white | black | blue | green | red | yellow | pink | magenta | orange | cyan;
 
-//Locations & Orientations
-<dir> = [to the] (right {CW} | left {CCW});
-<locs> = [to | to the] (there | here | <dir> | up | down);
-<orients> = <dir> | clockwise {CW} | counterclockwise {CCW};
+//Actions
+<select_action> = select | choose | pick | activate | use;
 
-//Choices
-<tens> = ten {10} | twenty {20} | thirty {30} | forty {40} | fifty {50} | sixty {60} | seventy {70} | eighty {80} | ninety {90};
-<degrees> =  <tens> | one (hundred {100} | [hundred] [and] (ten {110} | twenty {120} | thirty {130} | forty {140} | fifty {150} | sixty {160} | seventy {170} | eighty {180} | ninety {190})) | two (hundred {200} | [hundred] [and] (ten {210} | twenty {220} | thirty {230} | forty {240} | fifty {250} | sixty {260} | seventy {270} | eighty {280} | ninety {290})) | three (hundred {300} | [hundred] [and] (ten {310} | twenty {320} | thirty {330} | forty {340} | fifty {350} | sixty {360}));
-<enum1> = one {1} | two {2} | three {3} | five {5} |  eight {8} | nine {9} |  twelve {12} | twenty {20};
-<enum2> = four {4} | six {6} | seven {7} | ten {10} | eleven {11} | thirteen {13} | fourteen {14} | fifteen {15} | sixteen {16} | seventeen {17} | eighteen {18} | nineteen {19};
-<enum3> = first {1} | second {2} | third {3} | fifth {5} | eighth {8} | ninth {9} | twelfth {12} | twentieth {20} | <enum2>th;
-<colors> = white {WHITE} | black {BLACK}| blue {BLUE}| green {GREEN} | red {RED} | yellow {YELLOW} | pink {PINK} | magenta {MAGENTA};
+<delete_action> = delete | remove | trashcan | garbage [bin];
 
-//How pics may be referenced
-<pics_ref> = <pics> [<enum1> | <enum2>] | <enum3> <pics>;
+<move_action> = move | shift | relocate | change position;
 
-//Verbiage
-<startPolite> = (please | kindly | could you | oh mighty computer | I would like to | it would be [nice|great|awesome|cool] if you could | I want to | lets | let me | Can I) *;
-<endPolite> = [ please | thanks | thank you ];
+<rotate_action> = rotate | turn | spin | tilt | change orientation;
+
+<enlarge_action> = enlarge | increase size | make <pics> larger | make <pics> bigger;
+
+<smaller_action> = decrease size | reduce size | shrink | make smaller;
+
+<undo_action> = undo [that | it | this] | [go] back;
+
+<redo_action> = ((redo | do) [that | it | this] [again]) | [go] forward;
+
+<changeBG_action> = change <bg_color> <colors>;
+
+<pic_actions> = <select_action> | <delete_action> | <move_action> | <rotate_action> | <enlarge_action>| <smaller_action>| <undo_action> | <redo_action>;
 
 //Commands
-<select_command> = (<select_action> <pics_ref> | <pics_ref> <select_action>) {select};
-<move_command> = (<move_action> <pics_ref> | <pics_ref> <move_action>) {move};
-<rotate_command> = (<rotate_action> <pics_ref> | <pics_ref> <rotate_action>) {rotate}; // figure out how to add degree numbers
-<resize_command> = ([make | change to] (<enlarge_action> | <smaller_action>) <pics_ref> | <pics_ref> [make | change to] (<enlarge_action> | <smaller_action>)) {resize};
-<unredo_command> = ([this | what I just did | that | [last | previous] (action| event | step  | <actions>)](<undo_action> | <redo_action>) [this | what I just did | that | [last | previous] (action| event | step  | <actions>)]) {unredo};
-public <commands> = [<startPolite>] (<select_command> | <move_command> | <rotate_command> | <resize_command> | <unredo_command>) [<endPolite>];
-
-
+public <command> = <pic_actions> <pics> | <changeBG_action>;
