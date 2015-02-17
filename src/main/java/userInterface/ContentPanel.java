@@ -7,10 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.Toolkit;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -357,7 +354,6 @@ public class ContentPanel extends JPanel {
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
 		for (MyImage i : imageList) {
 			if (i.contains(new Point(x, y))) {
-				System.out.println("Contains point. Aww yeah!!");
 				selectedImage = i;
 			}
 		}

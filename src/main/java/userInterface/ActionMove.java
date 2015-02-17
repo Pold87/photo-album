@@ -19,4 +19,11 @@ public class ActionMove extends Action {
 		image.setX(oldX);
 		image.setY(oldY);
 	}
+	
+	public boolean isSignificant() {
+		if(oldX != newX || oldY != newY)
+			return true;
+		else
+			return false;
+	}
 }

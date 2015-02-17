@@ -39,6 +39,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Wit wit_runnable;
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
+    
+    public enum Modality{
+    	MOUSE, SPEECH, LEAP
+    }
+    public Modality currentModality =  Modality.MOUSE;
 
     @Override
     public void notifyOfThreadComplete(Wit wit) {
@@ -67,13 +72,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     // Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT,  SPEECH
+		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT, SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
 	public OurController()  {
 		super();
-	    ((MyTimerTask) task).add(this);
 		undoManager = new UndoManager();
 		rotateThread = new RotationThread(this);
     }
@@ -216,11 +220,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//END CommandInterface
 
 
-	//START MouseListeners
-	public void mouseDragged(MouseEvent mouseEvent) {
-		//this.toolModeIndex = ToolMode.MOVE;
-		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
-	}
+	//START MouseListener
 	
 	/* MOUSE LISTENER */
 
@@ -229,9 +229,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 		previousCursorY = YPos;
 		previousCursorX = XPos;
-		
+		this.selectPictureAt(XPos, YPos);
 		if (contentPanel.getSelectedPicture() != null) {
-			this.selectPictureAt(XPos, YPos);
+			
 			MyImage selectedImage = contentPanel.getSelectedPicture();
 
 			// Update mouse Coords
@@ -318,6 +318,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
 
+<<<<<<< HEAD
                     System.out.println("Current mouse X:" + XPos);
                     System.out.println("Max Xpos:" +  contentPanel.getWidth());
                     System.out.println("Width:" + selectedImage.getWidth());
@@ -328,6 +329,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
                     this.movePicture(newX, newY);
 
+=======
+                    selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
+>>>>>>> origin/master
 				}
                 
 				break;
@@ -351,6 +356,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			contentPanel.repaint();
 		}
 	}
+	
+	public void mouseDragged(MouseEvent mouseEvent) {
+		currentModality = Modality.MOUSE;
+		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
+	}
 
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
@@ -368,13 +378,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		//This boolean is to prevent use of the middle mouse button.
 		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
-			((MyTimerTask) task).addVariables(selectedImage, mode);
+			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {
@@ -389,6 +400,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		if (((MyTimerTask) task).isRunning()) {
 			task.cancel();
 			timer = new Timer();
@@ -407,6 +419,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 */
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
+    	currentModality = Modality.SPEECH;
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
 
