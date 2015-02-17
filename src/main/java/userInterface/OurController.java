@@ -73,7 +73,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     
 	public OurController()  {
 		super();
-	    ((MyTimerTask) task).add(this);
 		undoManager = new UndoManager();
 		rotateThread = new RotationThread(this);
     }
@@ -372,10 +371,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
 
-                    System.out.println("Current mouse X:" + XPos);
-                    System.out.println("Max Xpos:" +  contentPanel.getWidth());
-                    System.out.println("Width:" + selectedImage.getWidth());
-                    System.out.println("xDelimited:" + xDelimited);
                     selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
                     selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
 				}
@@ -424,7 +419,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
-			((MyTimerTask) task).addVariables(selectedImage, mode);
+			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {
