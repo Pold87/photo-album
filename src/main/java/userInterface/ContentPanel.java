@@ -394,6 +394,17 @@ public class ContentPanel extends JPanel {
     	repaint();
     }
 
+	public void deletePicture(MyImage img) {
+
+			if (this.imageList.contains(img)) {
+				img.setActive(false);
+				img.setSelected(false);
+				boolean removed = imageList.remove(img);
+			}
+
+		repaint();
+		}
+
     public void rotate(double degrees) {
 		if (this.selectedImage != null) {
 			selectedImage.incrementRotation(degrees);

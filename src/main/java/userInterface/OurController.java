@@ -200,9 +200,24 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 undoManager.addEdit(new ActionDelete(image, OurController.this));
                 checkUndoRedoButtons();
                 addButtonToLibrary(image);
-                contentPanel.repaint();
+                basicDesign.photoBar.addButton(image);
+                basicDesign.repaint();
             }
         });
+	}
+
+	public void deletePicture(MyImage img) {
+
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				contentPanel.deletePicture(img);
+			}
+		});
+
+
+
 	}
 
 	private void darker(){
@@ -503,6 +518,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case "brighter":
 				this.brighter();
 				break;
+			case "remove":
+				ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
+//				ArrayList<Integer> pictureNumbersRemove = response.extractNumbers();
+
+				if (pictureNumbersRemove.isEmpty()) {
+					this.deleteSelectedPicture();
+				} else {
+					for (int pic : pictureNumbersRemove) {
+						for (MyImage img : basicDesign.getLibrary()) {
+							if (img.getNum() == pic) {
+								this.deletePicture(img);
+							}
+						}
+					}
+				}
+
 			case "exit":
 				System.exit(0);
 				break;
