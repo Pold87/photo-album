@@ -1,15 +1,20 @@
 package main.java.userInterface;
 
-import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.image.BufferedImage;
-import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 public class MyImage {
 
@@ -148,12 +153,13 @@ public class MyImage {
     }
 
     public boolean contains(Point p){
-        if (p.getX() >= x && p.getX() <= x+width) {
-            if (p.getY() >= y && p.getY() <= y+height) {
-                return true;
-            }
-        }
-        return false;
+    	Rectangle rectangle = new Rectangle(x, y, width, height);
+		AffineTransform transform = new AffineTransform();
+		transform.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
+		Shape pictureArea = transform.createTransformedShape(rectangle);
+		boolean contains = pictureArea.contains(p);
+		System.out.println("Contains = " + contains);
+		return contains;
     }
 
     public void setWidth(int width) {

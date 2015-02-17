@@ -295,9 +295,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			oldHeight = selectedImage.getHeight();
 
 		}
-		//else {
-		//	contentPanel.unselectPicture(p);
-		//}
 	
 		switch (toolModeIndex) {
 		case MOVE:
@@ -410,18 +407,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-        switch (toolModeIndex) {
-            case MOVE:
-                contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
-                break;
-            case ROTATE:
-                break;
-            case CUT:
-                break;
-            default:
-                break;
-        }
-
 	}
 
 	public void mouseEntered(MouseEvent arg0) {
@@ -435,6 +420,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void mousePressed(MouseEvent e) {
 		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
+		//This boolean is to prevent use of the middle mouse button.
 		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
