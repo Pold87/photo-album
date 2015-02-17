@@ -221,12 +221,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//END CommandInterface
 
 
-	//START MouseListeners
-	public void mouseDragged(MouseEvent mouseEvent) {
-		currentModality = Modality.MOUSE;
-		//this.toolModeIndex = ToolMode.MOVE;
-		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
-	}
+	//START MouseListener
 	
 	/* MOUSE LISTENER */
 
@@ -352,6 +347,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			previousCursorX = XPos;
 			contentPanel.repaint();
 		}
+	}
+	
+	public void mouseDragged(MouseEvent mouseEvent) {
+		currentModality = Modality.MOUSE;
+		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 
 	public void mouseMoved(MouseEvent arg0) {

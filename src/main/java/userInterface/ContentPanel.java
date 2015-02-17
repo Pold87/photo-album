@@ -354,7 +354,6 @@ public class ContentPanel extends JPanel {
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
 		for (MyImage i : imageList) {
 			if (i.contains(new Point(x, y))) {
-				System.out.println("Contains point. Aww yeah!!");
 				selectedImage = i;
 			}
 		}
