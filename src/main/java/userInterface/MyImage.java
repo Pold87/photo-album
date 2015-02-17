@@ -158,7 +158,6 @@ public class MyImage {
 		transform.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
 		Shape pictureArea = transform.createTransformedShape(rectangle);
 		boolean contains = pictureArea.contains(p);
-		System.out.println("Contains = " + contains);
 		return contains;
     }
 

@@ -105,18 +105,21 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
                         // Cursor Pressed
                         if (leftHandClick && !prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorPressed(leftHandXPos, leftHandYPos);
                             prevRightClick = true;
                         }
 
                         // Cursor Released
                         if (!leftHandClick && prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorReleased(leftHandXPos, leftHandYPos);
                             prevRightClick = false;
                         }
 
                         // Cursor dragged
                         if (leftHandClick && prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorDragged(leftHandXPos, leftHandYPos);
                         }
 
@@ -134,10 +137,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 //                                contentPanel.setToolMode(OurController.ToolMode.ROTATE);
                                 break;
                             case 4:
-                                contentPanel.setToolMode(OurController.ToolMode.SPEECH);
                                 break;
                             case 5: // ENLARGE
 //                                contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
+                                contentPanel.setToolMode(OurController.ToolMode.SPEECH);
                                 break;
                             default:
                                 System.out.println("Hoeveel vingers heb je eigenlijk?");

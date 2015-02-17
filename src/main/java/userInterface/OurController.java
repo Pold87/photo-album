@@ -39,6 +39,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Wit wit_runnable;
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
+    
+    public enum Modality{
+    	MOUSE, SPEECH, LEAP
+    }
+    public Modality currentModality =  Modality.MOUSE;
 
     @Override
     public void notifyOfThreadComplete(Wit wit) {
@@ -67,7 +72,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     // Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT,  SPEECH
+		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT, SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
@@ -121,60 +126,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			}
 		});
     }
-
-	
-	public void recognizeSpeech() throws Exception {
-		// Url for recording speech input
-
-        toggleSpeechRecording();
-
-		// Record wav with external program
-		//Record.recordExtern(normalRecord);
-
-		URL url = getClass().getResource("/recording.wav");
-		File normalRecord = new File(url.toURI());
-		Recorder recorder = new Recorder(normalRecord);
-		Thread runnable = new Thread(recorder);
-
-        // TODO: SPEECH BUTTON DOES NOT WORK!!!
-
-        // TODO: runnable start and stop should be invoked by cursor pressed and released
-		runnable.start();
-
-		Thread.sleep(5000);
-
-		recorder.finish();
-
-		Wit wit = new Wit(normalRecord, "wav");
-
-		// Send recognized
-		recognizedText(wit.getWitRawJSONString());
-		recognizedWitResponse(wit);
-		toggleSpeechProcessing();
-//		Process p2 = new ProcessBuilder("killall", "xflux").start();
-	}
-
-//	public void recognizeSimpleSpeech() {
-
-//		SpeechResult utterance = this.speechCommands.recognizeCommand();
-//		System.out.println(utterance.getHypothesis());
-//		System.out.println(utterance.getResult());
-//		System.out.println(utterance.getNbest(3));
-//		System.out.println(utterance.getLattice());
-//		System.out.println(utterance.getWords());
-//	}
-	
-	public void toggleSpeechRecording() {
-
-		this.contentPanel.setSpeechRecording(!this.contentPanel.isSpeechRecording());
-		contentPanel.repaint();
-	}
-
-	public void toggleSpeechProcessing() {
-
-		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
-		contentPanel.repaint();
-	}
 
     //START CommandInterface
 	public void selectPicture(int nr) {
@@ -269,11 +220,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//END CommandInterface
 
 
-	//START MouseListeners
-	public void mouseDragged(MouseEvent mouseEvent) {
-		//this.toolModeIndex = ToolMode.MOVE;
-		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
-	}
+	//START MouseListener
 	
 	/* MOUSE LISTENER */
 
@@ -282,9 +229,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 		previousCursorY = YPos;
 		previousCursorX = XPos;
-		
+		this.selectPictureAt(XPos, YPos);
 		if (contentPanel.getSelectedPicture() != null) {
-			this.selectPictureAt(XPos, YPos);
+			
 			MyImage selectedImage = contentPanel.getSelectedPicture();
 
 			// Update mouse Coords
@@ -396,6 +343,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			contentPanel.repaint();
 		}
 	}
+	
+	public void mouseDragged(MouseEvent mouseEvent) {
+		currentModality = Modality.MOUSE;
+		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
+	}
 
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
@@ -413,6 +365,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		//This boolean is to prevent use of the middle mouse button.
@@ -434,6 +387,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		if (((MyTimerTask) task).isRunning()) {
 			task.cancel();
 			timer = new Timer();
@@ -452,6 +406,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 */
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
+    	currentModality = Modality.SPEECH;
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
 
@@ -509,6 +464,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case "brighter":
 				this.brighter();
 				break;
+
+            case "move":
+                this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
+                break;
 			case "remove":
 				ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
 //				ArrayList<Integer> pictureNumbersRemove = response.extractNumbers();

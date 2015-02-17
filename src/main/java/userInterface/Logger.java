@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class Logger {
 	private BufferedWriter writer;
+	private int nrOfActions;
 	
 	public Logger(){
 		try {
@@ -19,6 +20,10 @@ public class Logger {
 
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		writer = new BufferedWriter (fw);
+		//write the headers
+		writer.write("Action nr, Modality, Action name, new X, new Y, Orientation, Width, Height, new backgroundColor, TimeStamp ");
+		writer.newLine();
+		writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -26,7 +31,9 @@ public class Logger {
 	
 	public void logAction(String s){
 		try {
-			writer.write(s);
+			nrOfActions++;
+			String entry = nrOfActions + ", " + s;
+			writer.write(entry);
 			writer.newLine();
 			writer.flush();
 		} catch (IOException e) {

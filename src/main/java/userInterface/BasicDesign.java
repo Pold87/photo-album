@@ -68,6 +68,7 @@ public class BasicDesign extends JFrame {
         super.setLocationRelativeTo(null);
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
         File[] imageFiles = dir.listFiles();
