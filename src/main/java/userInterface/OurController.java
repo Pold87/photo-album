@@ -534,6 +534,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 					}
 				}
 
+                break;
 			case "exit":
 				System.exit(0);
 				break;

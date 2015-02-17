@@ -69,21 +69,26 @@ public class Recorder implements Runnable{
 
             this.line = (TargetDataLine) AudioSystem.getLine(info);
 
+            try {
 
-            if (!this.line.isOpen()) {
 
-                this.line.open(format);
-                this.line.start(); // start capturing
+                if (!this.line.isOpen() && !this.line.isRunning()) {
 
-                System.out.println("Start capturing...");
+                    this.line.open(format);
+                    this.line.start(); // start capturing
 
-                AudioInputStream ais = new AudioInputStream(this.line);
+                    System.out.println("Start capturing...");
 
-                System.out.println("Start recording...");
+                    AudioInputStream ais = new AudioInputStream(this.line);
 
-                // start recording
-                System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
-                AudioSystem.write(ais, fileType, wavFile);
+                    System.out.println("Start recording...");
+
+                    // start recording
+                    System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
+                    AudioSystem.write(ais, fileType, wavFile);
+                }
+            } catch (LineUnavailableException leu) {
+                System.out.println("Line not available");
             }
 
         } catch (LineUnavailableException ex) {
