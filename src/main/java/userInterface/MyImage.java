@@ -119,7 +119,7 @@ public class MyImage {
 
         BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         AffineTransform at = new AffineTransform();
-        at.scale(dWNew / dW, dWNew / dH);
+        at.scale(dWNew / dW, dHNew / dH);
         AffineTransformOp scaleOp =
                 new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
         after = scaleOp.filter(before, after);
