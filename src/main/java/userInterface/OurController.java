@@ -375,8 +375,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
 
-                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
-                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() + selectedImage.getHeight())));
+                    System.out.println("Current mouse X:" + XPos);
+                    System.out.println("Max Xpos:" +  contentPanel.getWidth());
+                    System.out.println("Width:" + selectedImage.getWidth());
+                    System.out.println("xDelimited:" + xDelimited);
+                    selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
 				}
                 
 				break;
