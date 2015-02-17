@@ -1,81 +1,35 @@
 package main.java.userInterface;
 
-import javax.swing.undo.UndoableEdit;
+import java.awt.image.BufferedImage;
 
-public class ActionCut implements UndoableEdit{
-
-    private MyImage picture;
-    private OurController ourController;
-
-    public ActionCut(MyImage picture, OurController ourController) {
-        this.picture = picture;
-        this.ourController = ourController;
-        long time = (System.currentTimeMillis() - App.startTime)/1000;
-        ourController.logger.logAction("Cut picture " + picture.getNum()+ "," + time);
+public class ActionCut extends Action{
+	BufferedImage newImage;
+	int newWidth, newHeight;
+	
+    public ActionCut(MyImage image, OurController ourController, int oldX, int oldY) {
+		super(image, "Cut", ourController, oldX, oldY, image.getX(), image.getY());
+		newImage = image.getImg();
+		newWidth = image.getWidth();
+		newHeight = image.getHeight();
     }
 
     //TODO this still needs to be implemented
     public void redo() {
-        ourController.selectPicture(picture);
-        ourController.logger.logAction("Redo");
+    	super.redo();
+        ourController.selectPicture(image);
+        image.setImg(newImage);
+        image.setHeight(newHeight);
+        image.setWidth(newWidth);
+        image.setX(newX);
+        image.setY(newY);
     }
 
     //TODO this still needs to be implemented
     public void undo() {
-        System.out.println("undo cut");
-        ourController.selectPicture(picture);
-        ourController.logger.logAction("Undo");
+    	super.undo();
+		ourController.selectPicture(image);
+		image.resetToOriginalImage();
+		image.setX(oldX);
+		image.setY(oldY);
     }
-
-	@Override
-	public boolean addEdit(UndoableEdit arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean canRedo() {
-		return true;
-	}
-
-	@Override
-	public boolean canUndo() {
-		return true;
-	}
-
-	@Override
-	public void die() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public String getPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getRedoPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getUndoPresentationName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isSignificant() {
-		return true;
-	}
-
-	@Override
-	public boolean replaceEdit(UndoableEdit arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
 }

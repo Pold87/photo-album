@@ -5,10 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.net.URL;
-
-/**
- * Created by pold on 12/11/14.
- */
+ 
 public class Toolbar extends JToolBar {
 
 	private static final long serialVersionUID = 1L;
@@ -18,7 +15,6 @@ public class Toolbar extends JToolBar {
     private JButton undoButton;
     private JButton redoButton;
     private JButton resizeButton;
-    private JButton simpleSpeechButton;
     private JButton deleteButton;
     private JButton cutButton;
     private ToolBarListener listener;
@@ -101,18 +97,6 @@ public class Toolbar extends JToolBar {
 
                 try {
                     listener.toolbarButtonClicked("redo");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        simpleSpeechButton = new JButton(new AbstractAction("simpleSpeech") {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                try {
-                    listener.toolbarButtonClicked("simpleSpeech");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

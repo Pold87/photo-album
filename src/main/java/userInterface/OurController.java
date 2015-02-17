@@ -1,6 +1,5 @@
 package main.java.userInterface;
 
-import java.awt.*;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -26,12 +25,12 @@ import main.java.speechrecognition.Wit;
 
 public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener, ThreadCompleteListener {
 
+	private RotationThread rotateThread;
 	private UndoManager undoManager;
 	public Logger logger;
 	public ContentPanel contentPanel;
 	private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos, oldWidth, oldHeight;
-	private String currentAction = "select";
     private URL url;
     private File normalRecord;
     private Thread thread = null;
@@ -68,7 +67,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     // Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, ROTATE, CUT,  SPEECH
+		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT,  SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
@@ -76,6 +75,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		super();
 	    ((MyTimerTask) task).add(this);
 		undoManager = new UndoManager();
+		rotateThread = new RotationThread(this);
     }
 	
 	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException {
@@ -154,7 +154,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 //		Process p2 = new ProcessBuilder("killall", "xflux").start();
 	}
 
-    // TODO
 //	public void recognizeSimpleSpeech() {
 
 //		SpeechResult utterance = this.speechCommands.recognizeCommand();
@@ -195,8 +194,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             if(image != null){
                 contentPanel.deleteSelectedPicture();
                 undoManager.addEdit(new ActionDelete(image, OurController.this));
-                basicDesign.getToolbar().setEnabledUndoButton(true);
-                basicDesign.getToolbar().setEnabledRedoButton(false);
+                checkUndoRedoButtons();
                 addButtonToLibrary(image);
                 basicDesign.photoBar.addButton(image);
                 basicDesign.repaint();
@@ -235,9 +233,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			image.setX(x);
 			image.setY(y);
 			undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-			basicDesign.repaint();
+			checkUndoRedoButtons();
             contentPanel.repaint();
 		}
 	}
@@ -246,9 +242,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		Color oldColor = contentPanel.getBackground();
 		contentPanel.setBackground(color);
 		undoManager.addEdit(new ActionBackground(oldColor, color, this));
-		basicDesign.getToolbar().setEnabledRedoButton(false);
-        basicDesign.getToolbar().setEnabledUndoButton(true);
-        basicDesign.repaint();
+		checkUndoRedoButtons();
         contentPanel.repaint();
 	}
 	
@@ -256,9 +250,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if (contentPanel.getSelectedPicture() != null) {
 			contentPanel.rotate(degrees);
 			undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-            basicDesign.repaint();
+			checkUndoRedoButtons();
             contentPanel.repaint();
 		}
 	}
@@ -267,20 +259,16 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if (contentPanel.getSelectedPicture() != null) {
 			//contentPanel.rotate(degrees);
 			undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-            basicDesign.repaint();
+			checkUndoRedoButtons();
             contentPanel.repaint();
 		}
 	}
 	//END CommandInterface
-//			performedActions.add(new ActionRotate(contentPanel.getSelectedPicture(), degrees, this));
 
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
-		System.out.println("mousedragged");
-		this.toolModeIndex = ToolMode.MOVE;
+		//this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
 	
@@ -289,20 +277,19 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorPressed(int XPos, int YPos) {
 		contentPanel.requestFocusInWindow();
 
-		//Point p = new Point(XPos, YPos);
 		previousCursorY = YPos;
 		previousCursorX = XPos;
 		
 		if (contentPanel.getSelectedPicture() != null) {
-		this.selectPictureAt(XPos, YPos);
-		MyImage selectedImage = contentPanel.getSelectedPicture();
-		
-		// Update mouse Coords
-		oldXPos = selectedImage.getX();
-		oldYPos = selectedImage.getY();
-		oldWidth = selectedImage.getWidth();
-		oldHeight = selectedImage.getHeight();
-		
+			this.selectPictureAt(XPos, YPos);
+			MyImage selectedImage = contentPanel.getSelectedPicture();
+
+			// Update mouse Coords
+			oldXPos = selectedImage.getX();
+			oldYPos = selectedImage.getY();
+			oldWidth = selectedImage.getWidth();
+			oldHeight = selectedImage.getHeight();
+
 		}
 		//else {
 		//	contentPanel.unselectPicture(p);
@@ -310,11 +297,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	
 		switch (toolModeIndex) {
 		case MOVE:
-		case ENLARGE:
-		case REDUCE:
-		case CUT:		
+		case RESIZE:
+		case CUT:
+			break;
 		case ROTATE:
-			contentPanel.repaint();
+			Thread thread = new Thread(rotateThread);
+			thread.start();
 			break;
         case SPEECH:
             try {
@@ -332,7 +320,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void cursorReleased(int XPos, int YPos) {
-        //int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
         MyImage selectedImage = contentPanel.getSelectedPicture();
 
         // Stop voice recording
@@ -345,35 +332,18 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             switch (toolModeIndex) {
                 case MOVE:
                 	undoManager.addEdit(new ActionMove(selectedImage, oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), this));
-                	basicDesign.getToolbar().setEnabledUndoButton(true);
-        			basicDesign.getToolbar().setEnabledRedoButton(false);
-                    basicDesign.repaint();
-                    contentPanel.repaint();
+                	checkUndoRedoButtons();
         			previousCursorX = -1;
         			previousCursorY = -1;
                     break;
-                case ENLARGE:
-                	undoManager.addEdit(new ActionResize(selectedImage, "Enlarged", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
-                   	basicDesign.getToolbar().setEnabledUndoButton(true);
-            		basicDesign.getToolbar().setEnabledRedoButton(false);
-                    basicDesign.repaint();
-                    contentPanel.repaint();
-                	break;
-                case REDUCE:
-                	undoManager.addEdit(new ActionResize(selectedImage, "Reduced", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
-                	basicDesign.getToolbar().setEnabledUndoButton(true);
-            		basicDesign.getToolbar().setEnabledRedoButton(false);
-                    basicDesign.repaint();
-                    contentPanel.repaint();
+                case RESIZE:
+                	undoManager.addEdit(new ActionResize(selectedImage, "Resized", oldXPos, oldYPos, selectedImage.getX(), selectedImage.getY(), oldWidth, oldHeight, selectedImage.getWidth(), selectedImage.getHeight(), this));
                 	break;
                 case ROTATE:
+                	rotateThread.keepGoing = false;
                     break;
                 case CUT:
-                    this.cut(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
-                    basicDesign.getToolbar().setEnabledUndoButton(true);
-            		basicDesign.getToolbar().setEnabledRedoButton(false);
-                    basicDesign.repaint();
-                    contentPanel.repaint();
+                    this.cut(XPos, YPos);
                     break;
                 case SPEECH:
                     break;
@@ -381,52 +351,28 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     System.out.println("Tool not found: " + toolModeIndex);
                     break;
             }
+            checkUndoRedoButtons();
         }
 	}
 
 	public void cursorDragged(int XPos, int YPos) {
 		int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
-		double normalizerX, normalizerY;
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
-			case ENLARGE:
-				// Specify maximum height of image
-                if (selectedImage.getHeight() < 650) {
-                    normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-                    normalizerY = -((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-
-                    selectedImage.setX((int) (selectedImage.getX() - normalizerX));
-                    selectedImage.setY((int) (selectedImage.getY() + normalizerY));
-
-                    selectedImage.resizeImg((int) (selectedImage.getWidth() + 6 * normalizerX), (int) (selectedImage.getHeight() - 6 * normalizerY));
-                }
-				break;
-			case REDUCE:
-				normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
-				normalizerY = - ((double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight()));
-
-                // Specify minimum height
-				if(selectedImage.getHeight() > 120) {
-					selectedImage.setY((int) (selectedImage.getY() - 4*normalizerY));
-					selectedImage.setX((int) (selectedImage.getX() + 4*normalizerX));
-					
-					selectedImage.resizeImg((int) (selectedImage.getWidth() - 8 * normalizerX), (int) (selectedImage.getHeight() + 8*normalizerY));
-				}
-				break;
 			case MOVE:
                 
                 // TODO: See if constraining the image is better
                 
 				if (selectedImage.contains(new Point(XPos, YPos))) {
-					selectedImage.setX(selectedImage.getX() + deltaX);
-					selectedImage.setY(selectedImage.getY() + deltaY);
-//
-//                    int xDelimited = selectedImage.getX() + deltaX;
-//                    int yDelimited = selectedImage.getY() + deltaY;
-//
-//                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
-//                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
+//					selectedImage.setX(selectedImage.getX() + deltaX);
+//					selectedImage.setY(selectedImage.getY() + deltaY);
+
+                    int xDelimited = selectedImage.getX() + deltaX;
+                    int yDelimited = selectedImage.getY() + deltaY;
+
+                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
+                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width() + selectedImage.getHeight())));
 				}
                 
 				break;
@@ -456,15 +402,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-        switch (currentAction) {
-            case "select":
+        switch (toolModeIndex) {
+            case MOVE:
                 contentPanel.selectPictureAt(mouseEvent.getX(), mouseEvent.getY());
                 break;
-            case "rotate":
-                rotate(45);
+            case ROTATE:
                 break;
-            case "cut":
-                this.cut(mouseEvent.getX(), mouseEvent.getY());
+            case CUT:
                 break;
             default:
                 break;
@@ -481,21 +425,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
-		System.out.println("mouse pressed");
+		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
-		if (currentAction == "resize") {
-			if (SwingUtilities.isLeftMouseButton(e)) {
-				currentAction = "enlarge";
-				toolModeIndex = ToolMode.ENLARGE;
-				((MyTimerTask) task).addVariables(selectedImage, "enlarge");
-				timer.scheduleAtFixedRate(task, 0, 25);
-			}
-			else if (SwingUtilities.isRightMouseButton(e)) {
-				currentAction = "reduce";
-				toolModeIndex = ToolMode.REDUCE;
-				((MyTimerTask) task).addVariables(selectedImage, "reduce");
-				timer.scheduleAtFixedRate(task, 0, 25);
-			}
+		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
+		{
+			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
+			((MyTimerTask) task).addVariables(selectedImage, mode);
+			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {
 			cursorPressed(e.getX(), e.getY());
@@ -606,20 +542,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	private void undo() {
 		undoManager.undo();
-		basicDesign.getToolbar().setEnabledRedoButton(true);
-		if (!undoManager.canUndo()) {
-			basicDesign.getToolbar().setEnabledUndoButton(false);
-		}
-		basicDesign.repaint();
+		checkUndoRedoButtons();
 	}
 
 	private void redo() {
 		undoManager.redo();
-		basicDesign.getToolbar().setEnabledUndoButton(true);
-		if (!undoManager.canRedo()) {
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-		}
-		basicDesign.repaint();
+		checkUndoRedoButtons();
 	}
 
     public void toolbarButtonClicked(String button) {
@@ -633,9 +561,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case "delete":
             	deleteSelectedPicture();
             	break;
+            case "select":
+            case "move":
+            	toolModeIndex = ToolMode.MOVE;
+            	break;
+            case "cut":
+            	toolModeIndex = ToolMode.CUT;
+            	break;
+            case "resize":
+            	toolModeIndex = ToolMode.RESIZE;
+            	break;
+            case "rotate":
+            	toolModeIndex = ToolMode.ROTATE;
+            	break;
             default:
-                currentAction = button;
-                break;
+            	System.out.println("Default toolbar button clicked??");
+				break;
         }
 	}
     //END ToolbarListener
@@ -670,31 +611,33 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     
 	public void addPicture(MyImage image){
         SwingUtilities.invokeLater(() -> {
-			contentPanel.addPictureToCurrentPage(image);
-			undoManager.addEdit(new ActionAddPic(image, OurController.this));
-			basicDesign.getToolbar().setEnabledUndoButton(true);
-			basicDesign.getToolbar().setEnabledRedoButton(false);
-			removeButtonFromLibrary(image);
-			selectPicture(image);
-		});
-
-
+            contentPanel.addPictureToCurrentPage(image);
+            undoManager.addEdit(new ActionAddPic(image, OurController.this));
+            checkUndoRedoButtons();
+            removeButtonFromLibrary(image);
+            selectPicture(image);
+        });
+	}
+	
+	private void checkUndoRedoButtons(){
+		basicDesign.getToolbar().setEnabledUndoButton(undoManager.canUndo());
+		basicDesign.getToolbar().setEnabledRedoButton(undoManager.canRedo());
+		basicDesign.repaint();
 	}
 
     public void cut(int x, int y) {
-    	if (contentPanel.getLines().size() == 4) {
-    		SwingUtilities.invokeLater(() -> {
-    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this));
+    	SwingUtilities.invokeLater(() -> {
+    		if (contentPanel.getLines().size() == 4) {  
+    			MyImage image = contentPanel.getSelectedPicture();
+    			int oldX = image.getX(), oldY = image.getY();
     			contentPanel.cut();
+    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this, oldX, oldY));
     			contentPanel.setLines(new ArrayList<>());
-    			basicDesign.getToolbar().setEnabledUndoButton(true);
-        		basicDesign.getToolbar().setEnabledRedoButton(false);
-                basicDesign.repaint();
+    			checkUndoRedoButtons();
                 contentPanel.repaint();
-    		});
-
-    	} else {
-    		contentPanel.addLine(x, y);
-    	}
+    		} else {
+    			contentPanel.addLine(x, y);
+    		}
+    	});
     }
 }
