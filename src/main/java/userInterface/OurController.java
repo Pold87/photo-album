@@ -137,6 +137,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		Recorder recorder = new Recorder(normalRecord);
 		Thread runnable = new Thread(recorder);
 
+        // TODO: SPEECH BUTTON DOES NOT WORK!!!
 
         // TODO: runnable start and stop should be invoked by cursor pressed and released
 		runnable.start();
@@ -182,13 +183,16 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void addPictureByNumber(int nr) {
-		if (nr < basicDesign.getLibrary().length) {
-			MyImage image = basicDesign.getLibrary()[nr];
-			addPicture(image);
-		}
-	}
-	
-	public void deleteSelectedPicture(){
+
+         ArrayList<Integer> nums = basicDesign.getPictureNums();
+
+        if (nums.contains(nr)) {
+            MyImage image = basicDesign.getLibrary()[nr];
+            addPicture(image);
+        }
+    }
+
+    public void deleteSelectedPicture(){
         SwingUtilities.invokeLater(() -> {
             MyImage image = contentPanel.getSelectedPicture();
             if(image != null){

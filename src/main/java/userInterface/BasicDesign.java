@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -199,6 +200,18 @@ public class BasicDesign extends JFrame {
 
     public Toolbar getToolbar(){
     	return toolbar;
+    }
+
+    public ArrayList<Integer> getPictureNums() {
+
+        ArrayList<Integer> nums = new ArrayList<>();
+
+
+        for (MyImage i : this.library) {
+            nums.add(i.getNum());
+        }
+
+        return nums;
     }
 
 
