@@ -5,6 +5,7 @@ import java.io.IOException;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
+import edu.cmu.sphinx.result.WordResult;
 
 /**
  * The speech recognition class. It is composed of two parts:
@@ -70,7 +71,28 @@ public class SpeechCommands {
 
             SpeechCommands sc = new SpeechCommands();
 
-            sc.recognizeCommand();
+//            sc.recognizeCommand();
+
+		SpeechResult result;
+
+		while ((result = sc.recognizeCommand()) != null) {
+
+			System.out.format("Hypothesis: %s\n", result.getHypothesis());
+
+			System.out.println("List of recognized words and their times:");
+			for (WordResult r : result.getWords()) {
+				System.out.println(r);
+			}
+
+			System.out.println("Best 3 hypothesis:");
+			for (String s : result.getNbest(3))
+				System.out.println(s);
+
+			System.out.println("Lattice contains "
+					+ result.getLattice().getNodes().size() + " nodes");
+		};
+
+
 
     }
 

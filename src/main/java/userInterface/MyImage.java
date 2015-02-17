@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -101,8 +102,21 @@ public class MyImage {
     }
 
     public void resizeImg(int newW, int newH) {
+        BufferedImage before =  this.img;
+
+        int oldW = before.getWidth();
+        int oldH = before.getHeight();
+
         width = newW;
         height = newH;
+
+        BufferedImage after = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        AffineTransform at = new AffineTransform();
+        at.scale(newW / oldW, newH / oldH);
+        AffineTransformOp scaleOp =
+                new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        after = scaleOp.filter(before, after);
+        this.img = after;
     }
 
     //Resizes an image to have the given width and height
@@ -113,6 +127,10 @@ public class MyImage {
         g2.drawImage(this.img, 0, 0, w, h, null);
         g2.dispose();
         return resizedImg;
+
+
+
+
     }
 
     public void incrementRotation(double degree){

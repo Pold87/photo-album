@@ -199,11 +199,23 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 basicDesign.getToolbar().setEnabledRedoButton(false);
                 addButtonToLibrary(image);
                 basicDesign.photoBar.addButton(image);
-				basicDesign.photoBar.repaint();
                 basicDesign.repaint();
-                contentPanel.repaint();
             }
         });
+	}
+
+	public void deletePicture(MyImage img) {
+
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				contentPanel.deletePicture(img);
+			}
+		});
+
+
+
 	}
 
 	private void darker(){
@@ -407,14 +419,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 // TODO: See if constraining the image is better
                 
 				if (selectedImage.contains(new Point(XPos, YPos))) {
-//					selectedImage.setX(selectedImage.getX() + deltaX);
-//					selectedImage.setY(selectedImage.getY() + deltaY);
-
-                    int xDelimited = selectedImage.getX() + deltaX;
-                    int yDelimited = selectedImage.getY() + deltaY;
-
-                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
-                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
+					selectedImage.setX(selectedImage.getX() + deltaX);
+					selectedImage.setY(selectedImage.getY() + deltaY);
+//
+//                    int xDelimited = selectedImage.getX() + deltaX;
+//                    int yDelimited = selectedImage.getY() + deltaY;
+//
+//                    selectedImage.setX(Math.max(0,Math.min(xDelimited, basicDesign.getScr_height() + selectedImage.getWidth())));
+//                    selectedImage.setY(Math.max(0,Math.min(yDelimited, basicDesign.getScr_width()) + selectedImage.getHeight()));
 				}
                 
 				break;
@@ -566,6 +578,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case "brighter":
 				this.brighter();
 				break;
+			case "remove":
+				ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
+//				ArrayList<Integer> pictureNumbersRemove = response.extractNumbers();
+
+				if (pictureNumbersRemove.isEmpty()) {
+					this.deleteSelectedPicture();
+				} else {
+					for (int pic : pictureNumbersRemove) {
+						for (MyImage img : basicDesign.getLibrary()) {
+							if (img.getNum() == pic) {
+								this.deletePicture(img);
+							}
+						}
+					}
+				}
+
 			case "exit":
 				System.exit(0);
 				break;
@@ -642,13 +670,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     
 	public void addPicture(MyImage image){
         SwingUtilities.invokeLater(() -> {
-            contentPanel.addPictureToCurrentPage(image);
-            undoManager.addEdit(new ActionAddPic(image, OurController.this));
-            basicDesign.getToolbar().setEnabledUndoButton(true);
-    		basicDesign.getToolbar().setEnabledRedoButton(false);
-            removeButtonFromLibrary(image);
-            selectPicture(image);
-        });
+			contentPanel.addPictureToCurrentPage(image);
+			undoManager.addEdit(new ActionAddPic(image, OurController.this));
+			basicDesign.getToolbar().setEnabledUndoButton(true);
+			basicDesign.getToolbar().setEnabledRedoButton(false);
+			removeButtonFromLibrary(image);
+			selectPicture(image);
+		});
 
 
 	}
