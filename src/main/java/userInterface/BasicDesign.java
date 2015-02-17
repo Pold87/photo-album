@@ -98,6 +98,7 @@ public class BasicDesign extends JFrame {
         // Specify content for tabs on the left hand side
 
         this.photoBar = new PhotoBar(images, ourController);
+
         BackgroundBar backgroundBar = new BackgroundBar(ourController);
 
 

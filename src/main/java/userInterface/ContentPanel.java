@@ -247,46 +247,46 @@ public class ContentPanel extends JPanel {
         g2d.setColor(Color.darkGray);
         int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
 
-        g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-                leapLeftCursorSize, leapLeftCursorSize);
-        // Filling
-        g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
-                255, 0, 0, 50));
-        g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-                leapLeftCursorSize, leapLeftCursorSize);
+//        g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+//                leapLeftCursorSize, leapLeftCursorSize);
+//        // Filling
+//        g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
+//                255, 0, 0, 50));
+//        g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
+//                leapLeftCursorSize, leapLeftCursorSize);
 
         // Finger count indicator
-
-        font = new Font("Verdana", Font.BOLD, 18);
-        g2d.setColor(Color.darkGray);
-        g2d.setFont(font);
-
-
-        // Show which action
-		switch (toolModeIndex) {
-			case MOVE:
-				g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case ENLARGE:
-				g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case REDUCE:
-				g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case ROTATE:
-				g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case CUT:
-				g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
-				break;
-			default:
-				break;
-		}
+//
+//        font = new Font("Verdana", Font.BOLD, 18);
+//        g2d.setColor(Color.darkGray);
+//        g2d.setFont(font);
 
 
-        font = new Font("Verdana", Font.PLAIN, 12);
-        g2d.setFont(font);
-        g2d.drawString("L", leapLeftX - 4, leapLeftY - 15);
+//        // Show which action
+//		switch (toolModeIndex) {
+//			case MOVE:
+//				g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
+//				break;
+//			case ENLARGE:
+//				g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
+//				break;
+//			case REDUCE:
+//				g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
+//				break;
+//			case ROTATE:
+//				g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
+//				break;
+//			case CUT:
+//				g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
+//				break;
+//			default:
+//				break;
+//		}
+
+//
+//        font = new Font("Verdana", Font.PLAIN, 12);
+//        g2d.setFont(font);
+//        g2d.drawString("L", leapLeftX - 4, leapLeftY - 15);
 
 
 

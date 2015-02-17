@@ -322,8 +322,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     System.out.println("Max Xpos:" +  contentPanel.getWidth());
                     System.out.println("Width:" + selectedImage.getWidth());
                     System.out.println("xDelimited:" + xDelimited);
-                    selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
-                    selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
+
+                    int newX = Math.max(0, Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth()));
+                    int newY = Math.max(0, Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight()));
+
+                    this.movePicture(newX, newY);
+
 				}
                 
 				break;
@@ -481,9 +485,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 
                 break;
-			case "exit":
-				System.exit(0);
-				break;
 			default:
 				System.out.println("The recognized intent is unknown: " + intent);
 				break;
