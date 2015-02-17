@@ -10,7 +10,6 @@ public class Toolbar extends JToolBar {
 
 	private static final long serialVersionUID = 1L;
 	private JButton selectButton;
-    private JButton speechButton;
     private JButton rotateButton;
     private JButton undoButton;
     private JButton redoButton;
@@ -46,24 +45,6 @@ public class Toolbar extends JToolBar {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-        });
-        speechButton = new JButton(new AbstractAction("speech") {
-
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                Thread speechThread = new Thread() {
-                    public void run() {
-                        try {
-                            controller.recognizeSpeech();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
-                speechThread.start();
-
             }
         });
 
@@ -130,7 +111,6 @@ public class Toolbar extends JToolBar {
 
         // Set Icons for buttons.
         selectButton.setIcon(createIcon("/icons/Write Document.png"));
-        speechButton.setIcon(createIcon("/icons/Discussion.png"));
         rotateButton.setIcon(createIcon("/icons/Backup Green Button.png"));
         undoButton.setIcon(createIcon("/icons/Undo.png"));
         redoButton.setIcon(createIcon("/icons/Redo.png"));
@@ -140,7 +120,6 @@ public class Toolbar extends JToolBar {
 
         // Set ToolTips.
         selectButton.setToolTipText("Select pictures");
-        speechButton.setToolTipText("Start and stop speech recognition");
         rotateButton.setToolTipText("Rotate selected pictures");
         undoButton.setToolTipText("Undo the last action");
         redoButton.setToolTipText("Redo the last undone action");
@@ -150,11 +129,9 @@ public class Toolbar extends JToolBar {
 
         // Add buttons to toolbar.
         add(selectButton);
-        add(speechButton);
         add(rotateButton);
         add(undoButton);
         add(redoButton);
-//        add(simpleSpeechButton);
         add(deleteButton);
         add(cutButton);
         add(resizeButton);

@@ -134,10 +134,10 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 //                                contentPanel.setToolMode(OurController.ToolMode.ROTATE);
                                 break;
                             case 4:
-                                contentPanel.setToolMode(OurController.ToolMode.SPEECH);
                                 break;
                             case 5: // ENLARGE
 //                                contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
+                                contentPanel.setToolMode(OurController.ToolMode.SPEECH);
                                 break;
                             default:
                                 System.out.println("Hoeveel vingers heb je eigenlijk?");

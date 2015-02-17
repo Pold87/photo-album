@@ -123,60 +123,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		});
     }
 
-	
-	public void recognizeSpeech() throws Exception {
-		// Url for recording speech input
-
-        toggleSpeechRecording();
-
-		// Record wav with external program
-		//Record.recordExtern(normalRecord);
-
-		URL url = getClass().getResource("/recording.wav");
-		File normalRecord = new File(url.toURI());
-		Recorder recorder = new Recorder(normalRecord);
-		Thread runnable = new Thread(recorder);
-
-        // TODO: SPEECH BUTTON DOES NOT WORK!!!
-
-        // TODO: runnable start and stop should be invoked by cursor pressed and released
-		runnable.start();
-
-		Thread.sleep(5000);
-
-		recorder.finish();
-
-		Wit wit = new Wit(normalRecord, "wav");
-
-		// Send recognized
-		recognizedText(wit.getWitRawJSONString());
-		recognizedWitResponse(wit);
-		toggleSpeechProcessing();
-//		Process p2 = new ProcessBuilder("killall", "xflux").start();
-	}
-
-//	public void recognizeSimpleSpeech() {
-
-//		SpeechResult utterance = this.speechCommands.recognizeCommand();
-//		System.out.println(utterance.getHypothesis());
-//		System.out.println(utterance.getResult());
-//		System.out.println(utterance.getNbest(3));
-//		System.out.println(utterance.getLattice());
-//		System.out.println(utterance.getWords());
-//	}
-	
-	public void toggleSpeechRecording() {
-
-		this.contentPanel.setSpeechRecording(!this.contentPanel.isSpeechRecording());
-		contentPanel.repaint();
-	}
-
-	public void toggleSpeechProcessing() {
-
-		this.contentPanel.setSpeechProcessing(!this.contentPanel.isSpeechProcessing());
-		contentPanel.repaint();
-	}
-
     //START CommandInterface
 	public void selectPicture(int nr) {
 		contentPanel.selectPicture(nr);
@@ -514,6 +460,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			case "brighter":
 				this.brighter();
 				break;
+
+            case "move":
+                this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
+                break;
 			case "remove":
 				ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
 //				ArrayList<Integer> pictureNumbersRemove = response.extractNumbers();
