@@ -1,14 +1,20 @@
 package main.java.userInterface;
 
+import java.awt.Color;
+
 import javax.swing.undo.UndoableEdit;
 
 public class Action implements UndoableEdit{
-	protected int imageNr = -1;
+	private Action previousAction;
+	protected String modality = "Implements this dude";
+	protected int imageNr = -999;
 	protected MyImage image;
 	protected String actionName;
 	protected OurController ourController;
 	protected long timePerform, timeUndo, timeRedo;
 	protected int oldX, oldY, newX, newY;
+	protected Color background;
+	
 	
 	public Action(MyImage image, String name, OurController ourController,
 			int oldX, int oldY, int newX, int newY) {
@@ -20,22 +26,36 @@ public class Action implements UndoableEdit{
 		this.ourController = ourController;
 		this.oldX = oldX;
 		this.oldY = oldY;
-		this.newX = newX;
-		this.newY = newY;
+		if(newX == 0)
+			this.newX = image.getX();
+		else
+			this.newX = newX;
+		if(newY == 0)
+			this.newY = image.getY();
+		else
+			this.newY = newY;
+		background = ourController.contentPanel.getBackground();
 		
-		timePerform = (System.currentTimeMillis() - App.startTime)/1000;
-		ourController.logger.logAction(actionName + " picture " + imageNr + " Timestamp: " + timePerform);
+		if(previousAction == null || !isSameRotate(previousAction))
+			log(actionName);
+		
+		previousAction = this;
+	}
+	
+	private void log (String action){
+		timePerform = (System.currentTimeMillis() - App.startTime)/100;
+		double time = timePerform*1.0/10;
+		ourController.logger.logAction(modality + ", " + action + ", " + newX + ", " + newY + ", " + image.getRotationDegrees() + ", " + image.getWidth() + ", " + image.getHeight() + ", " + background + ", " + time);
+		
 	}
 	
 	public void redo() {
-		timeRedo = (System.currentTimeMillis() - App.startTime)/1000;
-		ourController.logger.logAction("Redo "+ actionName + " From Timestamp: " + timePerform + " at Timestamp: " + timeRedo);
+		log("Redo");
 	}
 
 
 	public void undo() {
-		timeUndo = (System.currentTimeMillis() - App.startTime)/1000;
-		ourController.logger.logAction("Undo "+ actionName + " From Timestamp: " + timePerform + " at Timestamp: " + timeUndo);
+		log("Undo");
 	}
 
 	@Override
@@ -87,6 +107,18 @@ public class Action implements UndoableEdit{
 	public boolean replaceEdit(UndoableEdit anEdit) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	/**
+	 * Really nasty hack to fix a log entry per partial rotate.
+	 * @param a
+	 * @return
+	 */
+	public boolean isSameRotate(Action a){
+		if(a.actionName == "Rotate" && a.image == image)
+			return true;
+		else
+			return false;
 	}
 	
 	

@@ -67,7 +67,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     // Tool Mode
 	public enum ToolMode {
-		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT,  SPEECH
+		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT, SPEECH
 	}
 	public ToolMode toolModeIndex = ToolMode.MOVE;
     
@@ -229,9 +229,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 		previousCursorY = YPos;
 		previousCursorX = XPos;
-		
+		this.selectPictureAt(XPos, YPos);
 		if (contentPanel.getSelectedPicture() != null) {
-			this.selectPictureAt(XPos, YPos);
+			
 			MyImage selectedImage = contentPanel.getSelectedPicture();
 
 			// Update mouse Coords
