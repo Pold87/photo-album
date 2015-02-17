@@ -105,18 +105,21 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
                         // Cursor Pressed
                         if (leftHandClick && !prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorPressed(leftHandXPos, leftHandYPos);
                             prevRightClick = true;
                         }
 
                         // Cursor Released
                         if (!leftHandClick && prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorReleased(leftHandXPos, leftHandYPos);
                             prevRightClick = false;
                         }
 
                         // Cursor dragged
                         if (leftHandClick && prevRightClick) {
+                        	ourController.currentModality = OurController.Modality.LEAP;
                             ourController.cursorDragged(leftHandXPos, leftHandYPos);
                         }
 

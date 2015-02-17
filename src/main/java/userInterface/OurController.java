@@ -39,6 +39,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Wit wit_runnable;
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
+    
+    public enum Modality{
+    	MOUSE, SPEECH, LEAP
+    }
+    public Modality currentModality =  Modality.MOUSE;
 
     @Override
     public void notifyOfThreadComplete(Wit wit) {
@@ -218,6 +223,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	//START MouseListeners
 	public void mouseDragged(MouseEvent mouseEvent) {
+		currentModality = Modality.MOUSE;
 		//this.toolModeIndex = ToolMode.MOVE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
 	}
@@ -364,6 +370,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mousePressed(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		//This boolean is to prevent use of the middle mouse button.
@@ -385,6 +392,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		currentModality = Modality.MOUSE;
 		if (((MyTimerTask) task).isRunning()) {
 			task.cancel();
 			timer = new Timer();
@@ -403,6 +411,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 */
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
+    	currentModality = Modality.SPEECH;
 		String intent = response.getIntent();
 		System.out.println(response.getWitRawJSONString());
 

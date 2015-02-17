@@ -6,7 +6,7 @@ import javax.swing.undo.UndoableEdit;
 
 public class Action implements UndoableEdit{
 	private Action previousAction;
-	protected String modality = "Implements this dude";
+	protected OurController.Modality modality;
 	protected int imageNr = -999;
 	protected MyImage image;
 	protected String actionName;
@@ -35,6 +35,7 @@ public class Action implements UndoableEdit{
 		else
 			this.newY = newY;
 		background = ourController.contentPanel.getBackground();
+		modality = ourController.currentModality;
 		
 		if(previousAction == null || !isSameRotate(previousAction))
 			log(actionName);
