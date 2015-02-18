@@ -151,6 +151,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 addButtonToLibrary(image);
                 basicDesign.photoBar.addButton(image);
                 basicDesign.repaint();
+                image.resetToOriginalImage();
             }
         });
 	}
