@@ -449,8 +449,8 @@ public class ContentPanel extends JPanel {
 	}
 
 
-    public void setLines(ArrayList<Integer> lines) {
-        this.lines = lines;
+    public void emptyLineList() {
+        this.lines = new ArrayList<Integer>();
     }
 
     public void addLine(int x, int y) {

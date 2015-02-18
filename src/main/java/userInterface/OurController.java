@@ -39,6 +39,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Wit wit_runnable;
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
+    private ArrayList<Integer> cutLines = new ArrayList<Integer>();
     
     public enum Modality{
     	MOUSE, SPEECH, LEAP
@@ -587,7 +588,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     			int oldX = image.getX(), oldY = image.getY();
     			contentPanel.cut();
     			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this, oldX, oldY));
-    			contentPanel.setLines(new ArrayList<>());
+    			contentPanel.emptyLineList();
     			checkUndoRedoButtons();
                 contentPanel.repaint();
     		} else {
