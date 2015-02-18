@@ -2,7 +2,7 @@ package main.java.userInterface;
 
 import javax.swing.*;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class PhotoBar extends JToolBar {
@@ -61,7 +61,8 @@ public class PhotoBar extends JToolBar {
             this.repaint();
         });
     }
-    
+
+
     public void addButton(MyImage image){
 
         SwingUtilities.invokeLater(() -> {

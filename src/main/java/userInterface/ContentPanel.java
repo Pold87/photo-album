@@ -32,8 +32,7 @@ public class ContentPanel extends JPanel {
 
 	// Speech Recording sign
 	boolean speechRecording = false;
-
-	// Speech processing sign
+    // Speech processing sign
 	boolean speechProcessing = false;
 
 	//Needs edit when we make multiple pages
@@ -53,10 +52,6 @@ public class ContentPanel extends JPanel {
 		}
     }
 
-    public ArrayList<MyImage> getImageList() { 
-    	return imageList;
-    }
-
 	// Leap Stuff
 	ToolMode toolModeIndex = ToolMode.MOVE;
 
@@ -66,14 +61,8 @@ public class ContentPanel extends JPanel {
 	private boolean leapRightClick = false;
 
 	// Leap cursor left
-	private int leapLeftX = 9999, leapLeftY = 9999;
 	private float leapLeftScreenDist = 1.0f;
-	private boolean leapLeftClick = false;
 
-
-	public boolean isSpeechProcessing() {
-		return speechProcessing;
-	}
 
 	public void setSpeechProcessing(boolean speechProcessing) {
 		this.speechProcessing = speechProcessing;
@@ -85,14 +74,6 @@ public class ContentPanel extends JPanel {
 
     public int getLeapRightY() {
         return leapRightY;
-    }
-
-    public int getLeapLeftX() {
-        return leapLeftX;
-    }
-
-    public int getLeapLeftY() {
-        return leapLeftY;
     }
 
 	public void setToolMode(ToolMode toolModeIndex) {
@@ -120,21 +101,6 @@ public class ContentPanel extends JPanel {
 		repaint();
 	}
 
-	public void setLeapLeftClick(boolean leapClick) {
-		this.leapLeftClick = leapClick;
-		repaint();
-	}
-
-	public void setLeapLeftX(int leapX) {
-		this.leapLeftX = leapX;
-		repaint();
-	}
-
-	public void setLeapLeftY(int leapY) {
-		this.leapLeftY = leapY;
-		repaint();
-	}
-
 	public void setLeapLeftScreenDist(float leapScreenDist) {
 		this.leapLeftScreenDist = leapScreenDist;
 		repaint();
@@ -142,6 +108,11 @@ public class ContentPanel extends JPanel {
 
     public ArrayList<Integer> getLines() {
         return lines;
+    }
+
+
+    public boolean isSpeechProcessing() {
+        return speechProcessing;
     }
 
 
@@ -168,7 +139,7 @@ public class ContentPanel extends JPanel {
 		// Show progress for speech
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
 
-		if (this.speechRecording) {
+		if (this.speechRecording && !this.speechProcessing) {
 
 			g2d.setColor(Color.RED);
 			g2d.fillOval(30, 30, 50, 50);
@@ -242,50 +213,6 @@ public class ContentPanel extends JPanel {
         g2d.setStroke(new BasicStroke(1)); // Thickness
         // Outline - border
         g2d.setColor(Color.darkGray);
-        int leapLeftCursorSize = (int) (40 * (leapLeftScreenDist + 1));
-
-        g2d.drawOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-                leapLeftCursorSize, leapLeftCursorSize);
-        // Filling
-        g2d.setColor(this.leapLeftClick ? new Color(0, 150, 0, 50) : new Color(
-                255, 0, 0, 50));
-        g2d.fillOval(leapLeftX - leapLeftCursorSize / 2, leapLeftY - leapLeftCursorSize / 2,
-                leapLeftCursorSize, leapLeftCursorSize);
-
-        // Finger count indicator
-
-        font = new Font("Verdana", Font.BOLD, 18);
-        g2d.setColor(Color.darkGray);
-        g2d.setFont(font);
-
-
-        // Show which action
-		switch (toolModeIndex) {
-			case MOVE:
-				g2d.drawString("M", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case ENLARGE:
-				g2d.drawString("E", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case REDUCE:
-				g2d.drawString("Re", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case ROTATE:
-				g2d.drawString("Ro", leapLeftX - 6, leapLeftY + 6);
-				break;
-			case CUT:
-				g2d.drawString("C", leapLeftX - 6, leapLeftY + 6);
-				break;
-			default:
-				break;
-		}
-
-
-        font = new Font("Verdana", Font.PLAIN, 12);
-        g2d.setFont(font);
-        g2d.drawString("L", leapLeftX - 4, leapLeftY - 15);
-
-
 
         // Draw lines for cutting
         g2d.setStroke(new BasicStroke());

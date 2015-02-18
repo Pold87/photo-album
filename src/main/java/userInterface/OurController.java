@@ -98,24 +98,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void startSpeech() throws URISyntaxException {
 
-        this.contentPanel.setSpeechRecording(true);
-
-        runnable = new Recorder(this.normalRecord);
+        runnable = new Recorder(this.normalRecord, this.contentPanel);
         thread = new Thread(runnable);
-
         thread.start();
+        this.contentPanel.setSpeechRecording(true);
     }
 
 
     public void stopSpeech() {
-
         SwingUtilities.invokeLater(() -> {
 
-			this.contentPanel.setSpeechRecording(false);
 			wit_runnable = null;
 
 			if (this.thread_wit == null) {
 				try {
+                    this.contentPanel.setSpeechRecording(false);
 					wit_runnable = new Wit(this.normalRecord, "wav");
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -125,6 +122,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				thread_wit.start();
 				contentPanel.setSpeechProcessing(true);
 			}
+
 		});
     }
 
@@ -252,28 +250,15 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			Thread thread = new Thread(rotateThread);
 			thread.start();
 			break;
-        case SPEECH:
-            try {
-				if (!contentPanel.isSpeechProcessing()) {
-					this.startSpeech();
-				}
-			} catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-            break;
-            default:
+        default:
 			break;
 
 		}
 	}
 
+
 	public void cursorReleased(int XPos, int YPos) {
         MyImage selectedImage = contentPanel.getSelectedPicture();
-
-        // Stop voice recording
-        if (this.contentPanel.isSpeechRecording()) {
-            this.stopSpeech();
-        }
 
         if(!(selectedImage == null)) {
 
@@ -313,14 +298,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 // TODO: See if constraining the image is better
                 
 				if (selectedImage.contains(new Point(XPos, YPos))) {
-//					selectedImage.setX(selectedImage.getX() + deltaX);
-//					selectedImage.setY(selectedImage.getY() + deltaY);
 
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
 
                     selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
                     selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
+
 				}
                 
 				break;
@@ -334,7 +318,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 // do nothing
                 break;
 			default:
-				System.out.println("No Tool selected");
+                //
 				break;
 			}
 			
@@ -367,10 +351,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void mousePressed(MouseEvent e) {
 		currentModality = Modality.MOUSE;
-		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		//This boolean is to prevent use of the middle mouse button.
-		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
+		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) ^ SwingUtilities.isRightMouseButton(e)))
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
 			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
@@ -486,9 +469,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 
                 break;
-			case "exit":
-				System.exit(0);
-				break;
 			default:
 				System.out.println("The recognized intent is unknown: " + intent);
 				break;

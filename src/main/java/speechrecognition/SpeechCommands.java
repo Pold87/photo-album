@@ -1,11 +1,9 @@
 package main.java.speechrecognition;
 
 import java.io.IOException;
-
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
-import edu.cmu.sphinx.result.WordResult;
 
 /**
  * The speech recognition class. It is composed of two parts:
@@ -27,7 +25,6 @@ public class SpeechCommands {
 	public static final String DICTIONARY_PATH = "resource:/voxforge/cmudict.0.6d";
 	public static final String GRAMMAR_PATH = "resource:/voxforge";
 	public static final String GRAMMAR_NAME = "commands";
-
 
 	private Configuration configuration = new Configuration();
 	private LiveSpeechRecognizer commandRecognizer;
@@ -66,34 +63,100 @@ public class SpeechCommands {
 		return utterance;
 
 	}
+	private String[] parseCommand(String hypo) {
+		String[] words;
+		String intention = "unknown";
+		String val = "default";
+		String[] intent = {intention,val};
+		if (!hypo.equals("<unk>")){
+			words = hypo.trim().split("\\s+");
+			for (String s : words) {
+				System.out.println(s);
+			}
+			for (String w : words) {
+				switch (w) {
+					case "select":
+					case "choose":
+					case "activate":
+					case "pick":
+					case "use":
+						intention = "select";
+						break;
+					case "move":
+					case "shift":
+					case "relocate":
+					case "position":
+						intention = "move";
+						break;
+					case "delete":
+					case "remove":
+					case "trashcan":
+					case "garbage":
+					case "bin":
+						intention = "delete";
+						break;
+					case "rotate":
+					case "turn":
+					case "spin":
+					case "tilt":
+					case "orientation":
+						intention = "rotate";
+						break;
+					case "enlarge":
+					case "increase":
+					case "larger":
+					case "bigger":
+						intention = "enlarge";
+						break;
+					case "decrease":
+					case "reduce":
+					case "shrink":
+					case "smaller":
+						intention = "smaller";
+						break;
+					case "redo":
+					case "forward":
+						intention = "redo";
+						break;
+					case "undo":
+					case "back":
+						intention = "undo";
+						break;
+					case "black":
+					case "blue":
+					case "red":
+					case "yellow":
+					case "white":
+					case "orange":
+					case "green":
+					case "pink":
+					case "magenta":
+					case "cyan":
+						intention = "background";
+						val = w;
+						break;
+				}
+			}
+		}
+		intent[0] = intention;
+		intent[1] = val;
+		return intent;
+	}
 
     public static void main(String[] args) throws IOException {
 
-            SpeechCommands sc = new SpeechCommands();
-
-//            sc.recognizeCommand();
-
+		SpeechCommands sc = new SpeechCommands();
 		SpeechResult result;
 
 		while ((result = sc.recognizeCommand()) != null) {
+			String hypo = result.getHypothesis();
+			System.out.format("Hypothesis: %s\n", hypo);
+			String[] intent = sc.parseCommand(hypo);
+			System.out.format("Intention: %s\n",intent[0]);
+			System.out.format("Value: %s\n", intent[1]);
 
-			System.out.format("Hypothesis: %s\n", result.getHypothesis());
+		}
 
-			System.out.println("List of recognized words and their times:");
-			for (WordResult r : result.getWords()) {
-				System.out.println(r);
-			}
-
-			System.out.println("Best 3 hypothesis:");
-			for (String s : result.getNbest(3))
-				System.out.println(s);
-
-			System.out.println("Lattice contains "
-					+ result.getLattice().getNodes().size() + " nodes");
-		};
-
-
-
-    }
+	}
 
 }
