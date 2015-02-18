@@ -359,6 +359,16 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
+		else if(toolModeIndex == ToolMode.ENLARGE)
+		{
+			((MyTimerTask) task).addVariables(selectedImage, "enlarge",contentPanel.getWidth(),contentPanel.getHeight());
+			timer.scheduleAtFixedRate(task, 0, 25);
+		}
+		else if(toolModeIndex == ToolMode.REDUCE)
+		{
+			((MyTimerTask) task).addVariables(selectedImage, "reduce",contentPanel.getWidth(),contentPanel.getHeight());
+			timer.scheduleAtFixedRate(task, 0, 25);
+		}
 		else {
 			if(SwingUtilities.isLeftMouseButton(e)){
 				rotateThread.setClockwise(true);
