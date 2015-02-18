@@ -477,12 +477,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	private void undo() {
-		undoManager.undo();
+		if(undoManager.canUndo())
+			undoManager.undo();
 		checkUndoRedoButtons();
 	}
 
 	private void redo() {
-		undoManager.redo();
+		if(undoManager.canRedo())
+			undoManager.redo();
 		checkUndoRedoButtons();
 	}
 
