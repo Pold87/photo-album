@@ -1,5 +1,7 @@
 package main.java.speechrecognition;
 
+import main.java.userInterface.ContentPanel;
+
 import javax.sound.sampled.*;
 import java.io.*;
 
@@ -13,14 +15,17 @@ public class Recorder implements Runnable{
 
 
 	static final long RECORD_TIME = 6000; // Record duration, in milliseconds
-	File wavFile; // Path of the wav file
+
+    File wavFile; // Path of the wav file
 	AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE; // Format of audio file
 	TargetDataLine line; // The line from which audio data is captured
+    private ContentPanel contentPanel;
     private volatile boolean running = true;
 
-	public Recorder(File wavFile) {
-		this.wavFile = wavFile;
-	}
+	public Recorder(File wavFile, ContentPanel contentPanel) {
+        this.wavFile = wavFile;
+        this.contentPanel = contentPanel;
+    }
 
 	/**
 	 * Defines an audio format
@@ -65,19 +70,13 @@ public class Recorder implements Runnable{
                 this.finish();
             }
 
-            Thread.sleep(10);
-
             this.line = (TargetDataLine) AudioSystem.getLine(info);
 
             try {
-
-
-                if (!this.line.isOpen() && !this.line.isRunning()) {
+                if (!this.contentPanel.isSpeechProcessing() && this.contentPanel.isSpeechRecording()) {
 
                     this.line.open(format);
                     this.line.start(); // start capturing
-
-                    System.out.println("Start capturing...");
 
                     AudioInputStream ais = new AudioInputStream(this.line);
 
@@ -88,6 +87,7 @@ public class Recorder implements Runnable{
                     AudioSystem.write(ais, fileType, wavFile);
                 }
             } catch (LineUnavailableException leu) {
+
                 System.out.println("Line not available");
             }
 
@@ -95,8 +95,6 @@ public class Recorder implements Runnable{
 			ex.printStackTrace();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
-		} catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
     }
@@ -119,5 +117,9 @@ public class Recorder implements Runnable{
 		Process p = new ProcessBuilder("sox", "-d", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
 		p.waitFor();
 	}
+
+    public void setContentPanel(ContentPanel contentPanel) {
+        this.contentPanel = contentPanel;
+    }
 
 }
