@@ -215,7 +215,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                                         break;
                                     case STATE_STOP:
                                         //Handle ending gestures
-                                        System.out.println("Degrees rotated: " + totalDegrees);
                                         ourController.addRotateAction(totalDegrees);
                                         totalDegrees = 0;
                                         break;
@@ -228,7 +227,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         case TYPE_SWIPE:
                             if (rightHandFingerCount == 5) {
                                 ourController.deleteSelectedPicture();
-                                System.out.println("Swipe !!!");
                             }
                             break;
                         default:

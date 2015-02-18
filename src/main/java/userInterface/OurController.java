@@ -151,6 +151,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 addButtonToLibrary(image);
                 basicDesign.photoBar.addButton(image);
                 basicDesign.repaint();
+                image.resetToOriginalImage();
             }
         });
 	}
@@ -357,6 +358,16 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
 			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
+			timer.scheduleAtFixedRate(task, 0, 25);
+		}
+		else if(toolModeIndex == ToolMode.ENLARGE)
+		{
+			((MyTimerTask) task).addVariables(selectedImage, "enlarge",contentPanel.getWidth(),contentPanel.getHeight());
+			timer.scheduleAtFixedRate(task, 0, 25);
+		}
+		else if(toolModeIndex == ToolMode.REDUCE)
+		{
+			((MyTimerTask) task).addVariables(selectedImage, "reduce",contentPanel.getWidth(),contentPanel.getHeight());
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
 		else {

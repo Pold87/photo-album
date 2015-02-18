@@ -128,11 +128,11 @@ public class Toolbar extends JToolBar {
         resizeButton.setToolTipText("Resize the selected picture");
 
         // Add buttons to toolbar.
-        add(selectButton);
-        add(rotateButton);
         add(undoButton);
         add(redoButton);
+        add(selectButton);
         add(deleteButton);
+        add(rotateButton);
         add(cutButton);
         add(resizeButton);
 
