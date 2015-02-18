@@ -73,7 +73,6 @@ public class Recorder implements Runnable{
             this.line = (TargetDataLine) AudioSystem.getLine(info);
 
             try {
-                if (!this.contentPanel.isSpeechProcessing() && this.contentPanel.isSpeechRecording()) {
 
                     this.line.open(format);
                     this.line.start(); // start capturing
@@ -85,10 +84,9 @@ public class Recorder implements Runnable{
                     // start recording
                     System.out.println("Path of wav File is " + wavFile.getAbsolutePath());
                     AudioSystem.write(ais, fileType, wavFile);
-                }
             } catch (LineUnavailableException leu) {
 
-                System.out.println("Line not available");
+              leu.printStackTrace();
             }
 
         } catch (LineUnavailableException ex) {

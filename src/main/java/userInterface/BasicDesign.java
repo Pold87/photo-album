@@ -1,9 +1,8 @@
 package main.java.userInterface;
 
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,6 +44,47 @@ public class BasicDesign extends JFrame {
     // TODO: See if there is a conflict between Controller classes
     public Controller leapController;
     public VolkerLeapListener leapListener;
+
+
+    private class MyDispatcher implements KeyEventDispatcher {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_RELEASED) {
+
+
+                switch (e.getKeyChar()) {
+
+                    case '1':
+
+                        Logger rotateLogger = new Logger("rotate");
+                        ourController.setLogger(rotateLogger);
+
+                        break;
+
+                    case '2':
+                        break;
+
+                    case '3':
+                        break;
+
+                    case '4':
+                        break;
+
+                    case '5':
+                        break;
+
+                    case '6':
+                        break;
+
+                    case '7':
+                        break;
+
+                }
+
+            }
+            return false;
+        }
+    }
 
 
     public BasicDesign(String path) throws Exception {
@@ -141,6 +181,11 @@ public class BasicDesign extends JFrame {
         	leapController.addListener(leapListener);
         }
         /**************************/
+
+
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new MyDispatcher());
+
 
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

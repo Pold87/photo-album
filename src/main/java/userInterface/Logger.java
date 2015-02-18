@@ -28,6 +28,26 @@ public class Logger {
 			e.printStackTrace();
 		}
 	}
+
+    public Logger(String task) {
+        try {
+            int x = 1;
+            File file = new File("logs/" + App.testMode.toString() + "Log" + App.participantNr + "-" + task + ".txt");
+            while(file.exists()){
+                x++;
+                file = new File("logs/"+ App.testMode.toString() +"Log" + App.participantNr + "-" + task + "-" + x + ".txt");
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            writer = new BufferedWriter (fw);
+            //write the headers
+            writer.write("Action nr, Modality, Action name, new X, new Y, Orientation, Width, Height, new backgroundColor, TimeStamp ");
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	
 	public void logAction(String s){
 		try {
@@ -38,6 +58,7 @@ public class Logger {
 			writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
+        }
+    }
+
 }

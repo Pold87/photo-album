@@ -27,7 +27,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	private RotationThread rotateThread;
 	private UndoManager undoManager;
-	public Logger logger;
+    public Logger logger;
 	public ContentPanel contentPanel;
 	private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos, oldWidth, oldHeight;
@@ -98,10 +98,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void startSpeech() throws URISyntaxException {
 
-        runnable = new Recorder(this.normalRecord, this.contentPanel);
-        thread = new Thread(runnable);
-        thread.start();
-        this.contentPanel.setSpeechRecording(true);
+        if (!this.contentPanel.isSpeechProcessing() && !this.contentPanel.isSpeechRecording()) {
+            runnable = new Recorder(this.normalRecord, this.contentPanel);
+            thread = new Thread(runnable);
+            thread.start();
+            this.contentPanel.setSpeechRecording(true);
+        }
     }
 
 
@@ -169,16 +171,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 
 	}
-
-	private void darker(){
-		Color oldColor = contentPanel.getBackground();
-		this.setBackground(oldColor.darker());
-	}
-
-	private void brighter(){
-		Color oldColor = contentPanel.getBackground();
-		this.setBackground(oldColor.brighter());
-	}
 	
 	public void movePicture(int x, int y) {
 		MyImage image = contentPanel.getSelectedPicture();
@@ -231,35 +223,51 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		previousCursorX = XPos;
 		this.selectPictureAt(XPos, YPos);
 		if (contentPanel.getSelectedPicture() != null) {
-			
-			MyImage selectedImage = contentPanel.getSelectedPicture();
 
-			// Update mouse Coords
-			oldXPos = selectedImage.getX();
-			oldYPos = selectedImage.getY();
-			oldWidth = selectedImage.getWidth();
-			oldHeight = selectedImage.getHeight();
+            MyImage selectedImage = contentPanel.getSelectedPicture();
 
-		}
-	
-		switch (toolModeIndex) {
-		case MOVE:
-		case RESIZE:
-		case CUT:
-			break;
-		case ROTATE:
-			Thread thread = new Thread(rotateThread);
-			thread.start();
-			break;
-        default:
-			break;
+            // Update mouse Coords
+            oldXPos = selectedImage.getX();
+            oldYPos = selectedImage.getY();
+            oldWidth = selectedImage.getWidth();
+            oldHeight = selectedImage.getHeight();
 
-		}
+
+            switch (toolModeIndex) {
+                case MOVE:
+                    break;
+                case ENLARGE:
+
+                    ((MyTimerTask) task).addVariables(selectedImage, "enlarge", contentPanel.getWidth(), contentPanel.getHeight());
+                    timer.scheduleAtFixedRate(task, 0, 25);
+                    break;
+
+                case REDUCE:
+                    ((MyTimerTask) task).addVariables(selectedImage, "reduce", contentPanel.getWidth(), contentPanel.getHeight());
+                    timer.scheduleAtFixedRate(task, 0, 25);
+                    break;
+                case CUT:
+                    break;
+                case ROTATE:
+                    Thread thread = new Thread(rotateThread);
+                    thread.start();
+                    break;
+                default:
+                    break;
+
+            }
+        }
 	}
 
 
 	public void cursorReleased(int XPos, int YPos) {
         MyImage selectedImage = contentPanel.getSelectedPicture();
+
+        if (((MyTimerTask) task).isRunning()) {
+            task.cancel();
+            timer = new Timer();
+            task = new MyTimerTask();
+        }
 
         if(!(selectedImage == null)) {
 
@@ -281,8 +289,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     break;
                 case SPEECH:
                     break;
+                case ENLARGE:
+                    break;
+                case REDUCE:
+                    break;
                 default:
-                    System.out.println("Tool not found: " + toolModeIndex);
                     break;
             }
             checkUndoRedoButtons();
@@ -360,16 +371,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
 			timer.scheduleAtFixedRate(task, 0, 25);
 		}
-		else if(toolModeIndex == ToolMode.ENLARGE)
-		{
-			((MyTimerTask) task).addVariables(selectedImage, "enlarge",contentPanel.getWidth(),contentPanel.getHeight());
-			timer.scheduleAtFixedRate(task, 0, 25);
-		}
-		else if(toolModeIndex == ToolMode.REDUCE)
-		{
-			((MyTimerTask) task).addVariables(selectedImage, "reduce",contentPanel.getWidth(),contentPanel.getHeight());
-			timer.scheduleAtFixedRate(task, 0, 25);
-		}
 		else {
 			if(SwingUtilities.isLeftMouseButton(e)){
 				rotateThread.setClockwise(true);
@@ -383,11 +384,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void mouseReleased(MouseEvent e) {
 		currentModality = Modality.MOUSE;
-		if (((MyTimerTask) task).isRunning()) {
-			task.cancel();
-			timer = new Timer();
-		    task = new MyTimerTask();
-		}
 		cursorReleased(e.getX(), e.getY());
 	}
 	//END MouseListeners
@@ -446,20 +442,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				} else {
 					System.out.println("Unknown color: ");
 				}
-				break;
+                break;
 			case "undo":
 				this.undo();
 				break;
 			case "redo":
 				this.redo();
 				break;
-			case "darker":
-				this.darker();
-				break;
-			case "brighter":
-				this.brighter();
-				break;
-
             case "move":
                 this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
                 break;
@@ -571,6 +560,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		basicDesign.getToolbar().setEnabledRedoButton(undoManager.canRedo());
 		basicDesign.repaint();
 	}
+
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 
     public void cut(int x, int y) {
     	SwingUtilities.invokeLater(() -> {
