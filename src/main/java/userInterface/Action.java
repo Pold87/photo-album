@@ -26,6 +26,11 @@ public class Action implements UndoableEdit{
 		this.ourController = ourController;
 		this.oldX = oldX;
 		this.oldY = oldY;
+
+        // TODO: CAN THROW A NULL POINTER EXCEPTION
+
+        if (image != null) {
+
 		if(newX == 0)
 			this.newX = image.getX();
 		else
@@ -34,6 +39,8 @@ public class Action implements UndoableEdit{
 			this.newY = image.getY();
 		else
 			this.newY = newY;
+
+        }
 		background = ourController.contentPanel.getBackground();
 		modality = ourController.currentModality;
 		

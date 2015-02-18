@@ -24,14 +24,8 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	float clickThresholdRight = 0.0f;
 	float clickThresholdLeft = 0.0f;
 	boolean prevRightClick = false;
+    boolean prevLeftClick = false;
 	OurController ourController;
-
-
-//    Timer
-
-
-    int timeNotMovedLeft = 0;
-    int timeNotMovedRight = 0;
 
 	public void setScrWidth(int scrWidth) {
 		this.scrWidth = scrWidth;
@@ -79,21 +73,12 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 				try {
                     if (h.isLeft()) {
 
-                        this.timeNotMovedLeft = 0;
-
                         /** UPDATE LEFT HAND **/
 
                         for (int i = 0; i < h.fingers().count(); i++) {
                             if (h.fingers().get(i).isExtended())
                                 leftHandFingerCount += 1;
                         }
-
-                        InteractionBox iBox = frame.interactionBox();
-                        Vector normalizedPos = iBox.normalizePoint(h.fingers().get(1)
-                                .stabilizedTipPosition());
-                        int leftHandXPos = (int) (normalizedPos.getX() * scrWidth);
-                        int leftHandYPos = (int) (scrHeight - normalizedPos.getY()
-                                * scrHeight);
 
                         // Distance to screen ( rounded to 2 decimals)
                         Finger frontmostFinger = h.fingers().frontmost();
@@ -104,64 +89,35 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         boolean leftHandClick = leftHandDistanceToScreen < clickThresholdLeft;
 
                         // Cursor Pressed
-                        if (leftHandClick && !prevRightClick) {
-                        	ourController.currentModality = OurController.Modality.LEAP;
-                            ourController.cursorPressed(leftHandXPos, leftHandYPos);
-                            prevRightClick = true;
+                        if (leftHandClick && !prevLeftClick) {
+
+                            if (leftHandFingerCount == 5) {
+
+                                ourController.startSpeech();
+                                ourController.currentModality = OurController.Modality.LEAP;
+                                prevLeftClick = true;
+
+                            }
+
                         }
 
                         // Cursor Released
-                        if (!leftHandClick && prevRightClick) {
-                        	ourController.currentModality = OurController.Modality.LEAP;
-                            ourController.cursorReleased(leftHandXPos, leftHandYPos);
-                            prevRightClick = false;
+                        if (!leftHandClick && prevLeftClick) {
+
+                            ourController.currentModality = OurController.Modality.LEAP;
+                            prevLeftClick = false;
+                            ourController.stopSpeech();
+
                         }
 
-                        // Cursor dragged
-                        if (leftHandClick && prevRightClick) {
-                        	ourController.currentModality = OurController.Modality.LEAP;
-                            ourController.cursorDragged(leftHandXPos, leftHandYPos);
-                        }
-
-                        // Shape Mode
-                        switch (leftHandFingerCount) {
-                            case 0: // REDUCE
-//                                contentPanel.setToolMode(OurController.ToolMode.REDUCE);
-                                break;
-                            case 1: // MOVE
-//                                contentPanel.setToolMode(OurController.ToolMode.MOVE);
-                                break;
-                            case 2:
-                                break;
-                            case 3: // ROTATE
-//                                contentPanel.setToolMode(OurController.ToolMode.ROTATE);
-                                break;
-                            case 4:
-                                break;
-                            case 5: // ENLARGE
-//                                contentPanel.setToolMode(OurController.ToolMode.ENLARGE);
-                                contentPanel.setToolMode(OurController.ToolMode.SPEECH);
-                                break;
-                            default:
-                                System.out.println("Hoeveel vingers heb je eigenlijk?");
-                        }
-
-                        // Update drawpanel
-                        contentPanel.setLeapLeftX(leftHandXPos);
-                        contentPanel.setLeapLeftY(leftHandYPos);
                         contentPanel.setLeapLeftScreenDist(leftHandDistanceToScreen);
-                        contentPanel.setLeapLeftClick(leftHandClick);
                     }
 
-
-                    this.timeNotMovedRight += 1;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
 			if (h.isRight()) {
-
-                this.timeNotMovedRight = 0;
 
              /** UPDATE RIGHT HAND **/
 
@@ -233,8 +189,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                 contentPanel.setLeapRightScreenDist(rightHandDistanceToScreen);
                 contentPanel.setLeapRightClick(rightHandClick);
 
-                this.timeNotMovedLeft += 1;
-
                 /** UPDATE GESTURES **/
 
                 // Check if gesture is circle
@@ -288,10 +242,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 		}
 		if (frame.hands().isEmpty()) {
 			contentPanel.setLeapRightClick(false);
-			contentPanel.setLeapLeftClick(false);
-
-            this.timeNotMovedLeft += 1;
-            this.timeNotMovedRight += 1;
 
         }
 
@@ -304,22 +254,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	public void setContentPanel(ContentPanel contentPanel) {
 		this.contentPanel = contentPanel;
 	}
-
-    public int getTimeNotMovedLeft() {
-        return timeNotMovedLeft;
-    }
-
-    public void setTimeNotMovedLeft(int timeNotMovedLeft) {
-        this.timeNotMovedLeft = timeNotMovedLeft;
-    }
-
-    public int getTimeNotMovedRight() {
-        return timeNotMovedRight;
-    }
-
-    public void setTimeNotMovedRight(int timeNotMovedRight) {
-        this.timeNotMovedRight = timeNotMovedRight;
-    }
 
 
 }
