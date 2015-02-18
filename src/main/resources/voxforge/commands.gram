@@ -19,9 +19,9 @@ grammar photoalbum;
 
 <rotate_action> = rotate | turn | spin | tilt | change orientation;
 
-<enlarge_action> = enlarge | increase size | make <pics> larger | make <pics> bigger;
+<enlarge_action> = enlarge | increase [the] size | make [<pics>] larger | make [<pics>] bigger;
 
-<smaller_action> = decrease size | reduce size | shrink | make smaller;
+<smaller_action> = decrease [the] size | reduce [the] size | shrink | make [<pics>] smaller;
 
 <undo_action> = undo [that | it | this] | [go] back;
 
