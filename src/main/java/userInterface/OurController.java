@@ -368,7 +368,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		System.out.println("Mouse Pressed");
 		MyImage selectedImage = contentPanel.getSelectedPicture();
 		//This boolean is to prevent use of the middle mouse button.
-		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) 
+		if (toolModeIndex == ToolMode.RESIZE && (SwingUtilities.isLeftMouseButton(e) ^ SwingUtilities.isRightMouseButton(e)))
 		{
 			String mode = (SwingUtilities.isLeftMouseButton(e) ? "enlarge" : "reduce");
 			((MyTimerTask) task).addVariables(selectedImage, mode,contentPanel.getWidth(),contentPanel.getHeight());
