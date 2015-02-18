@@ -213,6 +213,8 @@ public class MyImage {
     }
 
     public void resetToOriginalImage(){
+    	x = 0;
+    	y = 0;
         img = originalImage;
         height = originalHeight;
         width = originalWidth;
