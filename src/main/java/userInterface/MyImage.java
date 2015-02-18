@@ -103,41 +103,44 @@ public class MyImage {
 
     public void resizeImg(int newW, int newH) {
 
+        width = newW;
+        height = newH;
 
-        double dW = (double) newW;
-        double dH = (double) newH;
-
-        BufferedImage before;
-        before = this.img;
-        double w = before.getWidth();
-        double h = before.getHeight();
-
-
-        double dWNew = (double) newW;
-        double dHNew = (double) newH;
-
-
-        System.out.println("New stuff" + dWNew + " " + dHNew);
-
-        double scaleFactorW = dWNew / w;
-        double scaleFactorH = dHNew / h;
-
-        System.out.println("Scale factor:" + scaleFactorW + " " + scaleFactorH);
-
-        BufferedImage after = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
-        AffineTransform at = new AffineTransform();
-        at.scale(scaleFactorW, scaleFactorH);
-        AffineTransformOp scaleOp =
-                new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
-        after = scaleOp.filter(before, after);
-
-
-//        BufferedImage after = this.getScaledImage(newW, newH);
-
-        this.img = after;
-
-        this.width = newW;
-        this.height = newH;
+//
+//        double dW = (double) newW;
+//        double dH = (double) newH;
+//
+//        BufferedImage before;
+//        before = this.img;
+//        double w = before.getWidth();
+//        double h = before.getHeight();
+//
+//
+//        double dWNew = (double) newW;
+//        double dHNew = (double) newH;
+//
+//
+//        System.out.println("New stuff" + dWNew + " " + dHNew);
+//
+//        double scaleFactorW = dWNew / w;
+//        double scaleFactorH = dHNew / h;
+//
+//        System.out.println("Scale factor:" + scaleFactorW + " " + scaleFactorH);
+//
+//        BufferedImage after = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+//        AffineTransform at = new AffineTransform();
+//        at.scale(scaleFactorW, scaleFactorH);
+//        AffineTransformOp scaleOp =
+//                new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
+//        after = scaleOp.filter(before, after);
+//
+//
+////        BufferedImage after = this.getScaledImage(newW, newH);
+//
+//        this.img = after;
+//
+//        this.width = newW;
+//        this.height = newH;
 
     }
 
