@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -572,9 +573,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     	SwingUtilities.invokeLater(() -> {
     		if (contentPanel.getLines().size() == 4) {  
     			MyImage image = contentPanel.getSelectedPicture();
-    			int oldX = image.getX(), oldY = image.getY();
+    			int oldX = image.getX(), oldY = image.getY(), oldWidth = image.getWidth(), oldHeight = image.getHeight();
+    			BufferedImage oldImage = image.getImg();
     			contentPanel.cut();
-    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this, oldX, oldY));
+    			undoManager.addEdit(new ActionCut(contentPanel.getSelectedPicture(), OurController.this, oldX, oldY, oldImage, oldWidth, oldHeight));
     			contentPanel.emptyLineList();
     			checkUndoRedoButtons();
                 contentPanel.repaint();

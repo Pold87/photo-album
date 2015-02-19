@@ -212,6 +212,9 @@ public class MyImage {
         this.img = img;
     }
 
+    /**
+     * No longer used
+     */
     public void resetToOriginalImage(){
     	x = 0;
     	y = 0;

@@ -3,17 +3,19 @@ package main.java.userInterface;
 import java.awt.image.BufferedImage;
 
 public class ActionCut extends Action{
-	BufferedImage newImage;
-	int newWidth, newHeight;
+	BufferedImage newImage, oldImage;
+	int newWidth, newHeight, oldHeight, oldWidth;
 	
-    public ActionCut(MyImage image, OurController ourController, int oldX, int oldY) {
+    public ActionCut(MyImage image, OurController ourController, int oldX, int oldY, BufferedImage oldImage, int oldWidth, int oldHeight) {
 		super(image, "Cut", ourController, oldX, oldY, image.getX(), image.getY());
 		newImage = image.getImg();
 		newWidth = image.getWidth();
 		newHeight = image.getHeight();
+		this.oldHeight = oldHeight;
+		this.oldWidth = oldWidth;
+		this.oldImage = oldImage;
     }
 
-    //TODO this still needs to be implemented
     public void redo() {
     	super.redo();
         ourController.selectPicture(image);
@@ -24,11 +26,12 @@ public class ActionCut extends Action{
         image.setY(newY);
     }
 
-    //TODO this still needs to be implemented
     public void undo() {
     	super.undo();
 		ourController.selectPicture(image);
-		image.resetToOriginalImage();
+		image.setImg(oldImage);
+		image.setWidth(oldWidth);
+		image.setHeight(oldHeight);
 		image.setX(oldX);
 		image.setY(oldY);
     }
