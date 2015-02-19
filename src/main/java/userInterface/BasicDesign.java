@@ -51,32 +51,42 @@ public class BasicDesign extends JFrame {
         public boolean dispatchKeyEvent(KeyEvent e) {
             if (e.getID() == KeyEvent.KEY_RELEASED) {
 
-
                 switch (e.getKeyChar()) {
 
                     case '1':
 
-                        Logger rotateLogger = new Logger("rotate");
-                        ourController.setLogger(rotateLogger);
-
+                        Logger logger1 = new Logger("task1");
+                        ourController.setLogger(logger1);
                         break;
 
                     case '2':
+                        Logger logger2 = new Logger("task2");
+                        ourController.setLogger(logger2);
                         break;
 
                     case '3':
+                        Logger logger3 = new Logger("task3");
+                        ourController.setLogger(logger3);
                         break;
 
                     case '4':
+                        Logger logger4 = new Logger("task4");
+                        ourController.setLogger(logger4);
                         break;
 
                     case '5':
+                        Logger logger5 = new Logger("task5");
+                        ourController.setLogger(logger5);
                         break;
 
                     case '6':
+                        Logger logger6 = new Logger("task6");
+                        ourController.setLogger(logger6);
                         break;
 
                     case '7':
+                        Logger logger7 = new Logger("task7");
+                        ourController.setLogger(logger7);
                         break;
 
                 }
