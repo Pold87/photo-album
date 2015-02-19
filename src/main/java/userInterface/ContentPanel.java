@@ -254,11 +254,13 @@ public class ContentPanel extends JPanel {
     	if(selectedImage != null){
     		selectedImage.setSelected(false);
     	}
+    	if(imageList.contains(image)){
     	selectedImage = image;
     	image.setSelected(true);
     	imageList.remove(selectedImage);
 		imageList.add(selectedImage);
 		repaint();
+    	}
     }
     
     public void selectPicture(int nr){

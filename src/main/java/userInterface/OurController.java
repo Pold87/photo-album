@@ -428,8 +428,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				for (int pic : pictureNumbers) {
 					for (MyImage img : basicDesign.getLibrary()) {
 						if (img.getNum() == pic) {
-							this.addPicture(img);
-						} else {
+							// Like this, pictures are no longer added when you are trying to select them, it would be weird if it did. I think this also fixes the bug from #30
+						//	this.addPicture(img);
+						//} else {
 							this.selectPicture(img);
 						}
 					}
