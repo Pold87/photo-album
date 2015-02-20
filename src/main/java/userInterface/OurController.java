@@ -1,7 +1,6 @@
 package main.java.userInterface;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -468,9 +467,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	private void undo() {
-		if(undoManager.canUndo())
-			undoManager.undo();
-		checkUndoRedoButtons();
+		ArrayList<Integer> cutLines = contentPanel.getLines();
+		if(!cutLines.isEmpty()){
+			cutLines.remove(cutLines.size()-1);
+		}else{
+			if(undoManager.canUndo())
+				undoManager.undo();
+			checkUndoRedoButtons();
+		}
 	}
 
 	private void redo() {

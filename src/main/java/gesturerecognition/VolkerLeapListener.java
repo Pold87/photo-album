@@ -2,6 +2,7 @@ package main.java.gesturerecognition;
 
 import main.java.userInterface.ContentPanel;
 import main.java.userInterface.OurController;
+
 import com.leapmotion.leap.CircleGesture;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
@@ -10,8 +11,6 @@ import com.leapmotion.leap.Gesture;
 import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.InteractionBox;
 import com.leapmotion.leap.Vector;
-
-import java.util.Timer;
 
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
