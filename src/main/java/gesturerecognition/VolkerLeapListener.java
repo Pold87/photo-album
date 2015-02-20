@@ -143,21 +143,24 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                 // To click or not to click
                 boolean rightHandClick = rightHandDistanceToScreen < clickThresholdRight;
 
-                // Cursor Pressed
-                if (rightHandClick && !prevRightClick) {
-                    ourController.cursorPressed(rightHandXPos, rightHandYPos);
-                    prevRightClick = true;
-                }
-
-                // Cursor Released
-                if (!rightHandClick && prevRightClick) {
-                    ourController.cursorReleased(rightHandXPos, rightHandYPos);
-                    prevRightClick = false;
-                }
-
-                // Cursor dragged
-                if (rightHandClick && prevRightClick) {
-                    ourController.cursorDragged(rightHandXPos, rightHandYPos);
+                if(ourController.toolModeIndex != OurController.ToolMode.ROTATE)
+                {
+	                // Cursor Pressed
+	                if (rightHandClick && !prevRightClick) {
+	                    ourController.cursorPressed(rightHandXPos, rightHandYPos);
+	                    prevRightClick = true;
+	                }
+	
+	                // Cursor Released
+	                if (!rightHandClick && prevRightClick) {
+	                    ourController.cursorReleased(rightHandXPos, rightHandYPos);
+	                    prevRightClick = false;
+	                }
+	
+	                // Cursor dragged
+	                if (rightHandClick && prevRightClick) {
+	                    ourController.cursorDragged(rightHandXPos, rightHandYPos);
+	                }
                 }
 
                 // Shape Mode
@@ -170,7 +173,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         break;
                     case 2:
                         break;
-                    case 3: // ROTATE
+                    case 3: // CUT
                         contentPanel.setToolMode(OurController.ToolMode.CUT);
                         break;
                     case 4:
