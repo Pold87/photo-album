@@ -211,6 +211,15 @@ public class MyImage {
     public void setImg(BufferedImage img) {
         this.img = img;
     }
+    
+    public void snapRotation(){
+    	int rot = (int) rotationDegrees % 360;
+    	int x = rot/45;
+    	int y = rot%45;
+    	if(y > 22)
+    		x++;
+    	rotationDegrees = x*45;
+    }
 
     /**
      * No longer used

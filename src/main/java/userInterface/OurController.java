@@ -225,15 +225,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             }
         });
 	}
-	
-	public void addRotateAction(double degrees) {
-		if (contentPanel.getSelectedPicture() != null) {
-			//contentPanel.rotate(degrees);
-			undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
-			checkUndoRedoButtons();
-            contentPanel.repaint();
-		}
-	}
 	//END CommandInterface
 
 
@@ -618,5 +609,13 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     			contentPanel.addLine(x, y);
     		}
     	});
+    }
+    
+    public void snapPictureRotation(){
+    	MyImage selectedImage = contentPanel.getSelectedPicture();
+    	if(selectedImage != null){
+    		selectedImage.snapRotation();
+    		contentPanel.repaint();
+    	}
     }
 }
