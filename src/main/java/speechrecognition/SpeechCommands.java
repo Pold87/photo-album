@@ -102,10 +102,6 @@ public class SpeechCommands implements Runnable {
 
         while ((result = commandRecognizer.getResult()) != null) {
             String hypo = result.getHypothesis();
-
-
-            System.out.println(result.getNbest(2));
-
             this.parseCommand(hypo);
             break;
         }
@@ -147,6 +143,9 @@ public class SpeechCommands implements Runnable {
             }
             for (String w : words) {
                 switch (w) {
+                    case "add":
+                        intention = "add";
+                        break;
                     case "select":
                     case "choose":
                     case "activate":
@@ -165,7 +164,7 @@ public class SpeechCommands implements Runnable {
                     case "trashcan":
                     case "garbage":
                     case "bin":
-                        intention = "delete";
+                        intention = "remove";
                         break;
                     case "rotate":
                     case "turn":

@@ -187,14 +187,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void addPictureByNumber(int nr) {
 
-        SwingUtilities.invokeLater(() -> {
-            ArrayList<Integer> nums = basicDesign.getPictureNums();
+        System.out.println("Will add " + nr);
 
+        SwingUtilities.invokeLater(() -> {
+
+            System.out.println("Im in invoke");
+
+            ArrayList<Integer> nums = basicDesign.getPictureNums();
             if (nums.contains(nr)) {
                 MyImage image = basicDesign.getLibrary()[nr];
                 addPicture(image);
+                basicDesign.repaint();
             }
+
         });
+
+        System.out.println("Really added it " + nr);
     }
 
     public void deleteSelectedPicture(){
@@ -450,7 +458,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 picturesToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
                 picturesToAdd.forEach(this :: selectPicture);
 
-
                 picturesWrongNumbersToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
                 picturesWrongNumbersToAdd.forEach(this :: selectPicture);
 
@@ -468,9 +475,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 break;
             case "select":
                 ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
+                ArrayList<Integer> picturesWrongNumbersToSelect = response.extractWrongNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> pictureNumbers = response.extractNumbers();
 
                 for (int pic : pictureNumbers) {
+                    for (MyImage img : basicDesign.getLibrary()) {
+                        if (img.getNum() == pic) {
+                            if(contentPanel.imageList.contains(img))
+                                selectPicture(img);
+                            else
+                                addPicture(img);
+                        }
+                    }
+                }
+
+                for (int pic : picturesWrongNumbersToSelect) {
                     for (MyImage img : basicDesign.getLibrary()) {
                         if (img.getNum() == pic) {
                             if(contentPanel.imageList.contains(img))
@@ -529,15 +548,19 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
         switch (intent[0]) {
             case "add":
-                int pictureToAdd = Integer.parseInt(intent[1]); // Extract all mentioned number
-
-                addPictureByNumber(pictureToAdd); // Could be a Java 1.8 feature
-                selectPicture(pictureToAdd);
+                if (Wit.isInteger(intent[1])) {
+                    int pictureToAdd = Integer.parseInt(intent[1]) - 10; // Extract all mentioned number
+                    System.out.println("Parsed num is " + pictureToAdd);
+                    addPictureByNumber(pictureToAdd); // Could be a Java 1.8 feature
+//                selectPicture(pictureToAdd);
+                    System.out.println("Added picture " + pictureToAdd);
+                }
                 break;
             case "rotate":
                 this.rotate(45); // Rotate 90 degrees if nothing else is said.
                 break;
             case "select":
+                System.out.println("Select picture " + intent[1]);
                 if (intent[1] != "default") {
                     int pictureNumber = Integer.parseInt(intent[1]);
                     for (MyImage img : basicDesign.getLibrary()) {
@@ -569,13 +592,15 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
                 break;
             case "remove":
-                if (intent[1].equals("unknown")) {
+                if (intent[1].equals("default")) {
                     this.deleteSelectedPicture();
                 } else {
-                    int pictureToRemove = Integer.parseInt(intent[1]);
-                    for (MyImage img : basicDesign.getLibrary()) {
-                        if (img.getNum() == pictureToRemove) {
-                            this.deletePicture(img);
+                    if (Wit.isInteger(intent[1])) {
+                        int pictureToRemove = Integer.parseInt(intent[1]);
+                        for (MyImage img : basicDesign.getLibrary()) {
+                            if (img.getNum() == pictureToRemove) {
+                                this.deletePicture(img);
+                            }
                         }
                     }
                 }
