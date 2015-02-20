@@ -44,6 +44,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
     private ArrayList<Integer> cutLines = new ArrayList<Integer>();
+    private SpeechCommands sc;
+    private SpeechResult result;
     
     public enum Modality{
     	MOUSE, SPEECH, LEAP
@@ -62,7 +64,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         }
 
         recognizedText(wit.getWitRawJSONString());
-
 
 		this.thread_wit = null;
 		this.thread = null;
@@ -85,18 +86,18 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		rotateThread = new RotationThread(this);
     }
 	
-	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException {
+	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException, IOException {
 		contentPanel = cp;
 		basicDesign = bd;
 		logger  = new Logger();
         this.url = getClass().getResource("/recording.wav");
         this.normalRecord =  new File(this.url.toURI());
+        this.sc = new SpeechCommands();
     }
 
 	public void setToolMode(OurController.ToolMode toolMode) {
 		this.toolModeIndex = toolMode;
 	}
-
 
     public void startSpeech() throws URISyntaxException {
 
@@ -110,8 +111,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void startSpeechSimple() throws IOException {
 
-        SpeechCommands sc = new SpeechCommands();
-        SpeechResult result;
         this.contentPanel.setSpeechRecording(true);
         while ((result = sc.recognizeCommand()) != null) {
             String hypo = result.getHypothesis();
@@ -119,11 +118,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             String[] intent = sc.parseCommand(hypo);
             System.out.format("Intention: %s\n",intent[0]);
             System.out.format("Value: %s\n", intent[1]);
-
+            basicDesign.getDebugPanel().appendText("Intention: " + intent[0] + "\n");
+            basicDesign.getDebugPanel().appendText("Value: " + intent[1] + "\n");
+            break;
         }
-        this.contentPanel.setSpeechRecording(false););
-
-
+        this.contentPanel.setSpeechRecording(false);
     }
 
 

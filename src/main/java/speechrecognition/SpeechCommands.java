@@ -143,6 +143,7 @@ public class SpeechCommands {
 		return intent;
 	}
 
+
     public static void main(String[] args) throws IOException {
 
 		SpeechCommands sc = new SpeechCommands();

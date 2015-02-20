@@ -11,6 +11,8 @@ import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.InteractionBox;
 import com.leapmotion.leap.Vector;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Timer;
 
 public class VolkerLeapListener extends com.leapmotion.leap.Listener {
@@ -94,7 +96,25 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
                             if (leftHandFingerCount == 5) {
 
-                                ourController.startSpeech();
+                                Thread t1 = new Thread(() -> {
+                                    try {
+                                        ourController.startSpeechSimple();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                                t1.start();
+
+                                Thread t2 = new Thread(() -> {
+                                        try {
+                                            ourController.startSpeech();
+                                        } catch (URISyntaxException e) {
+                                            e.printStackTrace();
+                                        }
+                                });
+                                t2.start();
+
+
                                 prevLeftClick = true;
 
                             }
@@ -207,12 +227,12 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                                         // Determine direction
                                         CircleGesture circle = new CircleGesture(gesture);
                                         if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI/2) {
-                                            ourController.rotate(0.30);
-                                            totalDegrees += 0.30;
+                                            ourController.rotate(0.10);
+                                            totalDegrees += 0.10;
                                         }
                                         else {
-                                            ourController.rotate(-0.30);
-                                            totalDegrees -= 0.30;
+                                            ourController.rotate(-0.10);
+                                            totalDegrees -= 0.10;
                                         }
                                         break;
                                     case STATE_STOP:
