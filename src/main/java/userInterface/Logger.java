@@ -8,6 +8,8 @@ import java.io.IOException;
 public class Logger {
 	private BufferedWriter writer;
 	private int nrOfActions;
+	//Another nasty hacky way of doing stuff.
+	private String previousRotate;
 	
 	public Logger(){
 		try {
@@ -51,11 +53,22 @@ public class Logger {
 	
 	public void logAction(String s){
 		try {
-			nrOfActions++;
-			String entry = nrOfActions + ", " + s;
-			writer.write(entry);
-			writer.newLine();
-			writer.flush();
+			if(s.contains("Rotate")){
+				previousRotate = s;
+			}else{
+				if(previousRotate != null){
+					nrOfActions++;
+					String entry = nrOfActions + ", " + previousRotate;
+					writer.write(entry);
+					writer.newLine();
+					previousRotate = null;
+				}
+				nrOfActions++;
+				String entry = nrOfActions + ", " + s;
+				writer.write(entry);
+				writer.newLine();
+				writer.flush();
+			}		
 		} catch (IOException e) {
 			e.printStackTrace();
         }
