@@ -169,8 +169,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			}
 		});
 
-
-
 	}
 	
 	public void movePicture(int x, int y) {
@@ -310,7 +308,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 
                 // TODO: See if constraining the image is better
                 
-				if (selectedImage.contains(new Point(XPos, YPos))) {
+//				if (selectedImage.contains(new Point(XPos + 100, YPos + 100))) {
 
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
@@ -318,7 +316,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
                     selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
 
-				}
+//				}
                 
 				break;
 			case ROTATE:

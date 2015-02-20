@@ -159,7 +159,6 @@ public class ContentPanel extends JPanel {
 		}
 
 
-
 		// Finger count indicator
 		g2d.setColor(Color.black);
 		Font font = new Font("Verdana", Font.BOLD, 18);

@@ -167,7 +167,7 @@ public class MyImage {
         Graphics2D g2dCopy = (Graphics2D) g2d.create();
         g2dCopy.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
         g2dCopy.drawImage(img, x, y, width, height, null);
-        g2dCopy.drawString(Integer.toString(this.num), x, y - 5);
+        g2dCopy.drawString(Integer.toString(this.num + 10), x, y - 5);
 
         if(selected){
             //draw blue frame around image if it is now selected
