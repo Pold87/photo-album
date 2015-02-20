@@ -237,5 +237,6 @@ public class MyImage {
         img = originalImage;
         height = originalHeight;
         width = originalWidth;
+        rotationDegrees =  0;
     }
 }
