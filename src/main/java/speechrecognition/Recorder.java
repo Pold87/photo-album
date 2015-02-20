@@ -102,11 +102,8 @@ public class Recorder implements Runnable{
 	 * Closes the target data line to finish capturing and recording
 	 */
 	public void finish() {
-        System.out.println("Started to finish");
-
             this.line.stop();
             this.line.close();
-            System.out.println("Finished");
 
     }
 

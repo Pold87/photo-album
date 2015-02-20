@@ -96,24 +96,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 
                             if (leftHandFingerCount == 5) {
 
-                                Thread t1 = new Thread(() -> {
-                                    try {
-                                        ourController.startSpeechSimple();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                t1.start();
-
-                                Thread t2 = new Thread(() -> {
-                                        try {
-                                            ourController.startSpeech();
-                                        } catch (URISyntaxException e) {
-                                            e.printStackTrace();
-                                        }
-                                });
-                                t2.start();
-
+                                ourController.startSpeech();
 
                                 prevLeftClick = true;
 
