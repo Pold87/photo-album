@@ -10,6 +10,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
 
+import edu.cmu.sphinx.api.SpeechResult;
 import main.java.speechrecognition.Recorder;
+import main.java.speechrecognition.SpeechCommands;
 import main.java.speechrecognition.ThreadCompleteListener;
 import main.java.speechrecognition.Wit;
 
@@ -51,8 +54,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     public void notifyOfThreadComplete(Wit wit) {
 
 		this.contentPanel.setSpeechProcessing(false);
-
-        recognizedText(wit.getWitRawJSONString());
 
         try {
             recognizedWitResponse(wit);
@@ -107,6 +108,24 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         }
     }
 
+    public void startSpeechSimple() throws IOException {
+
+        SpeechCommands sc = new SpeechCommands();
+        SpeechResult result;
+        this.contentPanel.setSpeechRecording(true);
+        while ((result = sc.recognizeCommand()) != null) {
+            String hypo = result.getHypothesis();
+            System.out.format("Hypothesis: %s\n", hypo);
+            String[] intent = sc.parseCommand(hypo);
+            System.out.format("Intention: %s\n",intent[0]);
+            System.out.format("Value: %s\n", intent[1]);
+
+        }
+        this.contentPanel.setSpeechRecording(false););
+
+
+    }
+
 
     public void stopSpeech() {
         SwingUtilities.invokeLater(() -> {
@@ -130,18 +149,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     }
 
     //START CommandInterface
-	public void selectPicture(int nr) {
-		contentPanel.selectPicture(nr);
-	}
-	
-	public void addPictureByNumber(int nr) {
+    public void selectPicture(int nr) {
+        SwingUtilities.invokeLater(() -> contentPanel.selectPicture(nr));
+    }
 
-         ArrayList<Integer> nums = basicDesign.getPictureNums();
+    public void addPictureByNumber(int nr) {
 
-        if (nums.contains(nr)) {
-            MyImage image = basicDesign.getLibrary()[nr];
-            addPicture(image);
-        }
+        SwingUtilities.invokeLater(() -> {
+
+            ArrayList<Integer> nums = basicDesign.getPictureNums();
+
+            if (nums.contains(nr)) {
+                MyImage image = basicDesign.getLibrary()[nr];
+                addPicture(image);
+            }
+        });
     }
 
     public void deleteSelectedPicture(){
@@ -161,7 +183,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void deletePicture(MyImage img) {
 
-
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -172,15 +193,18 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void movePicture(int x, int y) {
-		MyImage image = contentPanel.getSelectedPicture();
-		if (image != null) {
-			int oldX = image.getX(), oldY = image.getY();
-			image.setX(x);
-			image.setY(y);
-			undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
-			checkUndoRedoButtons();
-            contentPanel.repaint();
-		}
+
+        SwingUtilities.invokeLater(() -> {
+            MyImage image = contentPanel.getSelectedPicture();
+            if (image != null) {
+                int oldX = image.getX(), oldY = image.getY();
+                image.setX(x);
+                image.setY(y);
+                undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
+                checkUndoRedoButtons();
+                contentPanel.repaint();
+            }
+        });
 	}
 
 	public void setBackground(Color color) {
@@ -192,12 +216,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 	
 	public void rotate(double degrees) {
-		if (contentPanel.getSelectedPicture() != null) {
-			contentPanel.rotate(degrees);
-			undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
-			checkUndoRedoButtons();
-            contentPanel.repaint();
-		}
+        SwingUtilities.invokeLater(() -> {
+            if (contentPanel.getSelectedPicture() != null) {
+                contentPanel.rotate(degrees);
+                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
+                checkUndoRedoButtons();
+                contentPanel.repaint();
+            }
+        });
 	}
 	
 	public void addRotateAction(double degrees) {
@@ -529,25 +555,34 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//END ActionListener
 
 	public void selectPicture(MyImage image){
-		contentPanel.selectPicture(image);
-		basicDesign.repaint();
-	}
+        SwingUtilities.invokeLater(() -> {
+                    contentPanel.selectPicture(image);
+                    basicDesign.repaint();
+                });
+    }
 
-    public void selectPictureAt(int x, int y){
-        contentPanel.selectPictureAt(x, y);
+    public void selectPictureAt(int x, int y) {
+        SwingUtilities.invokeLater(() -> {
+            contentPanel.selectPictureAt(x, y);
+        });
     }
-    
-    public void addButtonToLibrary(MyImage image){
-    	basicDesign.photoBar.addButton(image);
-        basicDesign.repaint();
+
+    public void addButtonToLibrary(MyImage image) {
+        SwingUtilities.invokeLater(() -> {
+            basicDesign.photoBar.addButton(image);
+            basicDesign.repaint();
+        });
     }
-	
-    public void removeButtonFromLibrary(MyImage image){
-    	basicDesign.photoBar.removeButton(image);
-        basicDesign.repaint();
+
+
+    public void removeButtonFromLibrary(MyImage image) {
+        SwingUtilities.invokeLater(() -> {
+            basicDesign.photoBar.removeButton(image);
+            basicDesign.repaint();
+        });
     }
-    
-	public void addPicture(MyImage image){
+
+    public void addPicture(MyImage image){
         SwingUtilities.invokeLater(() -> {
             contentPanel.addPictureToCurrentPage(image);
             undoManager.addEdit(new ActionAddPic(image, OurController.this));

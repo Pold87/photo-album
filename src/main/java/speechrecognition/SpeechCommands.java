@@ -63,7 +63,7 @@ public class SpeechCommands {
 		return utterance;
 
 	}
-	private String[] parseCommand(String hypo) {
+	public String[] parseCommand(String hypo) {
 		String[] words;
 		String intention = "unknown";
 		String val = "default";
