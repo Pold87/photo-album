@@ -2,6 +2,7 @@ package main.java.gesturerecognition;
 
 import main.java.userInterface.ContentPanel;
 import main.java.userInterface.OurController;
+
 import com.leapmotion.leap.CircleGesture;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;

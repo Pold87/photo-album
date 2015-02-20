@@ -1,8 +1,15 @@
 package main.java.userInterface;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -230,5 +237,6 @@ public class MyImage {
         img = originalImage;
         height = originalHeight;
         width = originalWidth;
+        rotationDegrees =  0;
     }
 }

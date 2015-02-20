@@ -589,9 +589,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 
 	private void undo() {
-		if(undoManager.canUndo())
-			undoManager.undo();
-		checkUndoRedoButtons();
+		ArrayList<Integer> cutLines = contentPanel.getLines();
+		if(!cutLines.isEmpty()){
+			cutLines.remove(cutLines.size()-1);
+		}else{
+			if(undoManager.canUndo())
+				undoManager.undo();
+			checkUndoRedoButtons();
+		}
 	}
 
 	private void redo() {
