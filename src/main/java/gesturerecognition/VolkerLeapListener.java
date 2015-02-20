@@ -59,6 +59,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
 	}
 
 	public void onFrame(Controller controller) {
+        ourController.currentModality = OurController.Modality.LEAP;
 		// System.out.println("Frame available");
 		Frame frame = controller.frame();
 
@@ -94,7 +95,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                             if (leftHandFingerCount == 5) {
 
                                 ourController.startSpeech();
-                                ourController.currentModality = OurController.Modality.LEAP;
                                 prevLeftClick = true;
 
                             }
@@ -104,7 +104,6 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         // Cursor Released
                         if (!leftHandClick && prevLeftClick) {
 
-                            ourController.currentModality = OurController.Modality.LEAP;
                             prevLeftClick = false;
                             ourController.stopSpeech();
 
@@ -218,7 +217,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                                         break;
                                     case STATE_STOP:
                                         //Handle ending gestures
-                                        ourController.addRotateAction(totalDegrees);
+                                    	ourController.snapPictureRotation();
                                         totalDegrees = 0;
                                         break;
                                     default:

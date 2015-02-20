@@ -71,7 +71,29 @@ public class SpeechCommands {
 		if (!hypo.equals("<unk>")){
 			words = hypo.trim().split("\\s+");
 			for (String s : words) {
-				System.out.println(s);
+				switch (s) {
+					case "ten":
+						val = "10";
+						break;
+					case "eleven":
+						val = "11";
+						break;
+					case "twelve":
+						val = "12";
+						break;
+					case "thirteen":
+						val = "11";
+						break;
+					case "fourteen":
+						val = "14";
+						break;
+					case "fifteen":
+						val = "15";
+						break;
+					case "sixteen":
+						val = "16";
+						break;
+				}
 			}
 			for (String w : words) {
 				switch (w) {
@@ -137,6 +159,10 @@ public class SpeechCommands {
 						break;
 				}
 			}
+		}
+
+		if (intention.equals("background") && val.equals("default")){
+			val = "white";
 		}
 		intent[0] = intention;
 		intent[1] = val;
