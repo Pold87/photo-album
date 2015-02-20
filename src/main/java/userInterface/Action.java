@@ -53,8 +53,11 @@ public class Action implements UndoableEdit{
 	private void log (String action){
 		timePerform = (System.currentTimeMillis() - App.startTime)/100;
 		double time = timePerform*1.0/10;
+		if(image != null)
 		ourController.logger.logAction(modality + ", " + action + ", " + newX + ", " + newY + ", " + image.getRotationDegrees() + ", " + image.getWidth() + ", " + image.getHeight() + ", " + background + ", " + time);
-		
+		else
+			ourController.logger.logAction(modality + ", " + action + ", " + newX + ", " + newY + ", " + 0 + ", " + 0 + ", " + 0 + ", " + background + ", " + time);
+
 	}
 	
 	public void redo() {
