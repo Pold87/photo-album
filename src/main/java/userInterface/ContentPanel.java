@@ -498,22 +498,21 @@ public class ContentPanel extends JPanel {
 	            for (int i : this.lines) {
 	                System.out.println("Line is " + i);
 	            }
+	            System.out.println("width is:" + this.getSelectedPicture().getWidth());
+	            System.out.println("width of picture picture is:" + this.getSelectedPicture().getImg().getWidth());
+	            
 	            BufferedImage subImage;
-	            if (height && left && width && up) {
-	            	subImage = this.getSelectedPicture().getImg().getSubimage(x, y, w, h);
+	            if (height && left && width && up && xLeft != xRight && yUp != yDown) {
+	            	double multiplication = 1.0*this.getSelectedPicture().getImg().getWidth()/this.getSelectedPicture().getWidth();
+	            	subImage = this.getSelectedPicture().getImg().getSubimage((int) (x*multiplication),(int) (y*multiplication),(int) (w*multiplication),(int) (h*multiplication));
+		            this.getSelectedPicture().setImg(subImage);
+		            this.getSelectedPicture().setWidth(w);
+		            this.getSelectedPicture().setHeight(h);
 	            }
-	            else
-	            	subImage = this.getSelectedPicture().getImg();
-	            this.getSelectedPicture().setImg(subImage);
-	            this.getSelectedPicture().setWidth(w);
-	            this.getSelectedPicture().setHeight(h);
-	            if (height && left && width && up) {
+
+	            if (height && left && width && up && xLeft != xRight && yUp != yDown) {
 		            this.getSelectedPicture().setX(this.getSelectedPicture().getX() + x);
 		            this.getSelectedPicture().setY(this.getSelectedPicture().getY() + y);
-	            }
-	            else {
-	            	this.getSelectedPicture().setX(this.getSelectedPicture().getX());
-		            this.getSelectedPicture().setY(this.getSelectedPicture().getY());
 	            }
             }
         }
