@@ -35,8 +35,7 @@ public class ContentPanel extends JPanel {
     // Speech processing sign
 	boolean speechProcessing = false;
 
-	//Needs edit when we make multiple pages
-	private ArrayList<MyImage> imageList;
+	public ArrayList<MyImage> imageList;
 	private MyImage selectedImage;
 
     public ContentPanel(OurController ourController, MyImage[] library) throws IOException {
