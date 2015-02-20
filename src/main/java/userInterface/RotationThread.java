@@ -32,6 +32,7 @@ public class RotationThread implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		controller.snapPictureRotation();
 		}
 	}
 
