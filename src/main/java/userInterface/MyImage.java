@@ -239,4 +239,8 @@ public class MyImage {
         width = originalWidth;
         rotationDegrees =  0;
     }
+    
+    public int getNr(){
+    	return num;
+    }
 }
