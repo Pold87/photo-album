@@ -1,9 +1,19 @@
 package main.java.speechrecognition;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import com.leapmotion.leap.Controller;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
+import edu.cmu.sphinx.api.StreamSpeechRecognizer;
+import main.java.userInterface.DebugPanel;
+import main.java.userInterface.OurController;
 
 /**
  * The speech recognition class. It is composed of two parts:
@@ -19,170 +29,203 @@ import edu.cmu.sphinx.api.SpeechResult;
  * - Create configuration file - Tune continuous speech recognition
  */
 
-public class SpeechCommands {
+public class SpeechCommands implements Runnable {
 
-	public static final String ACOUSTIC_MODEL = "resource:/voxforge/acousticmodel/";
-	public static final String DICTIONARY_PATH = "resource:/voxforge/cmudict.0.6d";
-	public static final String GRAMMAR_PATH = "resource:/voxforge";
-	public static final String GRAMMAR_NAME = "commands";
+    public static final String ACOUSTIC_MODEL = "resource:/voxforge/acousticmodel/";
+    public static final String DICTIONARY_PATH = "resource:/voxforge/cmudict.0.6d";
+    public static final String GRAMMAR_PATH = "resource:/voxforge";
+    public static final String GRAMMAR_NAME = "commands";
 
-	private Configuration configuration = new Configuration();
-	private LiveSpeechRecognizer commandRecognizer;
+    private OurController ourController;
 
-	public SpeechCommands() throws IOException {
+    private Configuration configuration = new Configuration();
+    private StreamSpeechRecognizer commandRecognizer;
 
-		// Set acoustic model
-		this.configuration.setAcousticModelPath(ACOUSTIC_MODEL);
+    private String[] intent = new String[2];
 
-		// This is the in-built acoustic model
+    private final Set<SimpleSpeechThreadCompleteListener> listeners
+            = new CopyOnWriteArraySet<>();
+
+    public final void addListener(final SimpleSpeechThreadCompleteListener listener) {
+        listeners.add(listener);
+    }
+
+    public final void removeListener(final SimpleSpeechThreadCompleteListener listener) {
+        listeners.remove(listener);
+    }
+
+    private final void notifyListeners() {
+
+
+        for (SimpleSpeechThreadCompleteListener listener : listeners) {
+            listener.notifyOfSimpleSpeech(this);
+        }
+
+        this.intent[0] = "unknown";
+    }
+
+    public String[] getIntent() {
+        return intent;
+    }
+
+    public SpeechCommands() throws IOException {
+
+        // Set acoustic model
+        this.configuration.setAcousticModelPath(ACOUSTIC_MODEL);
+
+        // This is the in-built acoustic model
 //		configuration.setAcousticModelPath("resource:/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz");
 
-		// Set dictionary path
-		this.configuration.setDictionaryPath(DICTIONARY_PATH);
+        // Set dictionary path
+        this.configuration.setDictionaryPath(DICTIONARY_PATH);
 
-		// Set grammar (for commands) language model
-		this.configuration.setUseGrammar(true);
-		this.configuration.setGrammarName(GRAMMAR_NAME);
-		this.configuration.setGrammarPath(GRAMMAR_PATH);
+        // Set grammar (for commands) language model
+        this.configuration.setUseGrammar(true);
+        this.configuration.setGrammarName(GRAMMAR_NAME);
+        this.configuration.setGrammarPath(GRAMMAR_PATH);
 
 
-		// Create new LiveSpeechRecognizer (for commands)
-		this.commandRecognizer = new LiveSpeechRecognizer(this.configuration);
-	}
+        // Create new LiveSpeechRecognizer (for commands)
+        this.commandRecognizer = new StreamSpeechRecognizer(this.configuration);
 
-	// Recognize a command
-	public SpeechResult recognizeCommand() {
-		System.out.println("Command recognition (using grammar)");
+    }
 
-		this.commandRecognizer.startRecognition(true);
-		SpeechResult utterance = this.commandRecognizer.getResult();
-		this.commandRecognizer.stopRecognition();
+    // Recognize a command
+    public void recognizeCommand() {
+        System.out.println("Command recognition (using grammar)");
 
-		System.out.println(utterance.getHypothesis());
+        InputStream stream = SpeechCommands.class.getResourceAsStream("/recording.wav");
 
-		return utterance;
+        this.commandRecognizer.startRecognition(stream);
 
-	}
-	private String[] parseCommand(String hypo) {
-		String[] words;
-		String intention = "unknown";
-		String val = "default";
-		String[] intent = {intention,val};
-		if (!hypo.equals("<unk>")){
-			words = hypo.trim().split("\\s+");
-			for (String s : words) {
-				switch (s) {
-					case "ten":
-						val = "10";
-						break;
-					case "eleven":
-						val = "11";
-						break;
-					case "twelve":
-						val = "12";
-						break;
-					case "thirteen":
-						val = "11";
-						break;
-					case "fourteen":
-						val = "14";
-						break;
-					case "fifteen":
-						val = "15";
-						break;
-					case "sixteen":
-						val = "16";
-						break;
-				}
-			}
-			for (String w : words) {
-				switch (w) {
-					case "select":
-					case "choose":
-					case "activate":
-					case "pick":
-					case "use":
-						intention = "select";
-						break;
-					case "move":
-					case "shift":
-					case "relocate":
-					case "position":
-						intention = "move";
-						break;
-					case "delete":
-					case "remove":
-					case "trashcan":
-					case "garbage":
-					case "bin":
-						intention = "delete";
-						break;
-					case "rotate":
-					case "turn":
-					case "spin":
-					case "tilt":
-					case "orientation":
-						intention = "rotate";
-						break;
-					case "enlarge":
-					case "increase":
-					case "larger":
-					case "bigger":
-						intention = "enlarge";
-						break;
-					case "decrease":
-					case "reduce":
-					case "shrink":
-					case "smaller":
-						intention = "smaller";
-						break;
-					case "redo":
-					case "forward":
-						intention = "redo";
-						break;
-					case "undo":
-					case "back":
-						intention = "undo";
-						break;
-					case "black":
-					case "blue":
-					case "red":
-					case "yellow":
-					case "white":
-					case "orange":
-					case "green":
-					case "pink":
-					case "magenta":
-					case "cyan":
-						intention = "background";
-						val = w;
-						break;
-				}
-			}
-		}
+        SpeechResult result;
 
-		if (intention.equals("background") && val.equals("default")){
-			val = "white";
-		}
-		intent[0] = intention;
-		intent[1] = val;
-		return intent;
-	}
+        while ((result = commandRecognizer.getResult()) != null) {
+            String hypo = result.getHypothesis();
+            this.parseCommand(hypo);
+            break;
+        }
 
-    public static void main(String[] args) throws IOException {
+        this.commandRecognizer.stopRecognition();
 
-		SpeechCommands sc = new SpeechCommands();
-		SpeechResult result;
+    }
 
-		while ((result = sc.recognizeCommand()) != null) {
-			String hypo = result.getHypothesis();
-			System.out.format("Hypothesis: %s\n", hypo);
-			String[] intent = sc.parseCommand(hypo);
-			System.out.format("Intention: %s\n",intent[0]);
-			System.out.format("Value: %s\n", intent[1]);
+    public void parseCommand(String hypo) {
+        String[] words;
+        String intention = "unknown";
+        String val = "default";
+        if (!hypo.equals("<unk>")) {
+            words = hypo.trim().split("\\s+");
+            for (String s : words) {
+                switch (s) {
+                    case "ten":
+                        val = "10";
+                        break;
+                    case "eleven":
+                        val = "11";
+                        break;
+                    case "twelve":
+                        val = "12";
+                        break;
+                    case "thirteen":
+                        val = "11";
+                        break;
+                    case "fourteen":
+                        val = "14";
+                        break;
+                    case "fifteen":
+                        val = "15";
+                        break;
+                    case "sixteen":
+                        val = "16";
+                        break;
+                }
+            }
+            for (String w : words) {
+                switch (w) {
+                    case "add":
+                        intention = "add";
+                        break;
+                    case "select":
+                    case "choose":
+                    case "activate":
+                    case "pick":
+                    case "use":
+                        intention = "select";
+                        break;
+                    case "move":
+                    case "shift":
+                    case "relocate":
+                    case "position":
+                        intention = "move";
+                        break;
+                    case "delete":
+                    case "remove":
+                    case "trashcan":
+                    case "garbage":
+                    case "bin":
+                        intention = "remove";
+                        break;
+                    case "rotate":
+                    case "turn":
+                    case "spin":
+                    case "tilt":
+                    case "orientation":
+                        intention = "rotate";
+                        break;
+                    case "enlarge":
+                    case "increase":
+                    case "larger":
+                    case "bigger":
+                        intention = "enlarge";
+                        break;
+                    case "decrease":
+                    case "reduce":
+                    case "shrink":
+                    case "smaller":
+                        intention = "smaller";
+                        break;
+                    case "redo":
+                    case "forward":
+                        intention = "redo";
+                        break;
+                    case "undo":
+                    case "back":
+                        intention = "undo";
+                        break;
+                    case "black":
+                    case "blue":
+                    case "red":
+                    case "yellow":
+                    case "white":
+                    case "orange":
+                    case "green":
+                    case "pink":
+                    case "magenta":
+                    case "cyan":
+                        intention = "background";
+                        val = w;
+                        break;
+                }
+            }
+        }
 
-		}
+        this.intent[0] = intention;
+        this.intent[1] = val;
+    }
 
-	}
+    public void setOurController(OurController ourController) {
+        this.ourController = ourController;
+    }
 
+    @Override
+    public void run() {
+
+        try {
+            this.recognizeCommand();
+        } finally {
+            notifyListeners();
+        }
+
+    }
 }

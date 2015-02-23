@@ -9,7 +9,7 @@ grammar photoalbum;
 <pics> = ([the | this | a | of] (image | picture | form | selection | it)) | ((this | that) [one]);
 <bg_color> = [the | of] (background | wallpaper | background color | wallpaper color);
 <colors> = white | black | blue | green | red | yellow | pink | magenta | orange | cyan;
-<numbers> = ten | twelve | thirteen | fourteen | fifteen | sixteen;
+<numbers> = ten | eleven | twelve | thirteen | fourteen | fifteen | sixteen;
 
 //Actions
 <add_action> = add;
@@ -26,7 +26,7 @@ grammar photoalbum;
 
 <redo_action> = ((redo | do) [that | it | this] [again]) | [go] forward;
 
-<changeBG_action> = [change | set] <bg_color> <colors>;
+<changeBG_action> = [change | set] [<bg_color>] <colors>;
 
 <pic_actions> = <add_action> | <select_action> | <delete_action> | <move_action> | <rotate_action> | <undo_action> | <redo_action>;
 

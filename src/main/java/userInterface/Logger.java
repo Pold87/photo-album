@@ -23,7 +23,7 @@ public class Logger {
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		writer = new BufferedWriter (fw);
 		//write the headers
-		writer.write("Action nr, Modality, Action name, new X, new Y, Orientation, Width, Height, new backgroundColor, TimeStamp ");
+		writer.write("Action nr, Modality, Action name, Picture Nr, new X, new Y, Orientation, Width, Height, new backgroundColor, TimeStamp ");
 		writer.newLine();
 		writer.flush();
 		} catch (IOException e) {

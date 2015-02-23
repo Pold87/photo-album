@@ -1,7 +1,6 @@
 package main.java.userInterface;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -10,6 +9,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,12 +19,11 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 import javax.swing.undo.UndoManager;
 
-import main.java.speechrecognition.Recorder;
-import main.java.speechrecognition.ThreadCompleteListener;
-import main.java.speechrecognition.Wit;
+import edu.cmu.sphinx.api.SpeechResult;
+import main.java.speechrecognition.*;
 
 
-public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener, ThreadCompleteListener {
+public class OurController implements MouseMotionListener, MouseListener, ActionListener, ToolBarListener, WitThreadCompleteListener, SimpleSpeechThreadCompleteListener {
 
 	private RotationThread rotateThread;
 	private UndoManager undoManager;
@@ -40,8 +39,46 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private Wit wit_runnable;
     private Timer timer = new Timer();
     private TimerTask task = new MyTimerTask();
-    private ArrayList<Integer> cutLines = new ArrayList<Integer>();
-    
+    private SpeechCommands sc;
+    private Thread threadSimpleSpeech;
+    private SpeechResult result;
+    public boolean waitForWit;
+
+    @Override
+    public void notifyOfSimpleSpeech(SpeechCommands sc) {
+
+        if (sc == null || sc.getIntent() == null || sc.getIntent()[0].equals("unknown")) {
+
+            System.out.println(sc);
+            System.out.println(sc.getIntent());
+//                    sc.getIntent()[0].equals("unknown")
+
+            this.waitForWit = true;
+            System.out.println("Unknown");
+
+        }
+        else {
+
+            System.out.println(sc.getIntent()[0]);
+
+            this.waitForWit = false;
+            recognizedSimpleResponse(sc.getIntent());
+
+
+            this.contentPanel.setSpeechProcessing(false);
+
+            thread_wit = null;
+            thread = null;
+
+            if (runnable != null) {
+                runnable.finish();
+                runnable.terminate();
+
+            }
+        }
+
+    }
+
     public enum Modality{
     	MOUSE, SPEECH, LEAP
     }
@@ -50,52 +87,59 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     @Override
     public void notifyOfThreadComplete(Wit wit) {
 
-		this.contentPanel.setSpeechProcessing(false);
+        if (waitForWit) {
+            try {
+                recognizedWitResponse(wit);
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
 
-        recognizedText(wit.getWitRawJSONString());
+            recognizedText(wit.getWitRawJSONString());
 
-        try {
-            recognizedWitResponse(wit);
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
+            thread_wit = null;
+            thread = null;
+
+            if (runnable != null) {
+                runnable.finish();
+                runnable.terminate();
+
+            }
+
+            this.contentPanel.setSpeechProcessing(false);
+
         }
 
-        recognizedText(wit.getWitRawJSONString());
-
-
-		this.thread_wit = null;
-		this.thread = null;
-
-        if (runnable != null) {
-            runnable.finish();
-            runnable.terminate();
-        }
     }
 
     // Tool Mode
 	public enum ToolMode {
 		MOVE, ENLARGE, REDUCE, RESIZE, ROTATE, CUT, SPEECH
 	}
+
 	public ToolMode toolModeIndex = ToolMode.MOVE;
-    
+
 	public OurController()  {
 		super();
 		undoManager = new UndoManager();
 		rotateThread = new RotationThread(this);
     }
-	
-	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException {
+
+	public void initialize(ContentPanel cp, BasicDesign bd) throws URISyntaxException, IOException {
 		contentPanel = cp;
 		basicDesign = bd;
 		logger  = new Logger();
         this.url = getClass().getResource("/recording.wav");
         this.normalRecord =  new File(this.url.toURI());
+        this.sc = new SpeechCommands();
+        this.sc.setOurController(this);
+        this.threadSimpleSpeech = new Thread(this.sc);
+        sc.addListener(this);
+
     }
 
 	public void setToolMode(OurController.ToolMode toolMode) {
 		this.toolModeIndex = toolMode;
 	}
-
 
     public void startSpeech() throws URISyntaxException {
 
@@ -112,36 +156,53 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         SwingUtilities.invokeLater(() -> {
 
 			wit_runnable = null;
-
 			if (this.thread_wit == null) {
 				try {
                     this.contentPanel.setSpeechRecording(false);
-					wit_runnable = new Wit(this.normalRecord, "wav");
+
+                    wit_runnable = new Wit(this.normalRecord, "wav");
+
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				this.thread_wit = new Thread(wit_runnable);
+
+
+                this.threadSimpleSpeech = new Thread(sc);
+                threadSimpleSpeech.start();
+
+                this.thread_wit = new Thread(wit_runnable);
 				wit_runnable.addListener(this);
 				thread_wit.start();
+
 				contentPanel.setSpeechProcessing(true);
 			}
-
 		});
     }
 
     //START CommandInterface
-	public void selectPicture(int nr) {
-		contentPanel.selectPicture(nr);
-	}
-	
-	public void addPictureByNumber(int nr) {
+    public void selectPicture(int nr) {
+        SwingUtilities.invokeLater(() -> contentPanel.selectPicture(nr));
+    }
 
-         ArrayList<Integer> nums = basicDesign.getPictureNums();
+    public void addPictureByNumber(int nr) {
 
-        if (nums.contains(nr)) {
-            MyImage image = basicDesign.getLibrary()[nr];
-            addPicture(image);
-        }
+        System.out.println("Will add " + nr);
+
+        SwingUtilities.invokeLater(() -> {
+
+            System.out.println("Im in invoke");
+
+            ArrayList<Integer> nums = basicDesign.getPictureNums();
+            if (nums.contains(nr)) {
+                MyImage image = basicDesign.getLibrary()[nr];
+                addPicture(image);
+                basicDesign.repaint();
+            }
+
+        });
+
+        System.out.println("Really added it " + nr);
     }
 
     public void deleteSelectedPicture(){
@@ -161,26 +222,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void deletePicture(MyImage img) {
 
-
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				contentPanel.deletePicture(img);
-			}
-		});
-
+		SwingUtilities.invokeLater(() -> contentPanel.deletePicture(img));
 	}
-	
+
 	public void movePicture(int x, int y) {
-		MyImage image = contentPanel.getSelectedPicture();
-		if (image != null) {
-			int oldX = image.getX(), oldY = image.getY();
-			image.setX(x);
-			image.setY(y);
-			undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
-			checkUndoRedoButtons();
-            contentPanel.repaint();
-		}
+
+        SwingUtilities.invokeLater(() -> {
+            MyImage image = contentPanel.getSelectedPicture();
+            if (image != null) {
+                int oldX = image.getX(), oldY = image.getY();
+                image.setX(x);
+                image.setY(y);
+                undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
+                checkUndoRedoButtons();
+                contentPanel.repaint();
+            }
+        });
 	}
 
 	public void setBackground(Color color) {
@@ -190,20 +247,22 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		checkUndoRedoButtons();
         contentPanel.repaint();
 	}
-	
+
 	public void rotate(double degrees) {
-		if (contentPanel.getSelectedPicture() != null) {
-			contentPanel.rotate(degrees);
-			undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
-			checkUndoRedoButtons();
-            contentPanel.repaint();
-		}
+        SwingUtilities.invokeLater(() -> {
+            if (contentPanel.getSelectedPicture() != null) {
+                contentPanel.rotate(degrees);
+                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
+                checkUndoRedoButtons();
+                contentPanel.repaint();
+            }
+        });
 	}
 	//END CommandInterface
 
 
 	//START MouseListener
-	
+
 	/* MOUSE LISTENER */
 
 	public void cursorPressed(int XPos, int YPos) {
@@ -296,9 +355,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
 			case MOVE:
-                
+
                 // TODO: See if constraining the image is better
-                
+
 //				if (selectedImage.contains(new Point(XPos + 100, YPos + 100))) {
 
                     int xDelimited = selectedImage.getX() + deltaX;
@@ -308,7 +367,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
 
 //				}
-                
+
 				break;
 			case ROTATE:
 				// do nothing
@@ -323,14 +382,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 //
 				break;
 			}
-			
+
 			// Update mouse Coords
 			previousCursorY = YPos;
 			previousCursorX = XPos;
 			contentPanel.repaint();
 		}
 	}
-	
+
 	public void mouseDragged(MouseEvent mouseEvent) {
 		currentModality = Modality.MOUSE;
 		cursorDragged(mouseEvent.getX(), mouseEvent.getY());
@@ -339,7 +398,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void mouseMoved(MouseEvent arg0) {
 		// Not using this.
 	}
-	
+
 	public void mouseClicked(MouseEvent mouseEvent) {
 	}
 
@@ -348,7 +407,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void mouseExited(MouseEvent arg0) {
-		// Not using this.	
+		// Not using this.
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -367,7 +426,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			}else{
 				rotateThread.setClockwise(false);
 			}
-		
+
 			cursorPressed(e.getX(), e.getY());
 		}
 	}
@@ -377,7 +436,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 		cursorReleased(e.getX(), e.getY());
 	}
 	//END MouseListeners
-	
+
 	//START toolbarListener
 	public void recognizedText(String text) {
         basicDesign.getDebugPanel().appendText(text);
@@ -387,90 +446,182 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	 * This function determines what action should be taken after a response from wit.ai is received.
 	 */
     public void recognizedWitResponse(Wit response) throws FileNotFoundException {
-    	currentModality = Modality.SPEECH;
-		String intent = response.getIntent();
-		System.out.println(response.getWitRawJSONString());
+        currentModality = Modality.SPEECH;
+        String intent = response.getIntent();
+        System.out.println(response.getWitRawJSONString());
 
-		switch (intent) {
-			case "add":
-				ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
-//				ArrayList<Integer> picturesToAdd = response.extractNumbers(); // Extract all mentioned number
+        switch (intent) {
+            case "add":
+                ArrayList<Integer> picturesToAdd = response.extractNumbersShifted(); // Extract all mentioned number
+                ArrayList<Integer> picturesWrongNumbersToAdd = response.extractWrongNumbersShifted(); // Extract all mentioned number
 
-				picturesToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
-				picturesToAdd.forEach(this :: selectPicture);
-				break;
-			case "rotate":
-				ArrayList<Integer> rotations = response.extractNumbersShifted();
+                picturesToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
+                picturesToAdd.forEach(this :: selectPicture);
+
+                picturesWrongNumbersToAdd.forEach(this :: addPictureByNumber); // Could be a Java 1.8 feature
+                picturesWrongNumbersToAdd.forEach(this :: selectPicture);
+
+                break;
+            case "rotate":
+                ArrayList<Integer> rotations = response.extractNumbersShifted();
 //				ArrayList<Integer> rotations = response.extractNumbers();
-				if (rotations.isEmpty()) {
-					this.rotate(90); // Rotate 90 degrees if nothing else is said.
-				} else {
-					// Only use first number if several rotation degrees have been detected.
-					this.rotate(rotations.get(0));
-				}
+                if (rotations.isEmpty()) {
+                    this.rotate(90); // Rotate 90 degrees if nothing else is said.
+                } else {
+                    // Only use first number if several rotation degrees have been detected.
+                    this.rotate(rotations.get(0));
+                }
 
-				break;
-			case "select":
-				ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
+                break;
+            case "select":
+                ArrayList<Integer> pictureNumbers = response.extractNumbersShifted();
+                ArrayList<Integer> picturesWrongNumbersToSelect = response.extractWrongNumbersShifted(); // Extract all mentioned number
 //				ArrayList<Integer> pictureNumbers = response.extractNumbers();
 
-				for (int pic : pictureNumbers) {
-					for (MyImage img : basicDesign.getLibrary()) {
-						if (img.getNum() == pic) {
-							if(contentPanel.imageList.contains(img))
-								selectPicture(img);
-							else 
-								addPicture(img);
-						}
-					}
-				}
+                for (int pic : pictureNumbers) {
+                    for (MyImage img : basicDesign.getLibrary()) {
+                        if (img.getNum() == pic) {
+                            if(contentPanel.imageList.contains(img))
+                                selectPicture(img);
+                            else
+                                addPicture(img);
+                        }
+                    }
+                }
 
-				break;
-			case "background":
-				Color color = response.getBackgroundColor();
-				if (color != null) {
-					contentPanel.setBackground(color);
-				} else {
-					System.out.println("Unknown color: ");
-				}
+                for (int pic : picturesWrongNumbersToSelect) {
+                    for (MyImage img : basicDesign.getLibrary()) {
+                        if (img.getNum() == pic) {
+                            if(contentPanel.imageList.contains(img))
+                                selectPicture(img);
+                            else
+                                addPicture(img);
+                        }
+                    }
+                }
+
                 break;
-			case "undo":
-				this.undo();
-				break;
-			case "redo":
-				this.redo();
-				break;
+            case "background":
+                Color color = response.getBackgroundColor();
+                if (color != null) {
+                    contentPanel.setBackground(color);
+                } else {
+                    System.out.println("Unknown color: ");
+                }
+                break;
+            case "undo":
+                this.undo();
+                break;
+            case "redo":
+                this.redo();
+                break;
             case "move":
                 this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
                 break;
-			case "remove":
-				ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
+            case "remove":
+                ArrayList<Integer> pictureNumbersRemove = response.extractNumbersShifted();
 //				ArrayList<Integer> pictureNumbersRemove = response.extractNumbers();
 
-				if (pictureNumbersRemove.isEmpty()) {
-					this.deleteSelectedPicture();
-				} else {
-					for (int pic : pictureNumbersRemove) {
-						for (MyImage img : basicDesign.getLibrary()) {
-							if (img.getNum() == pic) {
-								this.deletePicture(img);
-							}
-						}
-					}
-				}
+                if (pictureNumbersRemove.isEmpty()) {
+                    this.deleteSelectedPicture();
+                } else {
+                    for (int pic : pictureNumbersRemove) {
+                        for (MyImage img : basicDesign.getLibrary()) {
+                            if (img.getNum() == pic) {
+                                this.deletePicture(img);
+                            }
+                        }
+                    }
+                }
 
                 break;
-			default:
-				System.out.println("The recognized intent is unknown: " + intent);
-				break;
-		}
-		basicDesign.repaint();
-	}
+            default:
+                System.out.println("The recognized intent is unknown: " + intent);
+                break;
+        }
+        basicDesign.repaint();
+    }
+
+
+    public void recognizedSimpleResponse(String[] intent) {
+        currentModality = Modality.SPEECH;
+
+        switch (intent[0]) {
+            case "add":
+                if (Wit.isInteger(intent[1])) {
+                    int pictureToAdd = Integer.parseInt(intent[1]) - 10; // Extract all mentioned number
+                    System.out.println("Parsed num is " + pictureToAdd);
+                    addPictureByNumber(pictureToAdd); // Could be a Java 1.8 feature
+//                selectPicture(pictureToAdd);
+                    System.out.println("Added picture " + pictureToAdd);
+                }
+                break;
+            case "rotate":
+                this.rotate(45); // Rotate 90 degrees if nothing else is said.
+                break;
+            case "select":
+                System.out.println("Select picture " + intent[1]);
+                if (intent[1] != "default") {
+                    int pictureNumber = Integer.parseInt(intent[1]);
+                    for (MyImage img : basicDesign.getLibrary()) {
+                        if (img.getNum() == pictureNumber) {
+                            if(contentPanel.imageList.contains(img))
+                                selectPicture(img);
+                            else
+                                addPicture(img);
+                        }
+                    }
+                }
+                break;
+            case "background":
+                Color color;
+                color = this.wit_runnable.stringToColor(intent[1]);
+                if (color != null) {
+                    contentPanel.setBackground(color);
+                } else {
+                    System.out.println("Unknown color: ");
+                }
+                break;
+            case "undo":
+                this.undo();
+                break;
+            case "redo":
+                this.redo();
+                break;
+            case "move":
+                this.movePicture(contentPanel.getLeapRightX(), contentPanel.getLeapRightY());
+                break;
+            case "remove":
+                if (intent[1].equals("default")) {
+                    this.deleteSelectedPicture();
+                } else {
+                    if (Wit.isInteger(intent[1])) {
+                        int pictureToRemove = Integer.parseInt(intent[1]);
+                        for (MyImage img : basicDesign.getLibrary()) {
+                            if (img.getNum() == pictureToRemove) {
+                                this.deletePicture(img);
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                System.out.println("The recognized intent is unknown: " + intent[0]);
+                break;
+        }
+        basicDesign.repaint();
+    }
+
 
 	private void undo() {
-		if(undoManager.canUndo())
-			undoManager.undo();
-		checkUndoRedoButtons();
+		ArrayList<Integer> cutLines = contentPanel.getLines();
+		if(!cutLines.isEmpty()){
+			cutLines.remove(cutLines.size()-1);
+		}else{
+			if(undoManager.canUndo())
+				undoManager.undo();
+			checkUndoRedoButtons();
+		}
 	}
 
 	private void redo() {
@@ -509,7 +660,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         }
 	}
     //END ToolbarListener
-    
+
     //START ActionListener
     //Used Only by the PhotoBar
 	public void actionPerformed(ActionEvent e) {
@@ -520,25 +671,34 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	//END ActionListener
 
 	public void selectPicture(MyImage image){
-		contentPanel.selectPicture(image);
-		basicDesign.repaint();
-	}
+        SwingUtilities.invokeLater(() -> {
+                    contentPanel.selectPicture(image);
+                    basicDesign.repaint();
+                });
+    }
 
-    public void selectPictureAt(int x, int y){
-        contentPanel.selectPictureAt(x, y);
+    public void selectPictureAt(int x, int y) {
+        SwingUtilities.invokeLater(() -> {
+            contentPanel.selectPictureAt(x, y);
+        });
     }
-    
-    public void addButtonToLibrary(MyImage image){
-    	basicDesign.photoBar.addButton(image);
-        basicDesign.repaint();
+
+    public void addButtonToLibrary(MyImage image) {
+        SwingUtilities.invokeLater(() -> {
+            basicDesign.photoBar.addButton(image);
+            basicDesign.repaint();
+        });
     }
-	
-    public void removeButtonFromLibrary(MyImage image){
-    	basicDesign.photoBar.removeButton(image);
-        basicDesign.repaint();
+
+
+    public void removeButtonFromLibrary(MyImage image) {
+        SwingUtilities.invokeLater(() -> {
+            basicDesign.photoBar.removeButton(image);
+            basicDesign.repaint();
+        });
     }
-    
-	public void addPicture(MyImage image){
+
+    public void addPicture(MyImage image){
         SwingUtilities.invokeLater(() -> {
             contentPanel.addPictureToCurrentPage(image);
             undoManager.addEdit(new ActionAddPic(image, OurController.this));
@@ -547,7 +707,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             selectPicture(image);
         });
 	}
-	
+
 	private void checkUndoRedoButtons(){
 		basicDesign.getToolbar().setEnabledUndoButton(undoManager.canUndo());
 		basicDesign.getToolbar().setEnabledRedoButton(undoManager.canRedo());
@@ -561,7 +721,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void cut(int x, int y) {
     	SwingUtilities.invokeLater(() -> {
-    		if (contentPanel.getLines().size() == 4) {  
+    		if (contentPanel.getLines().size() == 4) {
     			MyImage image = contentPanel.getSelectedPicture();
     			int oldX = image.getX(), oldY = image.getY(), oldWidth = image.getWidth(), oldHeight = image.getHeight();
     			BufferedImage oldImage = image.getImg();
@@ -575,7 +735,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     		}
     	});
     }
-    
+
     public void snapPictureRotation(){
     	MyImage selectedImage = contentPanel.getSelectedPicture();
     	if(selectedImage != null){
@@ -583,4 +743,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     		contentPanel.repaint();
     	}
     }
+
+
+    public void addToDebugPanel(String s) {
+
+        this.basicDesign.getDebugPanel().appendText(s + "\n");
+
+    }
+
 }
