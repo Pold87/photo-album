@@ -1,17 +1,11 @@
 package main.java.userInterface;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -26,6 +20,8 @@ public class ContentPanel extends JPanel {
 
 	private OurController ourController;
 
+	private ArrayList<MyImage> rectangles;
+
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	private int scr_width = screenSize.width;
 	private int scr_height = screenSize.height;
@@ -38,15 +34,19 @@ public class ContentPanel extends JPanel {
 	public ArrayList<MyImage> imageList;
 	private MyImage selectedImage;
 
+	private boolean drawRectangles;
+	private boolean drawPictures;
+
     public ContentPanel(OurController ourController, MyImage[] library) throws IOException {
     	setPreferredSize(new Dimension(600, 600));
         imageList = new ArrayList<>();
-        setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.rectangles = new ArrayList<>();
+		setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(Color.white);
         addMouseListener(ourController);
         addMouseMotionListener(ourController);
 		this.ourController = ourController;
-		if(App.testMode != App.TestMode.Train){
+		if(App.testMode != App.TestMode.Train) {
 			createPresetPage(library);
 		}
     }
@@ -134,6 +134,34 @@ public class ContentPanel extends JPanel {
                 drawDashedBox(g2d, i);
             }
         }
+
+
+		// Draw rectangles and helper images for templates
+
+		Iterator<MyImage> iterRect = this.rectangles.iterator();
+		// Changed to iterator as I got a ConcurrentModificationException (Volker)
+		// TODO: Still not working
+
+		if (this.isDrawRectangles()) {
+			while (iterRect.hasNext()) {
+				MyImage i = iterRect.next();
+				if (i.isActive()) {
+
+					if (this.isDrawPictures()) {
+						i.paint(g2d);
+					} else {
+						Graphics2D g2dCopy = (Graphics2D) g2d.create();
+						g2dCopy.rotate(Math.toRadians(i.getRotationDegrees()), i.getX() + (i.getWidth() / 2), i.getY() + (i.getHeight() / 2));
+						g2dCopy.drawRect(i.getX(), i.getY(), i.getWidth(), i.getHeight());
+						g2dCopy.drawString(Integer.toString(i.getNum() + 10), i.getX(), i.getY() - 5);
+						g2dCopy.setTransform(new AffineTransform());
+						g2dCopy.dispose();
+					}
+
+				}
+			}
+		}
+
 
 		// Show progress for speech
 		// TODO! Or exclude (it displays a red rectangle). Maybe find a nice icon.
@@ -360,14 +388,9 @@ public class ContentPanel extends JPanel {
 	}
 	
 	//Edit this here if you want a different starting page for the test conditions.
+	//Point[] positions, int[] width, int[] height
 	private void createPresetPage(MyImage[] library){
-		setBackground(Color.cyan);
-		addPictureToCurrentPage(library[2]);
-		imageList.get(0).setX(800);
-		imageList.get(0).setY(100);
-		imageList.get(0).incrementRotation(45);
-		addPictureToCurrentPage(library[4]);
-		
+		this.setBackground(Color.WHITE);
 	}
 	
 	public void unselect(){
@@ -520,4 +543,50 @@ public class ContentPanel extends JPanel {
 
     }
 
-}
+	public void saveContentPanel() throws IOException {
+
+		int x = 1;
+		String filename = "frames/" + "contentPanel-" + x + ".ser";
+		File file = new File(filename);
+		while(file.exists()) {
+			x++;
+			filename = "frames/" + "contentPanel-" + x + ".ser";
+			file = new File(filename);
+		}
+
+		FileOutputStream fout = new FileOutputStream(filename);
+		ObjectOutputStream oos = new ObjectOutputStream(fout);
+		oos.writeObject(this.imageList);
+	}
+
+	public void loadContentPanel(String filename) throws IOException, ClassNotFoundException {
+		//deserialize the quarks.ser file
+		FileInputStream file = new FileInputStream(filename);
+		InputStream buffer = new BufferedInputStream(file);
+		ObjectInput input = new ObjectInputStream (buffer);
+		//deserialize the List
+		this.rectangles = (ArrayList<MyImage>) input.readObject();
+		//display its data
+	}
+
+	public boolean isDrawRectangles() {
+		return this.drawRectangles;
+	}
+
+	public void setDrawRectangles(boolean rectangles) {
+		this.drawRectangles = rectangles;
+	}
+
+	public void overwritePictures() {
+		this.imageList = this.rectangles;
+	}
+
+	public boolean isDrawPictures() {
+		return drawPictures;
+	}
+
+	public void setDrawPictures(boolean drawPictures) {
+		this.drawPictures = drawPictures;
+	}
+
+	}

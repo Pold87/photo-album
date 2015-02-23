@@ -4,6 +4,7 @@ package main.java.userInterface;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -49,6 +50,9 @@ public class BasicDesign extends JFrame {
     private class MyDispatcher implements KeyEventDispatcher {
         @Override
         public boolean dispatchKeyEvent(KeyEvent e) {
+
+            String file_base = "frames/contentPanel-";
+
             if (e.getID() == KeyEvent.KEY_RELEASED) {
 
                 switch (e.getKeyChar()) {
@@ -57,38 +61,89 @@ public class BasicDesign extends JFrame {
 
                         Logger logger1 = new Logger("task1");
                         ourController.setLogger(logger1);
+
+                        try {
+                            contentPanel.loadContentPanel(file_base + '1' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
                         break;
 
                     case '2':
                         Logger logger2 = new Logger("task2");
                         ourController.setLogger(logger2);
+
+                        try {
+                            contentPanel.loadContentPanel(file_base + '2' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
                         break;
 
                     case '3':
                         Logger logger3 = new Logger("task3");
                         ourController.setLogger(logger3);
+
+                        try {
+                            contentPanel.loadContentPanel(file_base + '3' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
                         break;
 
                     case '4':
                         Logger logger4 = new Logger("task4");
                         ourController.setLogger(logger4);
-                        break;
 
+                        try {
+                            contentPanel.loadContentPanel(file_base + '4' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
+                        break;
                     case '5':
                         Logger logger5 = new Logger("task5");
                         ourController.setLogger(logger5);
+
+                        try {
+                            contentPanel.loadContentPanel(file_base + '5' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
                         break;
 
                     case '6':
                         Logger logger6 = new Logger("task6");
                         ourController.setLogger(logger6);
+
+                        try {
+                            contentPanel.loadContentPanel(file_base + '6' + ".ser");
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
                         break;
 
-                    case '7':
-                        Logger logger7 = new Logger("task7");
-                        ourController.setLogger(logger7);
+                    case 's':
+                        try {
+                            contentPanel.saveContentPanel();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                         break;
-
+                    case 't':
+                        contentPanel.setDrawRectangles(!contentPanel.isDrawRectangles());
+                        break;
+                    case 'o':
+                        contentPanel.overwritePictures();
+                        break;
+                    case 'p':
+                        contentPanel.setDrawPictures(!contentPanel.isDrawPictures());
                 }
 
             }

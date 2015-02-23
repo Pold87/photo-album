@@ -5,13 +5,17 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-public class MyImage {
+public class MyImage implements Serializable{
 
-    private BufferedImage img, originalImage; // The actual picture
+    transient private BufferedImage img, originalImage; // The actual picture
     private int x;
     private int y;
 
@@ -230,5 +234,31 @@ public class MyImage {
         img = originalImage;
         height = originalHeight;
         width = originalWidth;
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+
+        ArrayList<BufferedImage> images = new ArrayList<>();
+        images.add(this.img);
+        images.add(this.originalImage);
+        out.writeInt(2); // how many images are serialized?
+        for (BufferedImage eachImage : images) {
+            ImageIO.write(eachImage, "png", out); // png is lossless
+        }
+        }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+
+        final int imageCount = in.readInt();
+        ArrayList<BufferedImage> images = new ArrayList<BufferedImage>(imageCount);
+        for (int i=0; i<imageCount; i++) {
+            images.add(ImageIO.read(in));
+        }
+
+        this.img = images.get(0);
+        this.originalImage = images.get(1);
+
     }
 }
