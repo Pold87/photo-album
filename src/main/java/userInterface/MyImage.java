@@ -28,6 +28,7 @@ public class MyImage implements Serializable{
     private int x;
     private int y;
 
+    private double originalRatio;
     private int width, originalWidth;
     private int height, originalHeight; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
@@ -51,7 +52,12 @@ public class MyImage implements Serializable{
         height = img.getHeight();
         originalWidth = img.getWidth();
         originalHeight = img.getHeight();
-        originalImage = img;
+        originalImage = img;        
+        originalRatio = originalHeight*1.0/originalWidth;
+    }
+    
+    public double getOriginalRatio (){
+    	return originalRatio;
     }
 
     public boolean isActive() {
@@ -219,7 +225,15 @@ public class MyImage implements Serializable{
     	return num;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    public int getOriginalWidth() {
+		return originalWidth;
+	}
+
+	public int getOriginalHeight() {
+		return originalHeight;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
 
         ArrayList<BufferedImage> images = new ArrayList<>();
