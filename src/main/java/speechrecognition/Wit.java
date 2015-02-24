@@ -221,7 +221,9 @@ public class Wit implements Runnable {
         HashMap<String, Integer> assignments = new HashMap<>();
 
         assignments.put("to self", 12);
+        assignments.put("self", 12);
         assignments.put("taken", 10);
+        assignments.put("tent", 10);
         assignments.put("elf", 12);
         assignments.put("tells", 12);
         assignments.put("teen", 14);
@@ -263,7 +265,7 @@ public class Wit implements Runnable {
         JsonArray jsonArray = entities.getJsonArray("color");
 
 
-        if (!jsonArray.isEmpty()) {
+        if (jsonArray!= null && !jsonArray.isEmpty()) {
             JsonObject jsonObject = jsonArray.getJsonObject(0);
             String colorString = jsonObject.getString("value").toLowerCase();
             color = this.stringToColor(colorString);

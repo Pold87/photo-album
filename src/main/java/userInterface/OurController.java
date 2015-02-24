@@ -239,8 +239,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             MyImage image = contentPanel.getSelectedPicture();
             if (image != null) {
                 int oldX = image.getX(), oldY = image.getY();
-                image.setX(x);
-                image.setY(y);
+
+                if (contentPanel.getLeapRightY() > basicDesign.getScr_width()) {
+                    image.setX(200);
+                    image.setY(200);
+                } else {
+                    image.setX(x);
+                    image.setY(y);
+                }
                 undoManager.addEdit(new ActionMove(image, oldX, oldY, x, y, this));
                 checkUndoRedoButtons();
                 contentPanel.repaint();
@@ -367,9 +373,21 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	public void cursorDragged(int XPos, int YPos) {
 		int deltaY = YPos - previousCursorY, deltaX = XPos - previousCursorX;
 		MyImage selectedImage = contentPanel.getSelectedPicture();
+
+
+        // TODO STOP ONLY IF CHANGES
+
+
+
 		if(!(selectedImage==null)) {
 			switch (toolModeIndex) {
 			case MOVE:
+
+                if (((MyTimerTask) task).isRunning()) {
+                    task.cancel();
+                    timer = new Timer();
+                    task = new MyTimerTask();
+                }
 
                 // TODO: See if constraining the image is better
 
@@ -393,7 +411,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case SPEECH:
                 // do nothing
                 break;
-			default:
+            case ENLARGE:
+                break;
+            default:
                 //
 				break;
 			}
@@ -520,7 +540,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 Color color;
                 color = response.getBackgroundColor();
                 if (color != null) {
-                    contentPanel.setBackground(color);
+                    setBackground(color);
                 } else {
                     System.out.println("Unknown color: ");
                 }
@@ -593,7 +613,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 Color color;
                 color = this.wit_runnable.stringToColor(intent[1]);
                 if (color != null) {
-                    contentPanel.setBackground(color);
+                    setBackground(color);
                 } else {
                     System.out.println("Unknown color: ");
                 }

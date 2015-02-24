@@ -96,23 +96,17 @@ public class SpeechCommands implements Runnable {
 
     // Recognize a command
     public void recognizeCommand() {
-        System.out.println("yeah yeah - Command recognition (using grammar)");
 
-//        InputStream stream = SpeechCommands.class.getResourceAsStream("/recording.wav");
-
-
-        InputStream stream = App.class.getResourceAsStream("/recording.wav");
-
-//        stream.
+        InputStream stream = SpeechCommands.class.getResourceAsStream("/recording.wav");
 
 
-        System.out.println("What?!?");
+//        InputStream stream = App.class.getResourceAsStream("/recording.wav");
+
 
         this.commandRecognizer.startRecognition(stream);
 
         SpeechResult result;
 
-        System.out.println("Yeah");
 
         while ((result = commandRecognizer.getResult()) != null) {
             String hypo = result.getHypothesis();
