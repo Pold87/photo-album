@@ -221,8 +221,12 @@ public class Wit implements Runnable {
         HashMap<String, Integer> assignments = new HashMap<>();
 
         assignments.put("to self", 12);
+        assignments.put("taken", 10);
+        assignments.put("elf", 12);
+        assignments.put("tells", 12);
         assignments.put("teen", 14);
         assignments.put("den", 10);
+        assignments.put("hen", 10);
 
 
         ArrayList<Integer> imageNumbers = new ArrayList<>();
@@ -255,11 +259,18 @@ public class Wit implements Runnable {
     public Color getBackgroundColor() {
 
         JsonObject entities = this.getEntities();
+        Color color;
         JsonArray jsonArray = entities.getJsonArray("color");
-        JsonObject jsonObject = jsonArray.getJsonObject(0);
-        String colorString = jsonObject.getString("value").toLowerCase();
 
-        Color color = this.stringToColor(colorString);
+
+        if (!jsonArray.isEmpty()) {
+            JsonObject jsonObject = jsonArray.getJsonObject(0);
+            String colorString = jsonObject.getString("value").toLowerCase();
+            color = this.stringToColor(colorString);
+        } else {
+           color = null;
+        }
+
         return color;
     }
 

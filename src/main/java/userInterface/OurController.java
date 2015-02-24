@@ -515,9 +515,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
                 break;
             case "background":
-                Color color = response.getBackgroundColor();
+                Color color;
+                color = response.getBackgroundColor();
                 if (color != null) {
-                    this.setBackground(color);
+                    contentPanel.setBackground(color);
                 } else {
                     System.out.println("Unknown color: ");
                 }
