@@ -31,7 +31,7 @@ import main.java.userInterface.OurController;
 
 public class SpeechCommands implements Runnable {
 
-    public static final String ACOUSTIC_MODEL = "resource:/voxforge/acousticmodel/";
+    public static final String ACOUSTIC_MODEL = "resource:/voxforge/acousticmodel";
     public static final String DICTIONARY_PATH = "resource:/voxforge/cmudict.0.6d";
     public static final String GRAMMAR_PATH = "resource:/voxforge";
     public static final String GRAMMAR_NAME = "commands";

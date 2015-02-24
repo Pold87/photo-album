@@ -33,6 +33,7 @@ public class BasicDesign extends JFrame {
     private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
     private MyImage[] library;
     public OurController ourController;
+    private String task;
 
     // Leap stuff
 
@@ -51,82 +52,22 @@ public class BasicDesign extends JFrame {
         @Override
         public boolean dispatchKeyEvent(KeyEvent e) {
 
-            String file_base = "frames/contentPanel-";
-
             if (e.getID() == KeyEvent.KEY_RELEASED) {
 
                 switch (e.getKeyChar()) {
 
                     case '1':
-
-                        Logger logger1 = new Logger("task1");
-                        ourController.setLogger(logger1);
-
-                        try {
-                            contentPanel.loadContentPanel(file_base + '1' + ".ser");
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
-
-                        break;
-
                     case '2':
-                        Logger logger2 = new Logger("task2");
-                        ourController.setLogger(logger2);
-
-                        try {
-                            contentPanel.loadContentPanel(file_base + '2' + ".ser");
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
-
-                        break;
-
                     case '3':
-                        Logger logger3 = new Logger("task3");
-                        ourController.setLogger(logger3);
-
-                        try {
-                            contentPanel.loadContentPanel(file_base + '3' + ".ser");
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
-
-                        break;
-
                     case '4':
-                        Logger logger4 = new Logger("task4");
-                        ourController.setLogger(logger4);
-
-                        try {
-                            contentPanel.loadContentPanel(file_base + '4' + ".ser");
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
-
-                        break;
                     case '5':
-                        Logger logger5 = new Logger("task5");
-                        ourController.setLogger(logger5);
-
-                        try {
-                            contentPanel.loadContentPanel(file_base + '5' + ".ser");
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
-
-                        break;
-
                     case '6':
-                        Logger logger6 = new Logger("task6");
-                        ourController.setLogger(logger6);
-
+                        ourController.getLogger().setTaskNumber(e.getKeyChar());
                         try {
-                            contentPanel.loadContentPanel(file_base + '6' + ".ser");
+                            ourController.loadContentPanel(task, e.getKeyChar());
                         } catch (Exception e2) {
                             e2.printStackTrace();
                         }
-
                         break;
 
                     case 's':
@@ -144,6 +85,9 @@ public class BasicDesign extends JFrame {
                         break;
                     case 'p':
                         contentPanel.setDrawPictures(!contentPanel.isDrawPictures());
+                        break;
+                    case 'b':
+                        ourController.killWit();
                 }
 
             }
@@ -152,7 +96,7 @@ public class BasicDesign extends JFrame {
     }
 
 
-    public BasicDesign(String path) throws Exception {
+    public BasicDesign(String path, String task) throws Exception {
 
         super("Photoalbum");
         repaint();
@@ -173,6 +117,7 @@ public class BasicDesign extends JFrame {
         super.setLocationRelativeTo(null);
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        this.task = task;
 
         URL url = getClass().getResource(path);
         File dir = new File(url.toURI());
@@ -325,6 +270,15 @@ public class BasicDesign extends JFrame {
 
         return nums;
     }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
+    }
+
 
 
 }

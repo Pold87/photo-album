@@ -22,6 +22,8 @@ import javax.imageio.ImageIO;
 
 public class MyImage implements Serializable{
 
+    private static final long serialVersionUID = -4147097089450861685L;
+
     transient private BufferedImage img, originalImage; // The actual picture
     private int x;
     private int y;
@@ -36,7 +38,7 @@ public class MyImage implements Serializable{
     public MyImage(String path, int x, int y, int num) throws IOException {
         // Create URL for image (to handle OS difficulties)
         URL url = getClass().getResource(path);
-        System.out.println("Creating image: " + url);
+//        System.out.println("Creating image: " + url);
         this.img = ImageIO.read(url);
         this.x = x;
         this.y = y;
@@ -116,42 +118,6 @@ public class MyImage implements Serializable{
 
         width = newW;
         height = newH;
-
-//
-//        double dW = (double) newW;
-//        double dH = (double) newH;
-//
-//        BufferedImage before;
-//        before = this.img;
-//        double w = before.getWidth();
-//        double h = before.getHeight();
-//
-//
-//        double dWNew = (double) newW;
-//        double dHNew = (double) newH;
-//
-//
-//        System.out.println("New stuff" + dWNew + " " + dHNew);
-//
-//        double scaleFactorW = dWNew / w;
-//        double scaleFactorH = dHNew / h;
-//
-//        System.out.println("Scale factor:" + scaleFactorW + " " + scaleFactorH);
-//
-//        BufferedImage after = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
-//        AffineTransform at = new AffineTransform();
-//        at.scale(scaleFactorW, scaleFactorH);
-//        AffineTransformOp scaleOp =
-//                new AffineTransformOp(at, AffineTransformOp.TYPE_BICUBIC);
-//        after = scaleOp.filter(before, after);
-//
-//
-////        BufferedImage after = this.getScaledImage(newW, newH);
-//
-//        this.img = after;
-//
-//        this.width = newW;
-//        this.height = newH;
 
     }
 

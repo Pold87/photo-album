@@ -13,12 +13,12 @@ public class App {
 	public enum TestMode{
 		Train, TestLeap, TestMouse;
 	}
-	
+
 	//It's kinda nasty that I made global variables of these, but it saves a lot of parameter passing.
 	public static TestMode testMode;
 	public static int participantNr;
 	public static long startTime;
-	
+
     /**
      * Launch the application.
      * @throws InterruptedException 
@@ -28,17 +28,18 @@ public class App {
         new ModeSelector();        
     }
     
-    public static void modeSelected(int partNr, TestMode testmode){
-    	EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                	startTime = System.currentTimeMillis();
-                	testMode = testmode;
-                	participantNr = partNr;
-                    new BasicDesign("/pictures/");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public static void modeSelected(int partNr, TestMode testmode, String task){
+
+        System.out.println(task);
+
+        EventQueue.invokeLater(() -> {
+            try {
+                startTime = System.currentTimeMillis();
+                testMode = testmode;
+                participantNr = partNr;
+                new BasicDesign("/pictures/", task);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

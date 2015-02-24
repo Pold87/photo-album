@@ -1,6 +1,9 @@
 package main.java.userInterface;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.undo.UndoableEdit;
 
@@ -53,11 +56,31 @@ public class Action implements UndoableEdit{
 	private void log (String action){
 		timePerform = (System.currentTimeMillis() - App.startTime)/100;
 		double time = timePerform*1.0/10;
-		if(image != null)
-		ourController.logger.logAction(modality + ", " + action + ", " + image.getNr() + ", " + newX + ", " + newY + ", " + image.getRotationDegrees() + ", " + image.getWidth() + ", " + image.getHeight() + ", " + background + ", " + time);
-		else
-			ourController.logger.logAction(modality + ", " + action + ", " + 0 + ", " + newX + ", " + newY + ", " + 0 + ", " + 0 + ", " + 0 + ", " + background + ", " + time);
-
+		if(image != null) {
+            ArrayList<String> log = new ArrayList<>(Arrays.asList(modality.toString(),
+                    action,
+                    Integer.toString(image.getNr()),
+                    Integer.toString(newX),
+                    Integer.toString(newY),
+                    Double.toString(image.getRotationDegrees()),
+                    Integer.toString(image.getWidth()),
+                    Integer.toString(image.getHeight()),
+                    BackgroundBar.colorMap.get(background), // TODO: use better to color method
+                    Double.toString(time)));
+            ourController.logger.logAction(log);
+        } else {
+            List<String> log = new ArrayList<>(Arrays.asList(modality.toString(),
+                    action,
+                    Integer.toString(0),
+                    Integer.toString(newX),
+                    Integer.toString(newY),
+                    Integer.toString(0),
+                    Integer.toString(0),
+                    Integer.toString(0),
+                    BackgroundBar.colorMap.get(background),
+                    Double.toString(time)));
+            ourController.logger.logAction(log);
+        }
 	}
 	
 	public void redo() {

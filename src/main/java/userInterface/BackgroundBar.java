@@ -15,37 +15,27 @@ public class BackgroundBar extends JToolBar{
 
     private static final long serialVersionUID = 1L;
     private OurController listener;
+    private static Color[] colorArray = {
+            Color.WHITE
+            , Color.BLACK
+            , Color.RED
+            , Color.BLUE
+            , Color.CYAN
+            , Color.MAGENTA
+            , Color.PINK
+            , Color.GREEN
+            , Color.YELLOW
+            , Color.GRAY
+            , Color.ORANGE
+    };
+    public static Map<Color, String> colorMap = new HashMap<Color, String>();
+
 
     public BackgroundBar(OurController listener) throws Exception {
         this.listener = listener;
         setOrientation(SwingConstants.VERTICAL);
         setBackground(Color.white);
 
-        this.createIcon();
-        this.addSeparator();
-
-
-    }
-
-    @SuppressWarnings("serial")
-	private void createIcon() {
-
-        Color[] colorArray = {
-                  Color.WHITE
-                , Color.BLACK
-                , Color.BLUE
-                , Color.CYAN
-                , Color.DARK_GRAY
-                , Color.RED
-                , Color.MAGENTA
-                , Color.PINK
-                , Color.GREEN
-                , Color.YELLOW
-                , Color.GRAY
-                , Color.ORANGE
-        };
-
-        Map<Color, String> colorMap = new HashMap<Color, String>();
         colorMap.put(Color.WHITE, "White");
         colorMap.put(Color.BLACK, "Black");
         colorMap.put(Color.RED, "Red");
@@ -57,6 +47,20 @@ public class BackgroundBar extends JToolBar{
         colorMap.put(Color.YELLOW, "Yellow");
         colorMap.put(Color.GRAY, "Gray");
         colorMap.put(Color.ORANGE, "Orange");
+
+        this.createIcon();
+        this.addSeparator();
+
+
+    }
+
+
+    public Map<Color, String> getColorMap() {
+        return colorMap;
+    }
+
+
+    private void createIcon() {
 
         for (final Color c : colorArray) {
 
@@ -72,7 +76,7 @@ public class BackgroundBar extends JToolBar{
             if (c.equals(Color.BLACK)) {
                 imageButton.setForeground(Color.WHITE);
             }
-
+            imageButton.setForeground(Color.BLACK);
             imageButton.setText(colorMap.get(c));
             imageButton.setOpaque(true);
             this.add(imageButton);

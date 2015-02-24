@@ -3,16 +3,21 @@ package main.java.userInterface;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class ModeSelector extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JTextField txtParticipantNumber;
 	int participantNumber = 0;
-	
+
+
+    private ButtonGroup buttonGroup = new ButtonGroup();
+    private JRadioButton t1;
+    private JRadioButton t2;
+    private JPanel buttonPanel;
+
 	public ModeSelector() {
 		txtParticipantNumber = new JTextField();
 		txtParticipantNumber.setText("Participant Number");
@@ -30,8 +35,28 @@ public class ModeSelector extends JFrame implements ActionListener {
 		JButton btnTest2 = new JButton("Test Mouse");
 		getContentPane().add(btnTest2, BorderLayout.EAST);
 		btnTest2.addActionListener(this);
-		
-	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        this.buttonPanel = new JPanel();
+
+        this.t1 =  new JRadioButton("Task 1");
+        this.t1.setSelected(true);
+        this.t1.setActionCommand("task1");
+
+
+        this.t2 =  new JRadioButton("Task 2");
+        this.t2.setActionCommand("task2");
+
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+
+        buttonGroup.add(t1);
+        buttonGroup.add(t2);
+
+        buttonPanel.add(t1);
+        buttonPanel.add(t2);
+
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    setVisible(true);
 	    pack();
 	    this.setLocation(700, 350);
@@ -44,12 +69,16 @@ public class ModeSelector extends JFrame implements ActionListener {
 		}catch(Exception ex){
 			
 		}
-		if(e.getActionCommand().equalsIgnoreCase("Train"))
-			App.modeSelected(participantNumber, App.TestMode.Train);
+
+        String taskCommand = this.buttonGroup.getSelection().getActionCommand();
+        System.out.println(taskCommand);
+
+        if(e.getActionCommand().equalsIgnoreCase("Train"))
+			App.modeSelected(participantNumber, App.TestMode.Train, taskCommand);
 		else if(e.getActionCommand().equalsIgnoreCase("Test Mouse"))
-			App.modeSelected(participantNumber, App.TestMode.TestMouse);
+			App.modeSelected(participantNumber, App.TestMode.TestMouse, taskCommand);
 		else
-			App.modeSelected(participantNumber, App.TestMode.TestLeap);
-		this.dispose();
+			App.modeSelected(participantNumber, App.TestMode.TestLeap, taskCommand);
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 }

@@ -113,7 +113,6 @@ public class Wit implements Runnable {
     }
 
     private void askWit() throws IOException, URISyntaxException {
-        System.out.println("HEyho");
 
         // Speech recognition
         HttpClient client = HttpClients.createDefault();
@@ -222,6 +221,9 @@ public class Wit implements Runnable {
         HashMap<String, Integer> assignments = new HashMap<>();
 
         assignments.put("to self", 12);
+        assignments.put("teen", 14);
+        assignments.put("den", 10);
+
 
         ArrayList<Integer> imageNumbers = new ArrayList<>();
 

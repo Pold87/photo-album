@@ -42,6 +42,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     private SpeechCommands sc;
     private Thread threadSimpleSpeech;
     private SpeechResult result;
+    private boolean killed;
     public boolean waitForWit;
 
     @Override
@@ -87,28 +88,40 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     @Override
     public void notifyOfThreadComplete(Wit wit) {
 
-        if (waitForWit) {
-            try {
-                recognizedWitResponse(wit);
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            }
+        if (!killed) {
 
-            recognizedText(wit.getWitRawJSONString());
+            if (waitForWit) {
+                try {
+                    recognizedWitResponse(wit);
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                }
 
-            thread_wit = null;
-            thread = null;
+                recognizedText(wit.getWitRawJSONString());
 
-            if (runnable != null) {
-                runnable.finish();
-                runnable.terminate();
+                this.endWit();
 
             }
+        }
 
-            this.contentPanel.setSpeechProcessing(false);
+    }
+
+    public void killWit() {
+        this.killed = true;
+        this.endWit();
+    }
+
+    public void endWit() {
+        thread_wit = null;
+        thread = null;
+
+        if (runnable != null) {
+            runnable.finish();
+            runnable.terminate();
 
         }
 
+        this.contentPanel.setSpeechProcessing(false);
     }
 
     // Tool Mode
@@ -142,13 +155,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void startSpeech() throws URISyntaxException {
+        SwingUtilities.invokeLater(() -> {
 
-        if (!this.contentPanel.isSpeechProcessing() && !this.contentPanel.isSpeechRecording()) {
-            runnable = new Recorder(this.normalRecord, this.contentPanel);
-            thread = new Thread(runnable);
-            thread.start();
-            this.contentPanel.setSpeechRecording(true);
-        }
+            this.killed = false;
+
+            if (!this.contentPanel.isSpeechProcessing() && !this.contentPanel.isSpeechRecording()) {
+                runnable = new Recorder(this.normalRecord, this.contentPanel);
+                thread = new Thread(runnable);
+                thread.start();
+                this.contentPanel.setSpeechRecording(true);
+            }
+        });
     }
 
 
@@ -187,11 +204,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     public void addPictureByNumber(int nr) {
 
-        System.out.println("Will add " + nr);
-
         SwingUtilities.invokeLater(() -> {
-
-            System.out.println("Im in invoke");
 
             ArrayList<Integer> nums = basicDesign.getPictureNums();
             if (nums.contains(nr)) {
@@ -201,8 +214,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             }
 
         });
-
-        System.out.println("Really added it " + nr);
     }
 
     public void deleteSelectedPicture(){
@@ -241,18 +252,20 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
 	public void setBackground(Color color) {
-		Color oldColor = contentPanel.getBackground();
-		contentPanel.setBackground(color);
-		undoManager.addEdit(new ActionBackground(oldColor, color, this));
-		checkUndoRedoButtons();
-        contentPanel.repaint();
+        SwingUtilities.invokeLater(() -> {
+            Color oldColor = contentPanel.getBackground();
+            contentPanel.setBackground(color);
+            undoManager.addEdit(new ActionBackground(oldColor, color, this));
+            checkUndoRedoButtons();
+            contentPanel.repaint();
+        });
 	}
 
 	public void rotate(double degrees) {
         SwingUtilities.invokeLater(() -> {
             if (contentPanel.getSelectedPicture() != null) {
                 contentPanel.rotate(degrees);
-                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) degrees, this));
+                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) contentPanel.getSelectedPicture().getRotationDegrees(), this));
                 checkUndoRedoButtons();
                 contentPanel.repaint();
             }
@@ -308,6 +321,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         }
 	}
 
+    public Logger getLogger() {
+        return logger;
+    }
 
 	public void cursorReleased(int XPos, int YPos) {
         MyImage selectedImage = contentPanel.getSelectedPicture();
@@ -705,13 +721,17 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             checkUndoRedoButtons();
             removeButtonFromLibrary(image);
             selectPicture(image);
+            toolModeIndex = ToolMode.MOVE;
         });
 	}
 
 	private void checkUndoRedoButtons(){
-		basicDesign.getToolbar().setEnabledUndoButton(undoManager.canUndo());
-		basicDesign.getToolbar().setEnabledRedoButton(undoManager.canRedo());
-		basicDesign.repaint();
+        SwingUtilities.invokeLater(() -> {
+            basicDesign.getToolbar().setEnabledUndoButton(undoManager.canUndo());
+            basicDesign.getToolbar().setEnabledRedoButton(undoManager.canRedo());
+            basicDesign.repaint();
+        });
+
 	}
 
 
@@ -737,11 +757,14 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     }
 
     public void snapPictureRotation(){
-    	MyImage selectedImage = contentPanel.getSelectedPicture();
-    	if(selectedImage != null){
-    		selectedImage.snapRotation();
-    		contentPanel.repaint();
-    	}
+        SwingUtilities.invokeLater(() -> {
+            MyImage selectedImage = contentPanel.getSelectedPicture();
+            if(selectedImage != null){
+                selectedImage.snapRotation();
+                contentPanel.repaint();
+            }
+        });
+
     }
 
 
@@ -749,6 +772,12 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
         this.basicDesign.getDebugPanel().appendText(s + "\n");
 
+    }
+
+    public void loadContentPanel(String task, char num) throws IOException, ClassNotFoundException {
+
+        String file_base = "frames/contentPanel-";
+        this.contentPanel.loadContentPanel(file_base + task + "-" + num + ".ser");
     }
 
 }

@@ -2,6 +2,7 @@ package main.java.userInterface;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
@@ -425,7 +426,9 @@ public class ContentPanel extends JPanel {
 
     public void cut() {
 
-        if (this.getSelectedPicture() != null) {
+        MyImage image = this.getSelectedPicture();
+
+        if (image != null) {
 
             int x1 = this.lines.get(0);
             int x2 = this.lines.get(1);
@@ -451,93 +454,30 @@ public class ContentPanel extends JPanel {
                 yDown = y1;
             }
 
-            MyImage picture = this.getSelectedPicture();
-            int picX = picture.getX();
-            int picY = picture.getY();
-            boolean isOn = (xLeft > picX && xLeft < picX + picture.getWidth()) && (xRight > picX && xRight < picX + picture.getWidth()) && (yUp > picY && yUp < picY + picture.getHeight()) && (yDown > picY && yDown < picY + picture.getHeight());
-            if (isOn) {
-            
-	            int rightOverlap, leftOverlap, upOverlap, downOverlap;
-	
-	            rightOverlap = Math.max(picX + this.getSelectedPicture().getWidth() - xRight,0);
-	            leftOverlap = Math.max(xLeft - picX,0);
-	
-	            upOverlap = Math.max(yUp - picY,0);
-	            downOverlap = Math.max(picY + this.getSelectedPicture().getHeight() - yDown,0);
-	
-	            int x;
-	            int y;
-	            int w;
-	            int h;
-	            
-	            boolean left = xLeft > picX && xLeft < picX + picture.getWidth();
-	            boolean up = yUp > picY && yUp < picY + picture.getHeight();
-	            boolean width = xRight > picX && xRight < picX + picture.getWidth();
-	            boolean height = yDown > picY && yDown < picY + picture.getHeight();
-	            System.out.println("Left: " + left + ", up: " + up + ", width: " + width + ", height: " + height);
-	            if (left && up || left && height) {
-	            	x = leftOverlap;
-	            	System.out.println("leftIn");
-	            }
-	            else {
-	            	x = picX;
-	            	System.out.println("leftOut");
-	            }
-	            if (up && left || up && width) {
-	            	y = upOverlap;
-	            	System.out.println("upIn");
-	            }
-	            else {
-	            	y = picY;
-	            	System.out.println("upOut");
-	            }
-	            if (width && up || up && left) {
-	            	w = xRight - xLeft;
-	            	System.out.println("widthIn");
-	            }
-	            else {
-	            	w = picture.getWidth();
-	            	System.out.println("widthOut");
-	            }
-	            if (height && left || height && width) {
-	            	h = yDown - yUp;
-	            	System.out.println("heightIn");
-	            }
-	            else {
-	            	h = picture.getHeight();
-	            	System.out.println("heightOut");
-	            }
-	
-	            System.out.println("x" + x);
-	            System.out.println("y" + y);
-	            System.out.println("w" + w);
-	            System.out.println("h" + h);
-	
-	            System.out.println("Picture x is: " + this.getSelectedPicture().getX());
-	            System.out.println("Picture y is: " + this.getSelectedPicture().getY());
-	            System.out.println("Picture w is: " + this.getSelectedPicture().getImg().getWidth());
-	            System.out.println("Picture h is: " + this.getSelectedPicture().getImg().getHeight());
-	
-	            for (int i : this.lines) {
-	                System.out.println("Line is " + i);
-	            }
-	            BufferedImage subImage;
-	            if (height && left && width && up) {
-	            	subImage = this.getSelectedPicture().getImg().getSubimage(x, y, w, h);
-	            }
-	            else
-	            	subImage = this.getSelectedPicture().getImg();
-	            this.getSelectedPicture().setImg(subImage);
-	            this.getSelectedPicture().setWidth(w);
-	            this.getSelectedPicture().setHeight(h);
-	            if (height && left && width && up) {
-		            this.getSelectedPicture().setX(this.getSelectedPicture().getX() + x);
-		            this.getSelectedPicture().setY(this.getSelectedPicture().getY() + y);
-	            }
-	            else {
-	            	this.getSelectedPicture().setX(this.getSelectedPicture().getX());
-		            this.getSelectedPicture().setY(this.getSelectedPicture().getY());
-	            }
+
+            int w_intersect = xRight - xLeft;
+            int h_intersect = yDown - yUp;
+            Rectangle cut_rect = new Rectangle(xLeft, yUp, w_intersect, h_intersect);
+
+                Rectangle img_rect = new Rectangle(image.getX(), image.getY(), image.getWidth(), image.getHeight());
+
+
+                if (cut_rect.intersects(img_rect)) {
+
+                    Rectangle intersection = cut_rect.intersection(new Rectangle(image.getX(), image.getY(), image.getWidth(), image.getHeight()));
+
+
+                    int diff_x = (int) intersection.getX() - image.getX();
+                    int diff_y = (int) intersection.getY() - image.getY();
+
+
+                    BufferedImage enlarged_pic = this.getSelectedPicture().getScaledImage(this.getSelectedPicture().getWidth(), this.getSelectedPicture().getHeight());
+
+                    this.getSelectedPicture().setImg(enlarged_pic.getSubimage(diff_x, diff_y, (int) intersection.getWidth(), (int) intersection.getHeight()));
+                    this.getSelectedPicture().setWidth((int) intersection.getWidth());
+                    this.getSelectedPicture().setHeight((int) intersection.getHeight());
+                    this.getSelectedPicture().setX(this.getSelectedPicture().getX() + diff_x);
+                    this.getSelectedPicture().setY(this.getSelectedPicture().getY() + diff_y);
             }
         }
 
