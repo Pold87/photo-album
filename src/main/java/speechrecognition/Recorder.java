@@ -14,17 +14,13 @@ import java.io.*;
 public class Recorder implements Runnable{
 
 
-	static final long RECORD_TIME = 6000; // Record duration, in milliseconds
-
     File wavFile; // Path of the wav file
 	AudioFileFormat.Type fileType = AudioFileFormat.Type.WAVE; // Format of audio file
 	TargetDataLine line; // The line from which audio data is captured
-    private ContentPanel contentPanel;
-    private volatile boolean running = true;
+//    private volatile boolean running = true;
 
-	public Recorder(File wavFile, ContentPanel contentPanel) {
+	public Recorder(File wavFile) {
         this.wavFile = wavFile;
-        this.contentPanel = contentPanel;
     }
 
 	/**
@@ -41,9 +37,9 @@ public class Recorder implements Runnable{
         return format;
     }
 
-    public void terminate() {
-        running = false;
-    }
+//    public void terminate() {
+//        running = false;
+//    }
 
     public void run() {
             this.start_rec();
@@ -54,7 +50,6 @@ public class Recorder implements Runnable{
 	 */
 	public void start_rec() {
 		try {
-
 
 
             AudioFormat format = getAudioFormat();
@@ -102,19 +97,11 @@ public class Recorder implements Runnable{
 	 * Closes the target data line to finish capturing and recording
 	 */
 	public void finish() {
+        System.out.println("finished");
+
             this.line.stop();
             this.line.close();
 
-    }
-
-	public static void recordExtern(File file) throws IOException, InterruptedException {
-
-		Process p = new ProcessBuilder("sox", "-d", "-r", "8000", "-c", "2", "-t", "wav", file.toString(), "trim", "0", Long.toString(RECORD_TIME / 1000)).start();
-		p.waitFor();
-	}
-
-    public void setContentPanel(ContentPanel contentPanel) {
-        this.contentPanel = contentPanel;
     }
 
 }

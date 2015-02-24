@@ -12,6 +12,7 @@ import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
+import main.java.userInterface.App;
 import main.java.userInterface.DebugPanel;
 import main.java.userInterface.OurController;
 
@@ -36,8 +37,6 @@ public class SpeechCommands implements Runnable {
     public static final String GRAMMAR_PATH = "resource:/voxforge";
     public static final String GRAMMAR_NAME = "commands";
 
-    private OurController ourController;
-
     private Configuration configuration = new Configuration();
     private StreamSpeechRecognizer commandRecognizer;
 
@@ -58,7 +57,12 @@ public class SpeechCommands implements Runnable {
 
 
         for (SimpleSpeechThreadCompleteListener listener : listeners) {
+            System.out.println(listener);
+            System.out.println(this);
+            System.out.println(this.intent[0]);
+            System.out.println(this.intent[1]);
             listener.notifyOfSimpleSpeech(this);
+
         }
 
         this.intent[0] = "unknown";
@@ -92,13 +96,23 @@ public class SpeechCommands implements Runnable {
 
     // Recognize a command
     public void recognizeCommand() {
-        System.out.println("Command recognition (using grammar)");
+        System.out.println("yeah yeah - Command recognition (using grammar)");
 
-        InputStream stream = SpeechCommands.class.getResourceAsStream("/recording.wav");
+//        InputStream stream = SpeechCommands.class.getResourceAsStream("/recording.wav");
+
+
+        InputStream stream = App.class.getResourceAsStream("/recording.wav");
+
+//        stream.
+
+
+        System.out.println("What?!?");
 
         this.commandRecognizer.startRecognition(stream);
 
         SpeechResult result;
+
+        System.out.println("Yeah");
 
         while ((result = commandRecognizer.getResult()) != null) {
             String hypo = result.getHypothesis();
@@ -111,6 +125,9 @@ public class SpeechCommands implements Runnable {
     }
 
     public void parseCommand(String hypo) {
+
+        System.out.println("Yep");
+
         String[] words;
         String intention = "unknown";
         String val = "default";
@@ -212,10 +229,6 @@ public class SpeechCommands implements Runnable {
 
         this.intent[0] = intention;
         this.intent[1] = val;
-    }
-
-    public void setOurController(OurController ourController) {
-        this.ourController = ourController;
     }
 
     @Override

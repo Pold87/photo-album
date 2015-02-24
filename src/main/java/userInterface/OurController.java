@@ -48,10 +48,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
     @Override
     public void notifyOfSimpleSpeech(SpeechCommands sc) {
 
-        if (sc == null || sc.getIntent() == null || sc.getIntent()[0].equals("unknown")) {
+        if (sc == null || sc.getIntent()[0] == null || sc.getIntent()[0].equals("unknown")) {
 
-            System.out.println(sc);
-            System.out.println(sc.getIntent());
+//            System.out.println(sc);
+//            System.out.println(sc.getIntent());
 //                    sc.getIntent()[0].equals("unknown")
 
             this.waitForWit = true;
@@ -73,7 +73,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
             if (runnable != null) {
                 runnable.finish();
-                runnable.terminate();
+//                runnable.terminate();
 
             }
         }
@@ -117,7 +117,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
         if (runnable != null) {
             runnable.finish();
-            runnable.terminate();
+//            runnable.terminate();
 
         }
 
@@ -144,9 +144,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         this.url = getClass().getResource("/recording.wav");
         this.normalRecord =  new File(this.url.toURI());
         this.sc = new SpeechCommands();
-        this.sc.setOurController(this);
+        this.sc.addListener(this);
         this.threadSimpleSpeech = new Thread(this.sc);
-        sc.addListener(this);
 
     }
 
@@ -155,28 +154,27 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void startSpeech() throws URISyntaxException {
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
 
             this.killed = false;
 
             if (!this.contentPanel.isSpeechProcessing() && !this.contentPanel.isSpeechRecording()) {
-                runnable = new Recorder(this.normalRecord, this.contentPanel);
+                runnable = new Recorder(this.normalRecord);
                 thread = new Thread(runnable);
                 thread.start();
                 this.contentPanel.setSpeechRecording(true);
             }
-        });
+//        });
     }
 
 
     public void stopSpeech() {
-        SwingUtilities.invokeLater(() -> {
 
 			wit_runnable = null;
+            this.runnable.finish();
 			if (this.thread_wit == null) {
 				try {
                     this.contentPanel.setSpeechRecording(false);
-
                     wit_runnable = new Wit(this.normalRecord, "wav");
 
 
@@ -185,7 +183,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 				}
 
 
-                this.threadSimpleSpeech = new Thread(sc);
+                this.threadSimpleSpeech = new Thread(this.sc);
                 threadSimpleSpeech.start();
 
                 this.thread_wit = new Thread(wit_runnable);
@@ -194,7 +192,6 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 				contentPanel.setSpeechProcessing(true);
 			}
-		});
     }
 
     //START CommandInterface
@@ -520,7 +517,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             case "background":
                 Color color = response.getBackgroundColor();
                 if (color != null) {
-                    contentPanel.setBackground(color);
+                    this.setBackground(color);
                 } else {
                     System.out.println("Unknown color: ");
                 }
