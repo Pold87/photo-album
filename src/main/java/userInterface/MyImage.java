@@ -139,6 +139,11 @@ public class MyImage implements Serializable{
         return this.rotationDegrees;
     }
 
+    public void setOrientation(int orientation){
+    	rotationDegrees = orientation;
+    	snapRotation();
+    }
+    
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         Graphics2D g2dCopy = (Graphics2D) g2d.create();

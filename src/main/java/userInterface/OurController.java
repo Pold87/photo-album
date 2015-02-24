@@ -260,9 +260,11 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
 	public void rotate(double degrees) {
         SwingUtilities.invokeLater(() -> {
-            if (contentPanel.getSelectedPicture() != null) {
+        	MyImage selectedImage = contentPanel.getSelectedPicture();
+            if (selectedImage != null) {
+            	int oldDegrees = (int)selectedImage.getRotationDegrees();
                 contentPanel.rotate(degrees);
-                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), (int) contentPanel.getSelectedPicture().getRotationDegrees(), this));
+                undoManager.addEdit(new ActionRotate(contentPanel.getSelectedPicture(), oldDegrees, this));
                 checkUndoRedoButtons();
                 contentPanel.repaint();
             }

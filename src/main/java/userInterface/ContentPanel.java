@@ -364,6 +364,13 @@ public class ContentPanel extends JPanel {
 		}
 		repaint();
 	}
+    
+    public void setOrientation(int degrees) {
+		if (this.selectedImage != null) {
+			selectedImage.setOrientation(degrees);
+		}
+		repaint();
+	}
 
 	public boolean isSpeechRecording() {
 		return speechRecording;
