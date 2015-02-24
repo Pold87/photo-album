@@ -6,29 +6,29 @@
 grammar photoalbum;
 
 //Objects
-<pics> = ([the | this | a | of] (image | picture | form | selection | it)) | ((this | that) [one]);
-<bg_color> = [the | of] (background | wallpaper | background color | wallpaper color);
+<pics> = ([the | this | a | of] (image | picture)) | ((this | that) [one]);
+<bg_color> = [the | of] (background | background color);
 <colors> = white | black | blue | green | red | yellow | pink | magenta | orange | cyan;
 <numbers> = ten | eleven | twelve | thirteen | fourteen | fifteen | sixteen;
 
 //Actions
 <add_action> = add;
 
-<select_action> = select | choose | pick | activate | use;
+<select_action> = select | choose | pick | use;
 
-<delete_action> = delete | remove | trashcan | garbage [bin];
+<delete_action> = delete | remove;
 
-<move_action> = move | shift | relocate | change position;
+<move_action> = move | change position;
 
-<rotate_action> = rotate | turn | spin | tilt | change orientation;
+<rotate_action> = rotate | change orientation;
 
-<undo_action> = undo [that | it | this] | [go] back;
+<undo_action> = undo [that | it | this];
 
-<redo_action> = ((redo | do) [that | it | this] [again]) | [go] forward;
+<redo_action> = redo [that | it | this];
 
 <changeBG_action> = [change | set] [<bg_color>] <colors>;
 
 <pic_actions> = <add_action> | <select_action> | <delete_action> | <move_action> | <rotate_action> | <undo_action> | <redo_action>;
 
 //Commands
-public <command> = <pic_actions> ([<pics>] | [<pics>] [<numbers>]) | <changeBG_action>;
+public <command> = <pic_actions> ([<pics>] | [<pics>] [<numbers>] | [<numbers>]) | <changeBG_action>;

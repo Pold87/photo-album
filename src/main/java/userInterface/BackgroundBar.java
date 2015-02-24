@@ -54,7 +54,6 @@ public class BackgroundBar extends JToolBar{
 
     }
 
-
     public Map<Color, String> getColorMap() {
         return colorMap;
     }

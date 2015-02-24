@@ -256,6 +256,8 @@ public class Wit implements Runnable {
 
         JsonObject entities = this.getEntities();
         JsonArray jsonArray = entities.getJsonArray("color");
+
+
         JsonObject jsonObject = jsonArray.getJsonObject(0);
         String colorString = jsonObject.getString("value").toLowerCase();
 

@@ -155,7 +155,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	}
 
     public void startSpeech() throws URISyntaxException {
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
 
             this.killed = false;
 
@@ -165,7 +165,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                 thread.start();
                 this.contentPanel.setSpeechRecording(true);
             }
-        });
+//        });
     }
 
 
