@@ -133,7 +133,7 @@ public class Toolbar extends JToolBar {
         add(selectButton);
         add(deleteButton);
         add(rotateButton);
-        add(cutButton);
+//        add(cutButton);
         add(resizeButton);
 
         undoButton.setEnabled(false);

@@ -61,7 +61,6 @@ public class BasicDesign extends JFrame {
                     case '3':
                     case '4':
                     case '5':
-                    case '6':
                         ourController.getLogger().setTaskNumber(e.getKeyChar());
                         try {
                             ourController.loadContentPanel(task, e.getKeyChar());
@@ -172,6 +171,7 @@ public class BasicDesign extends JFrame {
         setLayout(new BorderLayout());
 
         debugPanel.setPreferredSize(new Dimension(800, 200));
+        debugPanel.setVisible(false);
 
         add(toolbar, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
@@ -230,7 +230,7 @@ public class BasicDesign extends JFrame {
         JMenu showMenu = new JMenu("View");
         JMenuItem showFormItem = new JCheckBoxMenuItem("Debug Window");
 
-        showFormItem.setSelected(true);
+        showFormItem.setSelected(false);
         showMenu.add(showFormItem);
 
         JMenu windowMenu = new JMenu("Window");

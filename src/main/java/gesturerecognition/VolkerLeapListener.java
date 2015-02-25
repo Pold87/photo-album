@@ -175,7 +175,7 @@ public class VolkerLeapListener extends com.leapmotion.leap.Listener {
                         contentPanel.setToolMode(OurController.ToolMode.MOVE);
                         break;
                     case 2:
-                        contentPanel.setToolMode(OurController.ToolMode.CUT);
+//                        contentPanel.setToolMode(OurController.ToolMode.CUT);
                         break;
                     case 3: // CUT
                         break;

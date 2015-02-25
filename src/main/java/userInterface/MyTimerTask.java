@@ -13,7 +13,7 @@ public class MyTimerTask extends TimerTask {
 
         if (this.selectedImage != null) {
 
-            if (s == "enlarge" && selectedImage.getHeight() < 650) {
+            if (s == "enlarge" && selectedImage.getHeight() < 650 && selectedImage.getWidth() < 650) {
 
                 double normalizerX = (double) selectedImage.getWidth() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
                 double normalizerY = (double) selectedImage.getHeight() / (double) (selectedImage.getWidth() + selectedImage.getHeight());
