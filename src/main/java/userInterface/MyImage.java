@@ -210,9 +210,6 @@ public class MyImage implements Serializable{
     	rotationDegrees = x*45;
     }
 
-    /**
-     * No longer used
-     */
     public void resetToOriginalImage(){
     	x = 0;
     	y = 0;

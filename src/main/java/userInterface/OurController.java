@@ -228,9 +228,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         });
 	}
 
-	public void deletePicture(MyImage img) {
-
-		SwingUtilities.invokeLater(() -> contentPanel.deletePicture(img));
+	private void deletePicture(MyImage img) {
+		contentPanel.selectPicture(img);
+		deleteSelectedPicture();
 	}
 
 	public void movePicture(int x, int y) {
