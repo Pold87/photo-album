@@ -302,7 +302,8 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
             switch (toolModeIndex) {
                 case MOVE:
-                	
+                	if(!contentPanel.isPictureAt(XPos, YPos))
+                		contentPanel.unselect();
                     break;
                 case ENLARGE:
 
@@ -328,6 +329,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
         	if(toolModeIndex == ToolMode.MOVE)
         		contentPanel.unselect();
         }
+		contentPanel.repaint();
 	}
 
     public Logger getLogger() {
