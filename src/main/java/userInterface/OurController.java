@@ -302,6 +302,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
             switch (toolModeIndex) {
                 case MOVE:
+                	
                     break;
                 case ENLARGE:
 
@@ -323,6 +324,9 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     break;
 
             }
+        }else{
+        	if(toolModeIndex == ToolMode.MOVE)
+        		contentPanel.unselect();
         }
 	}
 
