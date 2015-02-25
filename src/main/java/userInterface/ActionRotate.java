@@ -3,24 +3,24 @@ package main.java.userInterface;
 import javax.swing.undo.UndoableEdit;
 
 public class ActionRotate extends Action {
-	int degrees;	
+	int oldOrientation, newOrientation;	
 	
-	public ActionRotate(MyImage image, int degrees, OurController ourController) {
+	public ActionRotate(MyImage image, int oldOrientation, OurController ourController) {
 		super(image, "Rotate", ourController, 0, 0, 0, 0);
-		this.degrees = degrees;
+		this.oldOrientation = oldOrientation;
 	}
 
 	public void redo() {
 		super.redo();
 		ourController.selectPicture(image);
-		ourController.contentPanel.rotate(degrees);
+		ourController.contentPanel.setOrientation(newOrientation);
 	}
 
 
 	public void undo() {
 		super.undo();
 		ourController.selectPicture(image);
-		ourController.contentPanel.rotate(-degrees);
+		ourController.contentPanel.setOrientation(oldOrientation);
 	}
 	
 	@Override
@@ -30,7 +30,7 @@ public class ActionRotate extends Action {
 			return false;
 		else{
 			ActionRotate nextRotate = (ActionRotate) nextEdit;
-			degrees += nextRotate.degrees;
+			newOrientation = nextRotate.newOrientation;
 			return true;
 		}
 	}

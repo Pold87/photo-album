@@ -28,6 +28,7 @@ public class MyImage implements Serializable{
     private int x;
     private int y;
 
+    private double originalRatio;
     private int width, originalWidth;
     private int height, originalHeight; // 2D-coordinates
     private int num; // The number of the image (for selecting it)
@@ -51,7 +52,12 @@ public class MyImage implements Serializable{
         height = img.getHeight();
         originalWidth = img.getWidth();
         originalHeight = img.getHeight();
-        originalImage = img;
+        originalImage = img;        
+        originalRatio = originalHeight*1.0/originalWidth;
+    }
+    
+    public double getOriginalRatio (){
+    	return originalRatio;
     }
 
     public boolean isActive() {
@@ -139,6 +145,11 @@ public class MyImage implements Serializable{
         return this.rotationDegrees;
     }
 
+    public void setOrientation(int orientation){
+    	rotationDegrees = orientation;
+    	snapRotation();
+    }
+    
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         Graphics2D g2dCopy = (Graphics2D) g2d.create();
@@ -161,7 +172,7 @@ public class MyImage implements Serializable{
     }
 
     public boolean contains(Point p){
-    	Rectangle rectangle = new Rectangle(x, y, width, height);
+    	Rectangle rectangle = new Rectangle(x, y, width + 100, height + 100);
 		AffineTransform transform = new AffineTransform();
 		transform.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
 		Shape pictureArea = transform.createTransformedShape(rectangle);
@@ -187,6 +198,7 @@ public class MyImage implements Serializable{
 
     public void setImg(BufferedImage img) {
         this.img = img;
+        originalRatio = img.getHeight()*1.0/img.getWidth();
     }
     
     public void snapRotation(){
@@ -198,9 +210,6 @@ public class MyImage implements Serializable{
     	rotationDegrees = x*45;
     }
 
-    /**
-     * No longer used
-     */
     public void resetToOriginalImage(){
     	x = 0;
     	y = 0;
@@ -214,7 +223,15 @@ public class MyImage implements Serializable{
     	return num;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    public int getOriginalWidth() {
+		return originalWidth;
+	}
+
+	public int getOriginalHeight() {
+		return originalHeight;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
 
         ArrayList<BufferedImage> images = new ArrayList<>();

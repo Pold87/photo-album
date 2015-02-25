@@ -160,7 +160,9 @@ public class BasicDesign extends JFrame {
         this.contentPanel = new ContentPanel(ourController, library);
         ourController.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
+        this.debugPanel.setVisible(false);
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
+
 
 
 

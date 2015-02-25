@@ -290,6 +290,15 @@ public class ContentPanel extends JPanel {
     	}
     }
     
+    public boolean isPictureAt(int x, int y){
+    	for (MyImage i : imageList) {
+			if (i.contains(new Point(x, y))) {
+				return true;
+			}
+		}
+    	return false;
+    }
+    
     public void selectPicture(int nr){
     	if(selectedImage != null){
     		selectedImage.setSelected(false);
@@ -308,6 +317,7 @@ public class ContentPanel extends JPanel {
 
     public void selectPictureAt(int x, int y){
 		// For each image in the image list, get its area and determine if the mouse click occurred in this area.
+    	selectedImage = null;
 		for (MyImage i : imageList) {
 			if (i.contains(new Point(x, y))) {
 				selectedImage = i;
@@ -364,6 +374,13 @@ public class ContentPanel extends JPanel {
 		}
 		repaint();
 	}
+    
+    public void setOrientation(int degrees) {
+		if (this.selectedImage != null) {
+			selectedImage.setOrientation(degrees);
+		}
+		repaint();
+	}
 
 	public boolean isSpeechRecording() {
 		return speechRecording;
@@ -395,8 +412,11 @@ public class ContentPanel extends JPanel {
 	}
 	
 	public void unselect(){
+		System.out.println("Unselecting!!!");
+		if(selectedImage != null){
 		selectedImage.setSelected(false);
 		selectedImage = null;
+		}
 	}
 
 
