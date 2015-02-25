@@ -198,6 +198,7 @@ public class MyImage implements Serializable{
 
     public void setImg(BufferedImage img) {
         this.img = img;
+        originalRatio = img.getHeight()*1.0/img.getWidth();
     }
     
     public void snapRotation(){
