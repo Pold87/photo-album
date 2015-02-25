@@ -139,7 +139,7 @@ public class SpeechCommands implements Runnable {
                         val = "12";
                         break;
                     case "thirteen":
-                        val = "11";
+                        val = "13";
                         break;
                     case "fourteen":
                         val = "14";
