@@ -172,7 +172,7 @@ public class MyImage implements Serializable{
     }
 
     public boolean contains(Point p){
-    	Rectangle rectangle = new Rectangle(x, y, width, height);
+    	Rectangle rectangle = new Rectangle(x, y, width + 100, height + 100);
 		AffineTransform transform = new AffineTransform();
 		transform.rotate(Math.toRadians(rotationDegrees), x+ (width/2), y+(height/2));
 		Shape pictureArea = transform.createTransformedShape(rectangle);

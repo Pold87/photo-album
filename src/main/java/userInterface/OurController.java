@@ -1,6 +1,6 @@
 package main.java.userInterface;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -391,7 +391,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
                 // TODO: See if constraining the image is better
 
-//				if (selectedImage.contains(new Point(XPos + 100, YPos + 100))) {
+//                Rectangle imgRect = new Rectangle(selectedImage.getX() + 100, selectedImage.getY() + 100);
+
+
+				if (selectedImage.contains(new Point(XPos, YPos))) {
 
                     int xDelimited = selectedImage.getX() + deltaX;
                     int yDelimited = selectedImage.getY() + deltaY;
@@ -399,7 +402,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
                     selectedImage.setX(Math.max(0,Math.min(xDelimited, contentPanel.getWidth() - selectedImage.getWidth())));
                     selectedImage.setY(Math.max(0,Math.min(yDelimited, contentPanel.getHeight() - selectedImage.getHeight())));
 
-//				}
+				}
 
 				break;
 			case ROTATE:

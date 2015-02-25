@@ -161,7 +161,9 @@ public class BasicDesign extends JFrame {
         this.contentPanel = new ContentPanel(ourController, library);
         ourController.initialize(contentPanel, this);
         this.debugPanel = new DebugPanel();
+        this.debugPanel.setVisible(false);
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tabbedPane, contentPanel);
+
 
 
 
@@ -230,7 +232,7 @@ public class BasicDesign extends JFrame {
         JMenu showMenu = new JMenu("View");
         JMenuItem showFormItem = new JCheckBoxMenuItem("Debug Window");
 
-        showFormItem.setSelected(true);
+        showFormItem.setSelected(false);
         showMenu.add(showFormItem);
 
         JMenu windowMenu = new JMenu("Window");

@@ -221,6 +221,7 @@ public class Wit implements Runnable {
         HashMap<String, Integer> assignments = new HashMap<>();
 
         assignments.put("to self", 12);
+        assignments.put("to spell", 12);
         assignments.put("self", 12);
         assignments.put("taken", 10);
         assignments.put("tent", 10);
