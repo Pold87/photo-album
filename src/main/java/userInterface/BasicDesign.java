@@ -30,10 +30,12 @@ public class BasicDesign extends JFrame {
     private JSplitPane splitPane; // For splitting library and content panel
     private Toolbar toolbar;
     public PhotoBar photoBar;
-    private DebugPanel debugPanel; // For showing debug information (e.g., speech recogntion)
+    private DebugPanel debugPanel; // For showing debug information (e.g., speech recognition)
     private MyImage[] library;
     public OurController ourController;
     private String task;
+
+    private long startTime;
 
     // Leap stuff
 
@@ -42,8 +44,6 @@ public class BasicDesign extends JFrame {
     private int scr_width = screenSize.width;
     private int scr_height = screenSize.height;
 
-
-    // TODO: See if there is a conflict between Controller classes
     public Controller leapController;
     public VolkerLeapListener leapListener;
 
@@ -61,12 +61,13 @@ public class BasicDesign extends JFrame {
                     case '3':
                     case '4':
                     case '5':
-                        ourController.getLogger().setTaskNumber(e.getKeyChar());
+                        ourController.getLogger().setTaskNumber(KeyEvent.getKeyText(e.getKeyChar()));
                         try {
-                            ourController.loadContentPanel(task, e.getKeyChar());
+                            ourController.loadContentPanel(task, KeyEvent.getKeyText(e.getKeyChar()));
                         } catch (Exception e2) {
                             e2.printStackTrace();
                         }
+                        resetStartTime();
                         break;
 
                     case 's':
@@ -199,6 +200,8 @@ public class BasicDesign extends JFrame {
         manager.addKeyEventDispatcher(new MyDispatcher());
 
 
+        startTime = System.currentTimeMillis();
+
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
@@ -282,5 +285,12 @@ public class BasicDesign extends JFrame {
     }
 
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void resetStartTime() {
+        this.startTime = System.currentTimeMillis();;
+    }
 
 }

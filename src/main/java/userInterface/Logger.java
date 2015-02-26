@@ -12,7 +12,7 @@ public class Logger {
 	private int nrOfActions;
 	//Another nasty hacky way of doing stuff.
 	private List<String> previousRotate;
-    private int taskNumber = 1;
+    private int taskNumber = 0;
 
 
     public Logger(){
@@ -35,8 +35,8 @@ public class Logger {
 		}
 	}
 
-    public void setTaskNumber(int taskNumber) {
-        this.taskNumber = taskNumber;
+    public void setTaskNumber(String taskNumber) {
+        this.taskNumber = Integer.parseInt(taskNumber);
     }
 
     public void incTaskNumber() {

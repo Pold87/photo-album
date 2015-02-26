@@ -54,7 +54,7 @@ public class Action implements UndoableEdit{
 	}
 	
 	private void log (String action){
-		timePerform = (System.currentTimeMillis() - App.startTime)/100;
+		timePerform = (System.currentTimeMillis() - ourController.getBasicDesign().getStartTime())/100;
 		double time = timePerform*1.0/10;
 		if(image != null) {
             ArrayList<String> log = new ArrayList<>(Arrays.asList(modality.toString(),

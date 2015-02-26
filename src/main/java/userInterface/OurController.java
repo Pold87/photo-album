@@ -29,7 +29,7 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 	private UndoManager undoManager;
     public Logger logger;
 	public ContentPanel contentPanel;
-	private BasicDesign basicDesign;
+    private BasicDesign basicDesign;
 	private int previousCursorX = -1, previousCursorY = -1, oldXPos, oldYPos, oldWidth, oldHeight;
     private URL url;
     private File normalRecord;
@@ -299,6 +299,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
             oldWidth = selectedImage.getWidth();
             oldHeight = selectedImage.getHeight();
 
+            System.out.println(oldXPos);
+            System.out.println(oldYPos);
+
+
 
             switch (toolModeIndex) {
                 case MOVE:
@@ -470,9 +474,10 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 			}else{
 				rotateThread.setClockwise(false);
 			}
-
-			cursorPressed(e.getX(), e.getY());
 		}
+
+        cursorPressed(e.getX(), e.getY());
+
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -803,10 +808,15 @@ public class OurController implements MouseMotionListener, MouseListener, Action
 
     }
 
-    public void loadContentPanel(String task, char num) throws IOException, ClassNotFoundException {
+    public void loadContentPanel(String task, String num) throws IOException, ClassNotFoundException {
 
         String file_base = "frames/contentPanel-";
         this.contentPanel.loadContentPanel(file_base + task + "-" + num + ".ser");
+    }
+
+
+    public BasicDesign getBasicDesign() {
+        return basicDesign;
     }
 
 }

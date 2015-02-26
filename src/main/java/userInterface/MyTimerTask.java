@@ -28,10 +28,10 @@ public class MyTimerTask extends TimerTask {
                 int newY = (int) (selectedImage.getY() - normalizerY);
                 int newHeight = (int) (oldHeight + 6 * normalizerY);
 
-                System.out.println("NormalizerY = " + normalizerY);
-                System.out.println("New height: " + newHeight);
+//                System.out.println("NormalizerY = " + normalizerY);
+//                System.out.println("New height: " + newHeight);
                 int newWidth =  (int) (newHeight/ratio);
-                System.out.println( " New Width: "+ newWidth );
+//                System.out.println( " New Width: "+ newWidth );
                 //If picture size makes it go out of bounds, make it expand to the other side only.
                 selectedImage.setX((contentpanelWidth < newX + newWidth) ? contentpanelWidth - newWidth : newX);
                 selectedImage.setY((contentpanelHeight < newY + newHeight) ? contentpanelHeight - newHeight : newY);
